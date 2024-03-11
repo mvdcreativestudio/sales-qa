@@ -5,6 +5,36 @@
       "icon": "menu-icon tf-icons bx bx-home-circle",
       "slug": "dashboard",
       "url": "/"
+    },
+    {
+      "name": "Materias Primas",
+      "icon": "menu-icon tf-icons bx bx-box",
+      "slug": "raw-materials",
+      "url": "/raw-materials"
+    },
+    {
+      "name": "Stock",
+      "icon": "menu-icon tf-icons bx bx-package",
+      "slug": "stock",
+      "url": "/stock"
+    },
+    {
+      "name": "E-Commerce",
+      "icon": "menu-icon tf-icons bx bx-world",
+      "slug": "ecommerce",
+      "url": "/ecommerce"
+    },
+    {
+      "name": "Omnicanalidad",
+      "icon": "menu-icon tf-icons bx bx-network-chart",
+      "slug": "omnichannel",
+      "url": "/omnichannel"
+    },
+    {
+      "name": "Datacenter",
+      "icon": "menu-icon tf-icons bx bx-line-chart",
+      "slug": "datacenter",
+      "url": "/datacenter"
     }
   ]
 }

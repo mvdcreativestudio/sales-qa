@@ -17,3 +17,6 @@ import Checkbox from 'jquery-datatables-checkboxes';
 $.fn.dataTable.ext.Checkbox = Checkbox(window, $);
 $.fn.dataTable.ext.buttons.jszip = JSZip;
 $.fn.dataTable.ext.buttons.pdfMake = pdfMake;
+
+window.JSZip = JSZip;
+console.log('AAAAA');

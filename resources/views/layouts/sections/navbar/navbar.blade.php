@@ -98,7 +98,7 @@ $navbarDetached = ($navbarDetached ?? '');
                     </span>
                     <small class="text-muted">
                       @if (Auth::check())
-                        {{ Auth::user()->roles->first()->name ?? 'Sin Rol' }}
+                        {{ __(Auth::user()->roles->first()->name) ?? 'Sin Rol' }}
                       @else
                         -
                       @endif</small>
@@ -112,7 +112,7 @@ $navbarDetached = ($navbarDetached ?? '');
             <li>
               <a class="dropdown-item" href="#">
                 <i class="bx bx-user me-2"></i>
-                <span class="align-middle">Mi Perfil</span>
+                <span class="align-middle">{{ __('My Profile') }}</span>
               </a>
             </li>
             @if (Auth::check() && Laravel\Jetstream\Jetstream::hasApiFeatures())
@@ -132,7 +132,7 @@ $navbarDetached = ($navbarDetached ?? '');
               <li>
                 <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                   <i class='bx bx-power-off me-2'></i>
-                  <span class="align-middle">Cerrar Sesión</span>
+                  <span class="align-middle">{{ __('Sign Out') }}</span>
                 </a>
               </li>
               <form method="POST" id="logout-form" action="{{ route('logout') }}">
@@ -142,7 +142,7 @@ $navbarDetached = ($navbarDetached ?? '');
               <li>
                 <a class="dropdown-item" href="{{ Route::has('login') ? route('login') : url('auth/login-basic') }}">
                   <i class='bx bx-log-in me-2'></i>
-                  <span class="align-middle">Iniciar Sesión</span>
+                  <span class="align-middle">{{ __('Sign In') }}</span>
                 </a>
               </li>
               @endif

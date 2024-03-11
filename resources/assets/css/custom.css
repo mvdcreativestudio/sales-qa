@@ -1,0 +1,223 @@
+/* Generales */
+
+* {
+  font-family: Montserrat;
+}
+
+/* Fonts */
+
+.light {
+  font-weight: 300;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+
+
+  /* Spinner */
+
+  .spinner-container {
+    position: fixed; /* Se mantiene fijo en la pantalla */
+    top: 0;
+    left: 0;
+    width: 100%; /* Cubre todo el ancho de la pantalla */
+    height: 100%; /* Cubre todo el alto de la pantalla */
+    display: flex; /* Usa Flexbox para el centrado */
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+  }
+
+/* Navbar */
+
+.navbar-expand-lg {
+  background-color: #181818;
+  min-height: 70px;
+}
+
+.navbar-logo {
+  width: 180px;
+}
+
+.nav-link-menu {
+  color: white!important;
+}
+
+/* Home */
+
+.vendors-container {
+  color: #181818;
+}
+
+.custom-option-title {
+  color: #181818!important;
+}
+
+/* Footer */
+
+.footer-container {
+  position: relative;
+  left: 0;
+  bottom: -16;
+  background-color: #181818;
+  color: white;
+}
+
+.footer-logo {
+  max-width: 130px!important;
+}
+
+.creditos-container {
+  text-align: end;
+}
+
+@media (max-width: 767px) {
+  .creditos-container {
+    text-align: center;
+    padding-top: 15px;
+  }
+}
+
+.creditos {
+  color: white!important;
+}
+
+/* E-Commerce */
+
+  /* WhatsApp Box */
+
+  .whatsapp-box {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 3%;
+    z-index: 1000;
+  }
+
+  .whatsapp-box-img {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Cart */
+
+    .cart-box {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 3%;
+      padding: 7px;
+      z-index: 1000;
+      background-color: white;
+      border-radius: 10px;
+      -webkit-box-shadow: 4px 7px 16px -1px rgba(0,0,0,0.39);
+      -moz-box-shadow: 4px 7px 16px -1px rgba(0,0,0,0.39);
+      box-shadow: 4px 7px 16px -1px rgba(0,0,0,0.39);
+    }
+
+    .cart-box-img {
+      width: 100%;
+      height: auto;
+    }
+
+    .offcanvas-cart-footer {
+      flex-direction: row;
+      align-self: center;
+      margin-bottom: 20px;
+      width: 80%;
+      position: absolute;
+      bottom: 0;
+    }
+
+    .offcanvas-cart-button {
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .cart-product-list {
+    overflow-y: auto;
+    max-height: 60vh;
+  }
+
+  .cart-product-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+  }
+
+  .cart-product-img {
+      width: 100px;
+      height: auto;
+  }
+
+  .cart-product-variants {
+    padding-inline: 10px;
+  }
+
+  .product-card-text {
+      flex: 1;
+  }
+
+  .cart-total-price {
+    text-align: center;
+  }
+
+  .add-to-cart-img {
+    width: 60%;
+  }
+
+
+  /* Checkout */
+
+  .sabores-carrito {
+    font-size: 10px;
+    line-height: 1.4
+  }
+
+  /* Store */
+
+  .category-card-text {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+  }
+  .category-card-text h5 {
+    color: white;
+    border-radius: 0.25rem;
+  }
+
+  .card-category {
+    box-shadow: none!important;
+    background-color: transparent!important;
+  }
+
+  .category-name {
+    font-size: 1.5rem;
+  }
+
+  .title-container {
+    text-align: center;
+  }
+
+  /* Product */
+
+  .card-product {
+    box-shadow: none!important;
+    background-color: transparent!important;
+    cursor: pointer;
+  }
+
+  .product-card-text {
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  .product-name {
+    margin-bottom: 5px;
+  }
+
