@@ -11,7 +11,17 @@
 }
 
 .bold {
-  font-weight: 600;
+  font-weight: 600!important;
+}
+
+/* Colors */
+
+.bg-gray2 {
+  background-color: rgb(187, 187, 187)!important;
+}
+
+.font-white {
+  color: white!important;
 }
 
 

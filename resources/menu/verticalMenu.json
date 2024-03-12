@@ -19,6 +19,28 @@
       "url": "/stock"
     },
     {
+      "name": "Contabilidad",
+      "icon": "menu-icon tf-icons bx bx-dollar",
+      "slug": ["accounting", "receipts", "entries"],
+      "submenu": [
+        {
+          "url": "/accounting",
+          "name": "Facturas",
+          "slug": "accounting"
+        },
+        {
+          "url": "/receipts",
+          "name": "Recibos",
+          "slug": "receipts"
+        },
+        {
+          "url": "/entries",
+          "name": "Asientos",
+          "slug": "entries"
+        }
+      ]
+    },
+    {
       "name": "E-Commerce",
       "icon": "menu-icon tf-icons bx bx-world",
       "slug": "ecommerce",
@@ -35,6 +57,12 @@
       "icon": "menu-icon tf-icons bx bx-line-chart",
       "slug": "datacenter",
       "url": "/datacenter"
+    },
+    {
+      "name": "CRM",
+      "icon": "menu-icon tf-icons bx bx-group",
+      "slug": "crm",
+      "url": "/crm"
     }
   ]
 }

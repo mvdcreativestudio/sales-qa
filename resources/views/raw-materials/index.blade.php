@@ -37,7 +37,7 @@
         <div class="d-flex justify-content-between align-items-start">
           <div>
             <h6 class="mb-2">Total Materias Primas</h6>
-            <h4 class="mb-2">150</h4>
+            <h4 class="mb-2">11</h4>
             <p class="mb-0"><span class="text-muted me-2">En almacen</span><span class="badge bg-label-success">+5%</span></p>
           </div>
           <div class="avatar">
@@ -88,7 +88,7 @@
     }
 
     var dt_raw_materials_table = $('.datatables-raw-materials');
-    
+
     var rawMaterialAdd = '{{ route('raw-materials.create') }}';
     var rawMaterialEdit = '{{ route('raw-materials.edit', ':id') }}';
     var rawMaterialDelete = '{{ route('raw-materials.destroy', ':id') }}';
