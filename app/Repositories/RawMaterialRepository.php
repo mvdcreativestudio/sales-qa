@@ -40,8 +40,10 @@ class RawMaterialRepository
     {
         if (isset($data['image'])) {
             $data['image_url'] = $this->uploadImage($data['image']);
-            unset($data['image']); // Elimina la imagen del array para evitar intentar guardarla como columna.
+            unset($data['image']);
         }
+
+        $data['store_id'] = auth()->user()->store_id;
 
         return RawMaterial::create($data);
     }

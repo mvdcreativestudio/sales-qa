@@ -7,6 +7,7 @@ use App\Http\Controllers\EcommerceController;
 use App\Http\Controllers\OmnichannelController;
 use App\Http\Controllers\CrmController;
 use App\Http\Controllers\AccountingController;
+use App\Http\Controllers\StoreController;
 
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
 
@@ -19,7 +20,13 @@ Route::middleware([
         return view('content.dashboard.dashboard-mvd');
     })->name('dashboard');
 
-    Route::resource('raw-materials', RawMaterialController::class); // Genero automaticamente las rutas para el CRUD de Raw Materials
+    // Tiendas / Franquicias
+    Route::resource('stores', StoreController::class);
+    Route::get('stores/{store}/manage-users', [StoreController::class, 'manageUsers'])->name('stores.manageUsers');
+    Route::post('stores/{store}/associate-user', [StoreController::class, 'associateUser'])->name('stores.associateUser');
+    Route::post('stores/{store}/disassociate-user', [StoreController::class, 'disassociateUser'])->name('stores.disassociateUser');
+
+    Route::resource('raw-materials', RawMaterialController::class);
 });
 
 // Omnicanalidad
@@ -38,4 +45,3 @@ Route::get('accounting', [AccountingController::class, 'index'])->name('accounti
 Route::get('receipts', [AccountingController::class, 'receipts'])->name('receipts');
 Route::get('entries', [AccountingController::class, 'entries'])->name('entries');
 Route::get('entrie', [AccountingController::class, 'entrie'])->name('entrie');
-

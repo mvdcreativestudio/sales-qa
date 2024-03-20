@@ -51,7 +51,7 @@
                     </div>
 
                     <div id="unit_example" class="mt-2 mb-2 text-muted" style="display: none;">
-                        
+
                     </div>
 
                     <!-- Carga de imagen -->
@@ -62,6 +62,13 @@
                         <img id="image-preview" src="#" alt="Vista previa de la imagen" class="img-fluid" style="display: none;"/>
                         </div>
                     </div>
+                    @if ($errors->any())
+                      @foreach ($errors->all() as $error)
+                        <div class="alert alert-danger">
+                          {{ $error }}
+                        </div>
+                      @endforeach
+                    @endif
                 </div>
             </div>
 

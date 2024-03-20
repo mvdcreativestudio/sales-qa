@@ -172,6 +172,7 @@ return [
         App\Providers\JetstreamServiceProvider::class,
     App\Providers\MenuServiceProvider::class,
     Spatie\Permission\PermissionServiceProvider::class,
+    Laraveles\Spanish\SpanishServiceProvider::class,
   ])->toArray(),
 
   /*

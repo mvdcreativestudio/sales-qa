@@ -50,7 +50,7 @@
                 <option value="Litros" @if($rawMaterial->unit_of_measure == 'Litros') selected @endif>Litros (L)</option>
                 <option value="Mililitros" @if($rawMaterial->unit_of_measure == 'Mililitros') selected @endif>Mililitros (ML)</option>
                 <option value="Unidades" @if($rawMaterial->unit_of_measure == 'Unidades') selected @endif>Unidades (U)</option>
-              </select>              
+              </select>
             </div>
 
             <!-- Carga de imagen actual y nueva -->
@@ -65,6 +65,13 @@
                 <img id="image-preview" src="#" alt="Vista previa de la imagen" class="img-fluid" style="display: none;"/>
               </div>
             </div>
+            @if ($errors->any())
+              @foreach ($errors->all() as $error)
+                <div class="alert alert-danger">
+                  {{ $error }}
+                </div>
+              @endforeach
+            @endif
           </div>
         </div>
 
