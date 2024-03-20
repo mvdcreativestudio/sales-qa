@@ -1,31 +1,40 @@
 [
   {
     "id": "board-in-progress",
-    "title": "In Progress",
+    "title": "Primer Contacto",
     "item": [
       {
         "id": "in-progress-1",
-        "title": "Research FAQ page UX",
+        "title": "Rodelú Pqe. Rodó",
         "comments": "12",
-        "badge-text": "UX",
-        "badge": "success",
+        "badge-text": "Primer Contacto",
+        "badge": "info",
         "due-date": "5 April",
-        "attachments": "4",
-        "assigned": [
-          "12.png",
-          "5.png"
-        ],
-        "members": [
-          "Bruce",
-          "Clark"
-        ]
+        "attachments": "4"
+      },
+      {
+        "id": "in-progress-1",
+        "title": "Bar Sarmiento",
+        "comments": "12",
+        "badge-text": "Primer Contacto",
+        "badge": "info",
+        "due-date": "5 April",
+        "attachments": "4"
+      },      {
+        "id": "in-progress-1",
+        "title": "Lo de Rick",
+        "comments": "12",
+        "badge-text": "Primer Contacto",
+        "badge": "info",
+        "due-date": "5 April",
+        "attachments": "4"
       },
       {
         "id": "in-progress-2",
-        "title": "Review Javascript code",
+        "title": "Ancap Aeropuerto",
         "comments": "8",
-        "badge-text": "Code Review",
-        "badge": "danger",
+        "badge-text": "Primer Contacto",
+        "badge": "info",
         "attachments": "2",
         "due-date": "10 April",
         "assigned": [
@@ -41,78 +50,47 @@
   },
   {
     "id": "board-in-review",
-    "title": "In Review",
+    "title": "Enviado",
     "item": [
       {
         "id": "in-review-1",
-        "title": "Review completed Apps",
+        "title": "Ancap Pinar",
         "comments": "17",
-        "badge-text": "Dashboard",
-        "badge": "info",
+        "badge-text": "Propuesta enviada",
+        "badge": "warning",
         "due-date": "8 April",
-        "attachments": "8",
-        "assigned": [
-          "11.png",
-          "6.png"
-        ],
-        "members": [
-          "Laurel",
-          "Harley"
-        ]
+        "attachments": "8"
       },
       {
         "id": "in-review-2",
-        "title": "Find new images for pages",
+        "title": "Mar Abierto",
         "comments": "18",
-        "badge-text": "Images",
-        "image": "21.jpg",
+        "badge-text": "Propuesta enviada",
         "badge": "warning",
         "due-date": "2 April",
-        "attachments": "10",
-        "assigned": [
-          "9.png",
-          "2.png",
-          "3.png",
-          "12.png"
-        ],
-        "members": [
-          "Jordan",
-          "Dianna",
-          "Vinnie",
-          "Lasa"
-        ]
+        "attachments": "10"
       }
     ]
   },
   {
     "id": "board-done",
-    "title": "Done",
+    "title": "Aceptado",
     "item": [
       {
         "id": "done-1",
-        "title": "Forms & Tables section",
+        "title": "Ancap Centro",
         "comments": "4",
-        "badge-text": "App",
-        "badge": "secondary",
+        "badge-text": "Aceptado",
+        "badge": "success",
         "due-date": "7 April",
-        "attachments": "1",
-        "assigned": [
-          "2.png",
-          "9.png",
-          "10.png"
-        ],
-        "members": [
-          "Kara",
-          "Nyssa",
-          "Darcey"
-        ]
+        "attachments": "1"
       },
       {
         "id": "done-2",
-        "title": "Completed Charts & Maps",
+        "title": "Rodelú Pta. del Este",
         "comments": "21",
-        "badge-text": "Charts & Maps",
-        "badge": "primary",
+        "badge-text": "Aceptado",
+        "badge": "success",
         "due-date": "7 April",
         "attachments": "6",
         "assigned": [

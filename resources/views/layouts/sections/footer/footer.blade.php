@@ -4,9 +4,9 @@ $containerFooter = (isset($configData['contentLayout']) && $configData['contentL
 
 <!-- Footer-->
 <footer class="content-footer footer bg-footer-theme">
-  <div class="{{ $containerFooter }} d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+  <div class="{{ $containerFooter }} d-flex flex-wrap justify-content-end py-2 flex-md-row flex-column">
     <div class="mb-2 mb-md-0">
-      © <script>document.write(new Date().getFullYear())</script>, creado con ❤️ por <a href="{{ (!empty(config('variables.creatorUrl')) ? config('variables.creatorUrl') : '') }}" target="_blank" class="footer-link fw-medium">{{ (!empty(config('variables.creatorName')) ? config('variables.creatorName') : '') }}</a>
+      Desarrollado por <a href="https://mvdcreativestudio.com"><b>MVD Studio</b></a> ♥
     </div>
   </div>
 </footer>

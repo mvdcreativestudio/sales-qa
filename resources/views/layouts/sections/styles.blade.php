@@ -10,10 +10,12 @@
 <!-- Core CSS -->
 @vite(['resources/assets/vendor/scss'.$configData['rtlSupport'].'/core' .($configData['style'] !== 'light' ? '-' . $configData['style'] : '') .'.scss',
 'resources/assets/vendor/scss'.$configData['rtlSupport'].'/' .$configData['theme'] .($configData['style'] !== 'light' ? '-' . $configData['style'] : '') .'.scss',
-'resources/assets/css/demo.css'])
+'resources/assets/css/demo.css',
+'resources/assets/css/custom.css',])
 
 @vite(['resources/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.scss',
 'resources/assets/vendor/libs/typeahead-js/typeahead.scss'])
+
 
 <!-- Vendor Styles -->
 @yield('vendor-style')
@@ -23,3 +25,6 @@
 @yield('page-style')
 
 @livewireStyles
+
+
+

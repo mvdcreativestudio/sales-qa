@@ -50,7 +50,7 @@
     select2.each(function () {
       var $this = $(this);
       $this.wrap("<div class='position-relative'></div>").select2({
-        placeholder: 'Select Label',
+        placeholder: 'Seleccionar etiqueta',
         dropdownParent: $this.parent(),
         templateResult: renderLabels,
         templateSelection: renderLabels,
@@ -67,7 +67,7 @@
       modules: {
         toolbar: '.comment-toolbar'
       },
-      placeholder: 'Write a Comment... ',
+      placeholder: 'Escriba su comentario... ',
       theme: 'snow'
     });
   }
@@ -181,7 +181,7 @@
     buttonContent: '+ Add Item',
     itemAddOptions: {
       enabled: true, // add a button to board for easy item creation
-      content: '+ Add New Item', // text or html content of the board button
+      content: '+ Crear nuevo', // text or html content of the board button
       class: 'kanban-title-button btn btn-default btn-xs', // default class of the button
       footer: false // position the button on footer
     },
