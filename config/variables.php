@@ -4,7 +4,7 @@
     "creatorName" => "MDV Studio",
     "creatorUrl" => "#",
     "templateName" => "Chelato",
-    "templateSuffix" => "2024",
+    "templateSuffix" => "",
     "templateVersion" => "2.2.0",
     "templateFree" => false,
     "templateDescription" => "CRM creado por la empresa MDV Studio",
