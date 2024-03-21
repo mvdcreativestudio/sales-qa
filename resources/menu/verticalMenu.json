@@ -21,7 +21,12 @@
     {
       "name": "Contabilidad",
       "icon": "menu-icon tf-icons bx bx-dollar",
-      "slug": ["invoices", "receipts", "entries"],
+      "slug": [
+        "accounting",
+        "receipts",
+        "entries"
+      ],
+
       "submenu": [
         {
           "url": "/invoices",
@@ -90,6 +95,12 @@
       "icon": "menu-icon tf-icons bx bx-group",
       "slug": "crm",
       "url": "/crm"
+    },
+    {
+      "name": "Tiendas",
+      "icon": "menu-icon tf-icons bx bx-store-alt",
+      "slug": "stores",
+      "url": "/stores"
     }
   ]
 }

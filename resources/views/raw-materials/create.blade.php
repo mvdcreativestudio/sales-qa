@@ -43,25 +43,32 @@
                         <select class="form-select" id="unit_of_measure" name="unit_of_measure" required>
                             <option value="">Seleccione una unidad</option>
                             <option value="KG">Kilogramos (KG)</option>
-                            <option value="Gramos">Gramos</option>
-                            <option value="Litros">Litros</option>
-                            <option value="Mililitros">Mililitros (ml)</option>
-                            <option value="Unidades">Unidades</option>
+                            <option value="Gramos">Gramos (G)</option>
+                            <option value="Litros">Litros (L)</option>
+                            <option value="Mililitros">Mililitros (ML)</option>
+                            <option value="Unidades">Unidades (U)</option>
                         </select>
                     </div>
 
                     <div id="unit_example" class="mt-2 mb-2 text-muted" style="display: none;">
-                        
+
                     </div>
 
                     <!-- Carga de imagen -->
                     <div class="mb-3">
                         <label class="form-label">Imagen</label>
-                        <input type="file" class="form-control" id="imageUpload" name="image" accept="image/*">
+                        <input type="file" class="form-control" id="image_upload" name="image" accept="image/*">
                         <div class="mt-3">
                         <img id="image-preview" src="#" alt="Vista previa de la imagen" class="img-fluid" style="display: none;"/>
                         </div>
                     </div>
+                    @if ($errors->any())
+                      @foreach ($errors->all() as $error)
+                        <div class="alert alert-danger">
+                          {{ $error }}
+                        </div>
+                      @endforeach
+                    @endif
                 </div>
             </div>
 

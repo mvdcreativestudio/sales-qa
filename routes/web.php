@@ -8,6 +8,7 @@ use App\Http\Controllers\OmnichannelController;
 use App\Http\Controllers\CrmController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\AccountingController;
+use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ClientController;
 
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
@@ -21,6 +22,13 @@ Route::middleware([
         return view('content.dashboard.dashboard-mvd');
     })->name('dashboard');
     Route::get('/clients/datatable', [ClientController::class, 'datatable'])->name('clients.datatable');
+
+
+    // Tiendas / Franquicias
+    Route::resource('stores', StoreController::class);
+    Route::get('stores/{store}/manage-users', [StoreController::class, 'manageUsers'])->name('stores.manageUsers');
+    Route::post('stores/{store}/associate-user', [StoreController::class, 'associateUser'])->name('stores.associateUser');
+    Route::post('stores/{store}/disassociate-user', [StoreController::class, 'disassociateUser'])->name('stores.disassociateUser');
 
     Route::resource('raw-materials', RawMaterialController::class);
 });
@@ -51,6 +59,8 @@ Route::get('receipts', [AccountingController::class, 'receipts'])->name('receipt
 Route::get('entries', [AccountingController::class, 'entries'])->name('entries');
 Route::get('entrie', [AccountingController::class, 'entrie'])->name('entrie');
 
-    // Invoices
-    Route::resource('invoices', InvoiceController::class);
+
+ // Invoices
+ Route::resource('invoices', InvoiceController::class);
+
 
