@@ -36,9 +36,9 @@
       "slug": "accounting",
       "submenu": [
         {
-          "url": "/accounting",
+          "url": "/invoices",
           "name": "Facturas",
-          "slug": "accounting"
+          "slug": "invoices"
         },
         {
           "url": "/receipts",
@@ -53,10 +53,37 @@
       ]
     },
     {
+      "name": "Clientes",
+      "icon": "menu-icon tf-icons bx bx-user",
+      "slug": "clients",
+      "url": "/clients"
+    },
+    {
       "name": "E-Commerce",
       "icon": "menu-icon tf-icons bx bx-world",
-      "slug": "ecommerce",
-      "url": "/ecommerce"
+      "slug": ["orders", "products", "marketing", "settings"],
+      "submenu": [
+        {
+          "url": "/ecommerce/orders",
+          "name": "Pedidos",
+          "slug": "orders"
+        },
+        {
+          "url": "/ecommerce/products",
+          "name": "Productos",
+          "slug": "products"
+        },
+        {
+          "url": "/ecommerce/marketing",
+          "name": "Marketing",
+          "slug": "marketing"
+        },
+        {
+          "url": "/ecommerce/settings",
+          "name": "Configuración",
+          "slug": "settings"
+        }
+      ]
     },
     {
       "name": "Omnicanalidad",
