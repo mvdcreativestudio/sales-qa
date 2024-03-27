@@ -63,7 +63,7 @@
 /* Footer */
 
 .footer-container {
-  position: relative;
+  position: fixed;
   left: 0;
   bottom: -16;
   background-color: #181818;
@@ -207,7 +207,7 @@
   text-align: center;
 }
 
-/* Product */
+/* Products */
 
 .card-product {
   box-shadow: none !important;
@@ -224,6 +224,17 @@
   margin-bottom: 5px;
 }
 
+
 tr.odd {
   border-bottom: 0.5px solid var(--bs-table-border-color);
 }
+
+
+/* Backoffice - Products */
+
+.datatables-products p {
+  padding: 0;
+  margin: 0;
+}
+
+

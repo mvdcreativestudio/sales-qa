@@ -61,17 +61,22 @@
     {
       "name": "E-Commerce",
       "icon": "menu-icon tf-icons bx bx-world",
-      "slug": ["orders", "products", "marketing", "settings"],
+      "slug": ["orders", "products", "marketing", "settings", "product-categories"],
       "submenu": [
         {
-          "url": "/ecommerce/orders",
+          "url": "orders",
           "name": "Pedidos",
           "slug": "orders"
         },
         {
-          "url": "/ecommerce/products",
+          "url": "products",
           "name": "Productos",
           "slug": "products"
+        },
+        {
+          "url": "product-categories",
+          "name": "Categorías",
+          "slug": "product-categories"
         },
         {
           "url": "/ecommerce/marketing",

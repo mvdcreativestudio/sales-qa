@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Product;
 
 class EcommerceController extends Controller
 {
@@ -13,23 +14,12 @@ class EcommerceController extends Controller
 
     public function store()
     {
-        return view('content.e-commerce.front.store');
+      $products = Product::all();
+        return view('content.e-commerce.front.store', compact('products'));
     }
 
-    public function checkout()
-    {
-        return view('content.e-commerce.front.checkout');
-    }
 
-    public function orders()
-    {
-        return view('content.e-commerce.backoffice.orders');
-    }
 
-    public function products()
-    {
-        return view('content.e-commerce.backoffice.products');
-    }
 
     public function marketing()
     {
