@@ -23,7 +23,7 @@
 
 @section('content')
 <div class="row">
-
+{{--
   <div class="col-12 mb-4 text-end">
     <div class="text-light small fw-medium">Filtrar período de tiempo</div>
     <div>
@@ -36,7 +36,7 @@
         <label class="btn btn-outline-primary" for="btnradio3">Esta semana</label>
       </div>
     </div>
-  </div>
+  </div> --}}
 
   <!-- single card  -->
   <div class="col-12">
@@ -72,7 +72,7 @@
               <div class="d-flex justify-content-between align-items-start border-end pb-3 pb-sm-0 card-widget-3">
                 <div>
                   <h3 class="mb-1">$24.600</h3>
-                  <p class="mb-0">Ingresos</p>
+                  <p class="mb-0">Ingresos este mes</p>
                 </div>
                 <span class="badge bg-label-secondary rounded p-2 me-sm-4">
                   <i class="bx bx-check-double bx-sm"></i>
@@ -83,7 +83,7 @@
               <div class="d-flex justify-content-between align-items-start">
                 <div>
                   <h3 class="mb-1">$1.498</h3>
-                  <p class="mb-0">Ingresos perdidos</p>
+                  <p class="mb-0">Ingresos perdidos este mes</p>
                 </div>
                 <span class="badge bg-label-secondary rounded p-2">
                   <i class="bx bx-error-circle bx-sm"></i>
@@ -109,7 +109,7 @@
         </div>
         <p class="mb-1 fw-medium me-1">Pedidos completados</p>
         <p class="mb-0">
-          <span class="fw-medium me-1">+18.2%</span>
+          <span class="fw-medium me-1 text-success">+18.2%</span>
         </p>
       </div>
     </div>
@@ -125,7 +125,7 @@
         </div>
         <p class="mb-1 fw-medium me-1">Pedidos pendientes</p>
         <p class="mb-0">
-          <span class="fw-medium me-1">-8.7%</span>
+          <span class="fw-medium me-1 text-danger">-8.7%</span>
         </p>
       </div>
     </div>
@@ -141,7 +141,7 @@
         </div>
         <p class="mb-1">Pedidos cancelados</p>
         <p class="mb-0">
-          <span class="fw-medium me-1">+4.3%</span>
+          <span class="fw-medium me-1 text-success">+4.3%</span>
         </p>
       </div>
     </div>
@@ -157,7 +157,7 @@
         </div>
         <p class="mb-1">Ticket medio</p>
         <p class="mb-0">
-          <span class="fw-medium me-1">-2.5%</span>
+          <span class="fw-medium me-1 text-danger">-2.5%</span>
         </p>
       </div>
     </div>

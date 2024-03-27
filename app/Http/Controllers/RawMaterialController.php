@@ -36,7 +36,15 @@ class RawMaterialController extends Controller
     public function index(): View
     {
         $rawMaterials = $this->rawMaterialRepository->getAll();
-        return view('raw-materials.index', compact('rawMaterials'));
+    
+        $quantityByUnitOfMeasure = $rawMaterials
+                                    ->groupBy('unit_of_measure')
+                                    ->map(function ($item) {
+                                        return $item->count();
+                                    });
+    
+    
+        return view('raw-materials.index', compact('rawMaterials', 'quantityByUnitOfMeasure'));
     }
 
     /**
