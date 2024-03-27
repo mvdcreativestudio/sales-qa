@@ -10,24 +10,8 @@ class Order extends Model
     use HasFactory;
 
     // Definir los atributos que se pueden asignar en masa
-    protected $fillable = [
-        'date',
-        'client_id',
-        'product_id',
-        'store_id',
-        'subtotal',
-        'tax',
-        'shipping',
-        'coupon_id',
-        'coupon_amount',
-        'discount',
-        'total',
-        'payment_status',
-        'shipping_status',
-        'payment_method',
-        'shipping_method',
-        'shipping_tracking',
-    ];
+    protected $fillable = ['date', 'origin', 'client_id', 'store_id', 'products', 'subtotal', 'tax', 'shipping', 'coupon_id', 'coupon_amount', 'discount', 'total', 'payment_status', 'shipping_status', 'payment_method', 'shipping_method'];
+
 
     // Relación con Client
     public function client()
@@ -36,9 +20,11 @@ class Order extends Model
     }
 
     // Relación con Product
-    public function product()
+    public function products()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsToMany(Product::class, 'order_products')
+                    ->withPivot('quantity', 'price')
+                    ->withTimestamps();
     }
 
     // Relación con Store

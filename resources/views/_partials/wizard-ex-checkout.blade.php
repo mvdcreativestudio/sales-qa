@@ -78,50 +78,41 @@
             <!-- Shopping bag -->
             <h5>Carrito de compras</h5>
             <ul class="list-group mb-3">
-              <li class="list-group-item p-4">
-                <div class="d-flex gap-3">
-                  <div class="flex-shrink-0 d-flex align-items-center">
-                    <img src="{{asset('assets/img/products/helado1.jpg')}}" alt="google home" class="w-px-100">
-                  </div>
-                  <div class="flex-grow-1">
-                    <div class="row">
-                      <div class="col-md-8">
-                        <p class=" mb-0"><a href="javascript:void(0)" class="text-body">Helado 1 Litro</a></p>
-                        <small class="mt-0">Dulce de Leche - Crema Tramontana - Chocolate con Almendras - Frutilla</small>
-                        <input type="number" class="form-control form-control-sm w-px-100 mt-2" value="1" min="1" max="5">
+              @if(session('cart') && count(session('cart')) > 0)
+                @foreach(session('cart') as $id => $details)
+                  <li class="list-group-item p-4">
+                    <div class="d-flex gap-3">
+                      <div class="flex-shrink-0 d-flex align-items-center">
+                        <img src="{{ asset('assets/img/ecommerce-images/' . $details['image']) }}" alt="{{ $details['name'] }}" class="w-px-100">
                       </div>
-                      <div class="col-md-4">
-                        <div class="text-md-end">
-                          <button type="button" class="btn-close btn-pinned" aria-label="Close"></button>
-                          <div class="my-2 my-md-4 mb-md-5"><s class="text-muted">$359</s><span class="text-primary"> - $299</span></div>
+                      <div class="flex-grow-1">
+                        <div class="row">
+                          <div class="col-md-8">
+                            <p class=" mb-0"><a href="javascript:void(0)" class="text-body">{{ $details['name'] }}</a></p>
+                            <small class="mt-0">Tus sabores aquí</small>
+                            <input type="number" class="form-control form-control-sm w-px-100 mt-2" value="{{ $details['quantity'] }}" min="1" max="5">
+                          </div>
+                          <div class="col-md-4">
+                            <div class="text-md-end">
+                              <button type="button" class="btn-close btn-pinned" aria-label="Close"></button>
+                              <div class="my-2 my-md-4 mb-md-5">
+                                @if ($details['old_price'])
+                                  <s class="text-muted">${{ $details['old_price'] }}</s>
+                                  <span class="text-primary"> ${{ $details['price'] }}</span>
+                                @else
+                                  <span class="text-primary">${{ $details['price'] }}</span>
+                                @endif
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </li>
-              <li class="list-group-item p-4">
-                <div class="d-flex gap-3">
-                  <div class="flex-shrink-0 d-flex align-items-center">
-                    <img src="{{asset('assets/img/products/helado1.jpg')}}" alt="google home" class="w-px-100">
-                  </div>
-                  <div class="flex-grow-1">
-                    <div class="row">
-                      <div class="col-md-8">
-                        <p class=" mb-0"><a href="javascript:void(0)" class="text-body">Helado 2 Litros</a></p>
-                        <small class="mt-0">Dulce de Leche - Crema Tramontana - Chocolate con Almendras - Frutilla</small>
-                        <input type="number" class="form-control form-control-sm w-px-100 mt-2" value="1" min="1" max="5">
-                      </div>
-                      <div class="col-md-4">
-                        <div class="text-md-end">
-                          <button type="button" class="btn-close btn-pinned" aria-label="Close"></button>
-                          <div class="my-2 my-md-4 mb-md-5"><s class="text-muted">$359</s><span class="text-primary"> - $299</span></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
+                  </li>
+                @endforeach
+              @else
+                <li class="list-group-item">Tu carrito está vacío.</li>
+              @endif
             </ul>
 
           </div>
@@ -154,18 +145,30 @@
               <!-- Price Details -->
               <h6>Detalles</h6>
               <dl class="row mb-0">
-                <dt class="col-6 fw-normal">Total en productos</dt>
-                <dd class="col-6 text-end">$598</dd>
+                  <dt class="col-6 fw-normal">Total en productos</dt>
+                  <dd class="col-6 text-end">${{ $totalProductos }}</dd>
 
-                <dt class="col-sm-6 fw-normal">Cupones</dt>
-                <dd class="col-sm-6 text-end"><a href="javascript:void(0)">Ingresar cupón</a></dd>
+                  @if(session('cart') && isset(session('cart')['coupon']))
+                      <dt class="col-sm-6 fw-normal">Cupones</dt>
+                      <dd class="col-sm-6 text-end">-{{ session('cart')['coupon']['discount_value'] }}{{ session('cart')['coupon']['discount_type'] == 'percent' ? '%' : '$' }}</dd>
+                  @else
+                      <dt class="col-sm-6 fw-normal">Cupones</dt>
+                      <dd class="col-sm-6 text-end"><a href="javascript:void(0)">Ingresar cupón</a></dd>
+                  @endif
 
-                <dt class="col-6 fw-normal">Total del pedido</dt>
-                <dd class="col-6 text-end">$598</dd>
+                  <dt class="col-6 fw-normal">Total del pedido</dt>
+                  <dd class="col-6 text-end">${{ $totalPedido }}</dd>
 
-                <dt class="col-6 fw-normal">Costo de envío</dt>
-                <dd class="col-6 text-end"><s class="text-muted">$60</s> <span class="badge bg-label-success ms-1">Gratis</span></dd>
+                  <dt class="col-6 fw-normal">Costo de envío</dt>
+                  <dd class="col-6 text-end">
+                      @if($envioGratis)
+                          <span class="badge bg-label-success ms-1">Gratis</span>
+                      @else
+                          <s class="text-muted">${{ $costoEnvio }}</s>
+                      @endif
+                  </dd>
               </dl>
+
 
               <hr class="mx-n4">
               <dl class="row mb-0">
@@ -185,11 +188,8 @@
         <div class="row">
           <!-- Address left -->
           <div class="col-xl-8  col-xxl-9 mb-3 mb-xl-0">
-
-            <!-- Select address -->
-            <p>Selecciona la dirección</p>
             <div class="row mb-3">
-              <div class="col-md mb-md-0 mb-2">
+              {{-- <div class="col-md mb-md-0 mb-2">
                 <div class="form-check custom-option custom-option-basic checked">
                   <label class="form-check-label custom-option-content" for="customRadioAddress1">
                     <input name="customRadioTemp" class="form-check-input" type="radio" value="" id="customRadioAddress1" checked="">
@@ -226,7 +226,35 @@
                 </div>
               </div>
             </div>
-            <button type="button" class="btn btn-label-primary mb-4" data-bs-toggle="modal" data-bs-target="#addNewAddress">Nueva dirección</button>
+            <button type="button" class="btn btn-label-primary mb-4" data-bs-toggle="modal" data-bs-target="#addNewAddress">Nueva dirección</button> --}}
+
+            <div class="modal-body">
+              <div class="text-center mb-4">
+                <h3 class="address-title">Dirección de envío</h3>
+              </div>
+              <form id="addNewAddressForm" class="row g-3" onsubmit="return false">
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label" for="modalAddressFirstName">Nombre</label>
+                    <input type="text" id="modalAddressFirstName" name="modalAddressFirstName" class="form-control" placeholder="John" />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label" for="modalAddressLastName">Apellido</label>
+                    <input type="text" id="modalAddressLastName" name="modalAddressLastName" class="form-control" placeholder="Doe" />
+                  </div>
+                </div>
+                <div class="col-12 mt-2">
+                  <label class="form-label" for="modalAddressAddress1">Dirección</label>
+                  <input type="text" id="modalAddressAddress1" name="modalAddressAddress1" class="form-control" placeholder="12, Business Park" />
+                </div>
+                <div class="col-12 mt-2">
+                  <label class="form-label" for="modalAddressLandmark">Barrio</label>
+                  <input type="text" id="modalAddressState" name="modalAddressState" class="form-control" placeholder="California" />
+                </div>
+              </form>
+            </div>
+          </div>
+
 
             <!-- Choose Delivery -->
             <p>Seleccione tipo de entrega</p>

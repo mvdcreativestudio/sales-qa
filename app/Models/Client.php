@@ -9,8 +9,8 @@ class Client extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'type', 'rut', 'ci', 'passport', 'doc_ext', 'address', 'city', 'state', 'country', 'phone', 'email', 'website', 'logo'];
-    
+    protected $fillable = ['name', 'lastname', 'type', 'rut', 'ci', 'passport', 'doc_ext', 'address', 'city', 'state', 'country', 'phone', 'email', 'website', 'logo'];
+
 
     // Relación con Order
     public function orders()

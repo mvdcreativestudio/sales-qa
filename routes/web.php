@@ -10,6 +10,11 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\AccountingController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
 
@@ -22,6 +27,8 @@ Route::middleware([
         return view('content.dashboard.dashboard-mvd');
     })->name('dashboard');
     Route::get('/clients/datatable', [ClientController::class, 'datatable'])->name('clients.datatable');
+    Route::get('/products/datatable', [ProductController::class, 'datatable'])->name('products.datatable');
+    Route::get('/product-categories/datatable', [ProductCategoryController::class, 'datatable'])->name('product-categories.datatable');
 
 
     // Tiendas / Franquicias
@@ -43,11 +50,27 @@ Route::get('omnichannel', [OmnichannelController::class, 'index'])->name('omnich
 // E-Commerce
 Route::get('shop', [EcommerceController::class, 'index'])->name('shop');
 Route::get('store', [EcommerceController::class, 'store'])->name('store');
-Route::get('checkout', [EcommerceController::class, 'checkout'])->name('checkout');
+
+// Cart
+Route::post('/cart/add/{productId}', [CartController::class, 'addToCart'])->name('cart.add');
+
+Route::get('/session/clear', [CartController::class, 'clearSession'])->name('session.clear');
+
+// Checkout
+Route::resource('checkout', CheckoutController::class);
+
 
 // E-Commerce - Backoffice
-Route::get('/ecommerce/orders', [EcommerceController::class, 'orders'])->name('orders');
-Route::get('/ecommerce/products', [EcommerceController::class, 'products'])->name('products');
+
+// E-Commerce - Products
+Route::resource('products', ProductController::class);
+
+// E-Commerce - Categories
+Route::resource('product-categories', ProductCategoryController::class);
+
+// E-Commerce - Orders
+Route::resource('orders', OrderController::class);
+
 Route::get('/ecommerce/marketing', [EcommerceController::class, 'marketing'])->name('marketing');
 Route::get('/ecommerce/settings', [EcommerceController::class, 'settings'])->name('settings');
 

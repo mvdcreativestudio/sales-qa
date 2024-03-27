@@ -171,3 +171,18 @@ $(document).ready(function() {
     }
   });
 })();
+
+
+// Campo CI o RUT dependiendo si es CF o Empresa
+$(document).ready(function() {
+  // Escucha cambios en los botones de radio del tipo de cliente
+  $('input[type=radio][name=type]').change(function() {
+    if (this.value == 'individual') {
+      $("#ciField").show();
+      $("#rutField").hide();
+    } else if (this.value == 'company') {
+      $("#ciField").hide();
+      $("#rutField").show();
+    }
+  });
+});
