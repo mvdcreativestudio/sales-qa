@@ -49,11 +49,11 @@
       <div class="sidebar-body">
         <!-- Chats -->
         <ul class="list-unstyled chat-contact-list pt-1" id="chat-list">
-          <li class="chat-contact-list-item chat-contact-list-item-title">
+          <li class="chat-contact-list-item chat-contact-list-item-title chat-title">
             <h5 class="text-primary mb-0">Conversaciones</h5>
           </li>
           @forelse ($chats as $chat)
-            <li class="chat-contact-list-item" data-phone-number-id="{{$chat->sender->phone_id}}" data-contact-name="{{$chat->sender->phone_number_owner}}">
+            <li class="chat-contact-list-item" data-phone-number-id="{{$chat->sender->phone_id}}" data-contact-name="{{$chat->sender->phone_number_owner}}" data-message-created="{{ $chat->message_created }}">
               <a class="d-flex align-items-center">
                 <div class="flex-shrink-0 avatar avatar-online">
                   <img src="https://ui-avatars.com/api/?background=random&name={{ urlencode($chat->sender->phone_number_owner ?? 'NA') }}" alt="Avatar" class="rounded-circle">
@@ -88,7 +88,7 @@
               </a>
             </li>
           @empty
-            <li class="chat-contact-list-item chat-list-item-0">
+            <li class="chat-contact-list-item chat-list-item-0 chat-title chat-title-empty">
               <h6 class="text-muted mb-0">No se encontraron conversaciones</h6>
             </li>
           @endforelse
@@ -160,7 +160,26 @@
 </div>
 
 <script>
+  function scrollToBottom() {
+    const chatHistory = $('.chat-history-body');
+    setTimeout(() => {
+      chatHistory.scrollTop(chatHistory.prop("scrollHeight"));
+    }, 100);
+  }
+
+  function resetScroll() {
+    $('.chat-history-body').scrollTop(0);
+  }
+
+  var notificationSound = new Audio('/assets/audio/notification.mp3');
+
+  function playNotificationSound() {
+    notificationSound.play().catch(error => console.error("Error al reproducir el sonido de notificación:", error));
+  }
+
+
   function loadChatMessages(phoneNumberId, contactName, contactAvatarUrl, userAvatarUrl) {
+      resetScroll();
       $.ajax({
           url: '{{ route('omnichannel.fetch.messages') }}',
           method: 'GET',
@@ -199,6 +218,7 @@
 
                   messageElement.append(messageWrapper);
                   chatHistoryBody.append(messageElement);
+                  scrollToBottom();
               });
 
               $('.chat-history-body').scrollTop($('.chat-history-body')[0].scrollHeight);
@@ -208,7 +228,6 @@
           }
       });
   }
-
 
   function getMessageContent(message) {
       switch (message.message_type) {
@@ -229,23 +248,201 @@
       }
   }
 
-  const chatListItems = document.querySelectorAll('.chat-contact-list-item');
+  $('#chat-list').on('click', '.chat-contact-list-item:not(.chat-title)', function() {
+    $('#chat-list .chat-contact-list-item').removeClass('active');
+    $(this).addClass('active');
+    const phoneNumberId = $(this).attr('data-phone-number-id');
+    const contactName = $(this).attr('data-contact-name');
+    const contactAvatarUrl = `https://ui-avatars.com/api/?background=random&name=${encodeURIComponent(contactName)}`;
+    const userAvatarUrl = `https://ui-avatars.com/api/?background=random&name={{ urlencode(auth()->user()->name ?? 'NA') }}`;
 
-  chatListItems.forEach(function(item) {
-    item.addEventListener('click', function() {
-        const phoneNumberId = this.getAttribute('data-phone-number-id');
-        const contactName = this.getAttribute('data-contact-name');
-        const contactAvatarUrl = `https://ui-avatars.com/api/?background=random&name=${encodeURIComponent(contactName)}`;
-        const userAvatarUrl = `https://ui-avatars.com/api/?background=random&name={{ urlencode(auth()->user()->name ?? 'NA') }}`;
+    const avatarElement = document.querySelector('.avatar-header img');
+    avatarElement.src = contactAvatarUrl;
 
-        const avatarElement = document.querySelector('.avatar-header img');
-        avatarElement.src = contactAvatarUrl;
+    const chatHeaderInfo = document.querySelector('.chat-header-info h6');
+    chatHeaderInfo.textContent = contactName;
 
-        const chatHeaderInfo = document.querySelector('.chat-header-info h6');
-        chatHeaderInfo.textContent = contactName;
+    $('.app-chat-history').attr('data-active-chat', phoneNumberId);
+    $('.app-chat-history').attr('data-contact-name', contactName);
 
-        loadChatMessages(phoneNumberId, contactName, contactAvatarUrl, userAvatarUrl);
-    });
+    loadChatMessages(phoneNumberId, contactName, contactAvatarUrl, userAvatarUrl);
   });
+
+  const phoneId = "{{ auth()->user()->store->phoneNumber->phone_id }}";
+
+  function handleNewMessage(message) {
+    const currentChatId = $('.app-chat-history').attr('data-active-chat');
+    if (currentChatId === message.from_phone_id || currentChatId === message.to_phone_id) {
+      displayMessage(message, message.from_phone_id === '{{ auth()->user()->phone_number ?? 'user_phone_number' }}');
+    }
+  }
+
+  function displayMessage(message, isSender) {
+    var chatHistoryBody = $('.chat-history-body ul');
+    var messageClass = isSender ? 'chat-message-right' : '';
+    var messageElement = $(`<li class="chat-message ${messageClass}"></li>`);
+
+    const contactName = $('.app-chat-history').attr('data-contact-name');
+
+    const contactAvatarUrl = `https://ui-avatars.com/api/?background=random&name=${encodeURIComponent(contactName)}`;
+    const userAvatarUrl = `https://ui-avatars.com/api/?background=random&name={{ urlencode(auth()->user()->name ?? 'NA') }}`;
+
+    const avatarUrl = isSender ? userAvatarUrl : contactAvatarUrl;
+
+    var avatarElement = `<div class="user-avatar flex-shrink-0 ${isSender ? 'ms-3' : 'me-3'}">
+                            <div class="avatar avatar-sm">
+                                <img src="${avatarUrl}" alt="Avatar" class="rounded-circle">
+                            </div>
+                          </div>`;
+
+    var messageContent = getMessageContent(message);
+
+    var messageWrapper = `<div class="d-flex overflow-hidden">
+                              ${isSender ? '' : avatarElement}
+                              <div class="chat-message-wrapper flex-grow-1">
+                                  <div class="chat-message-text">
+                                      ${messageContent}
+                                  </div>
+                                  <div class="text-${isSender ? 'end' : ''} text-muted mt-1">
+                                      <small>${new Date(message.message_created).toLocaleTimeString()}</small>
+                                  </div>
+                              </div>
+                              ${isSender ? avatarElement : ''}
+                          </div>`;
+
+    messageElement.append(messageWrapper);
+    chatHistoryBody.append(messageElement);
+    scrollToBottom();
+  }
+
+  function getMessagePreview(message) {
+    switch (message.message_type) {
+      case 'image':
+        return '📷 Imagen';
+      case 'audio':
+        return '🔊 Audio';
+      case 'document':
+        return '📄 Documento';
+      case 'video':
+        return '🎥 Video';
+      case 'sticker':
+        return '🌟 Sticker';
+      default:
+        return message.message_text;
+    }
+  }
+
+  function parseDateString(dateString) {
+      if (dateString.includes('T') && dateString.endsWith('Z')) {
+          return new Date(dateString);
+      } else if (dateString.includes(' ')) {
+          const [date, time] = dateString.split(' ');
+          return new Date(`${date}T${time}`);
+      } else {
+          return new Date(dateString);
+      }
+  }
+
+  function formatDateOrTime(dateString) {
+    const messageDate = parseDateString(dateString);
+    const now = new Date();
+    let diffInSeconds = Math.floor((now - messageDate) / 1000);
+    let diffInMinutes = Math.floor((now - messageDate) / 60000);
+    let diffInHours = Math.floor((now - messageDate) / 3600000);
+    let diffInDays = Math.floor(diffInHours / 24);
+    let diffInMonths = Math.floor(diffInDays / 30);
+    let diffInYears = Math.floor(diffInDays / 365);
+
+    if (diffInSeconds < 60) {
+        return 'hace unos segundos';
+    } else if (diffInMinutes < 60) {
+        return `hace ${diffInMinutes} minuto${diffInMinutes > 1 ? 's' : ''}`;
+    } else if (diffInHours < 24) {
+        return `hace ${diffInHours} hora${diffInHours > 1 ? 's' : ''}`;
+    } else if (diffInDays < 30) {
+        return `hace ${diffInDays} día${diffInDays > 1 ? 's' : ''}`;
+    } else if (diffInMonths < 12) {
+        return `hace ${diffInMonths} mes${diffInMonths > 1 ? 'es' : ''}`;
+    } else {
+        return `hace ${diffInYears} año${diffInYears > 1 ? 's' : ''}`;
+    }
+  }
+
+
+  function formatDateToStandard(dateString) {
+      const date = new Date(dateString);
+      return date.getFullYear() + '-' +
+            ('0' + (date.getMonth()+1)).slice(-2) + '-' +
+            ('0' + date.getDate()).slice(-2) + ' ' +
+            ('0' + date.getHours()).slice(-2) + ':' +
+            ('0' + date.getMinutes()).slice(-2) + ':' +
+            ('0' + date.getSeconds()).slice(-2);
+  }
+
+
+  function updateChatListOnNewMessage(message, fromPhoneNumberOwner) {
+    const chatList = $('#chat-list');
+    const existingChat = chatList.find(`[data-phone-number-id="${message.from_phone_id}"]`);
+    const firstChatAfterTitle = $('#chat-list .chat-contact-list-item:not(.chat-contact-list-item-title)').first();
+
+    let messagePreview = getMessagePreview(message);
+    const formattedDate = formatDateOrTime(message.message_created);
+    const formattedMessageCreated = formatDateToStandard(message.message_created);
+
+    if (existingChat.length) {
+      existingChat.find('.chat-contact-status').text(messagePreview);
+      existingChat.find('small.text-muted').text(formattedDate);
+      existingChat.attr('data-message-created', formattedMessageCreated);
+      updateChatTimestamps();
+      firstChatAfterTitle.before(existingChat);
+    } else {
+      const chatHtml = `
+        <li class="chat-contact-list-item" data-phone-number-id="${message.from_phone_id}" data-contact-name="${fromPhoneNumberOwner}" data-message-created="${message.message_created}">
+          <a class="d-flex align-items-center">
+            <div class="flex-shrink-0 avatar avatar-online">
+              <img src="https://ui-avatars.com/api/?background=random&name=${encodeURIComponent(fromPhoneNumberOwner)}" alt="Avatar" class="rounded-circle">
+            </div>
+            <div class="chat-contact-info flex-grow-1 ms-3">
+              <h6 class="chat-contact-name text-truncate m-0">${fromPhoneNumberOwner}</h6>
+              <p class="chat-contact-status text-truncate mb-0 text-muted">${messagePreview}</p>
+            </div>
+            <small class="text-muted mb-auto">${formattedDate}</small>
+          </a>
+        </li>`;
+
+      firstChatAfterTitle.before($(chatHtml));
+    }
+
+    if ($('#chat-list .chat-title-empty').length) {
+      $('#chat-list .chat-title-empty').remove();
+    }
+  }
+
+  function updateChatTimestamps() {
+    const chats = document.querySelectorAll('.chat-contact-list-item');
+    chats.forEach(chat => {
+      const messageDate = chat.getAttribute('data-message-created');
+      if (messageDate) {
+        const newTimeAgo = formatDateOrTime(messageDate);
+        const timeElement = chat.querySelector('small.text-muted');
+        if (timeElement) {
+          timeElement.textContent = newTimeAgo;
+        }
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Echo.private(`messages.${phoneId}`).listen('.message.received', (e) => {
+      if (e.message) {
+        handleNewMessage(e.message);
+        updateChatListOnNewMessage(e.message, e.fromPhoneNumberOwner);
+        playNotificationSound();
+      }
+    });
+
+    setInterval(updateChatTimestamps, 5000);
+  });
+
 </script>
 @endsection

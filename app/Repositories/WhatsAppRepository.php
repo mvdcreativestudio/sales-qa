@@ -5,12 +5,11 @@ use App\Models\PhoneNumber;
 use App\Models\Message;
 use App\Models\OmniSetting;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Josantonius\MimeType\MimeType;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Events\MessageReceived;
 
 class WhatsAppRepository {
 
@@ -139,6 +138,8 @@ class WhatsAppRepository {
         'message_text' => $messageBody,
         'created_at' => $created,
       ]);
+
+      MessageReceived::dispatch($message, $senderPhone->phone_number_owner);
     } catch (\Exception $e) {
       Log::error($e->getMessage());
     }
@@ -253,6 +254,8 @@ class WhatsAppRepository {
                 'message_type' => 'image',
                 'created_at' => $created,
             ]);
+
+            MessageReceived::dispatch($message, $senderPhone->phone_number_owner);
         }
       } catch (\Exception $e) {
         Log::error($e->getMessage());
@@ -290,6 +293,8 @@ class WhatsAppRepository {
                 'message_type' => 'audio',
                 'created_at' => $created,
             ]);
+
+            MessageReceived::dispatch($message, $senderPhone->phone_number_owner);
         }
       } catch (\Exception $e) {
         Log::error($e->getMessage());
@@ -329,6 +334,8 @@ class WhatsAppRepository {
                     'message_type' => 'audio',
                     'created_at' => $created,
                 ]);
+
+                MessageReceived::dispatch($message, $senderPhone->phone_number_owner);
             } else {
                 $message = Message::create([
                     'from_phone_id' => $senderPhone->phone_id,
@@ -339,6 +346,8 @@ class WhatsAppRepository {
                     'message_type' => 'document',
                     'created_at' => $created,
                 ]);
+
+                MessageReceived::dispatch($message, $senderPhone->phone_number_owner);
             }
         }
       } catch (\Exception $e) {
@@ -377,6 +386,8 @@ class WhatsAppRepository {
                 'message_type' => 'video',
                 'created_at' => $created,
             ]);
+
+            MessageReceived::dispatch($message, $senderPhone->phone_number_owner);
         }
       } catch (\Exception $e) {
         Log::error($e->getMessage());
@@ -412,6 +423,8 @@ class WhatsAppRepository {
                 'message_type' => 'sticker',
                 'created_at' => $created,
             ]);
+
+            MessageReceived::dispatch($message, $senderPhone->phone_number_owner);
         }
       } catch (\Exception $e) {
         Log::error($e->getMessage());

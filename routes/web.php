@@ -14,6 +14,11 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplierOrderController;
 use App\Http\Controllers\OmnichannelController;
 use App\Http\Controllers\WhatsAppController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\OrderController;
 
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
 
