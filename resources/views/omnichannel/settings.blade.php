@@ -91,6 +91,7 @@
                                           @if(isset($phone['store']))
                                               <form action="{{ route('omnichannel.disassociate', ['phone_id' => $phone['id']]) }}" method="POST" style="display: inline;">
                                                   @csrf
+                                                  <input type="hidden" name="phone_id" value="{{ $phone['id'] }}">
                                                   <button type="submit" class="btn btn-primary">
                                                       Desasociar de {{ $phone['store']->name }}
                                                   </button>
