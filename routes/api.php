@@ -22,3 +22,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // WhatsApp Webhook
 Route::get('/webhook', [WhatsAppController::class, 'webhook']);
 Route::post('/webhook', [WhatsAppController::class, 'recibe']);
+
+Route::post('/send-message', [WhatsAppController::class, 'send'])->name('api.send.messages');

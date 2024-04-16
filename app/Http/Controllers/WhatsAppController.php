@@ -73,7 +73,7 @@ class WhatsAppController extends Controller
     {
         $phoneNumber = $request->input('phone_number');
         $messageContent = $request->input('message');
-        $fromPhoneNumberId = $request->input('from_phone_number_id'); // Asegúrate de tener este ID almacenado o enviado desde el cliente
+        $fromPhoneNumberId = $request->input('from_phone_number_id');
 
         $result = $this->whatsAppRepo->sendMessage($phoneNumber, $messageContent, $fromPhoneNumberId);
 
