@@ -19,7 +19,22 @@
 @endsection
 
 @section('content')
-<h4 class="mb-4"><span class="text-muted fw-light">Omnicanalidad /</span> Chats de WhatsApp de {{ auth()->user()->store->phoneNumber->phone_number }}</h4>
+<h4 class="mb-4 d-flex">
+  <span class="text-muted fw-light">
+  Omnicanalidad /</span>
+
+  Chats de WhatsApp de {{ auth()->user()->store->phoneNumber->phone_number }}
+
+  <div class="mute-button">
+    <button class="btn btn-primary" id="mute-button" style="
+      padding: 3px;
+      padding-inline: 10px;
+      margin-left: 10px;
+      margin-top: -5px;
+      border: none;
+  "><i class="bx bx-volume-mute" style="margin-right: 5px;"></i><span>Silenciar</span></button>
+  </div>
+</h4>
 <div class="app-chat overflow-hidden card">
   <div class="row g-0">
     <!-- Sidebar Left -->
@@ -141,16 +156,18 @@
           </ul>
         </div>
         <!-- Chat message form -->
-        <div class="chat-history-footer">
-          <form class="form-send-message d-flex justify-content-between align-items-center" id="send-message-form">
-	    <input class="form-control message-input border-0 me-3 shadow-none" placeholder="Escriba su mensaje aquÃ­..." id="message-input">
-            <div class="message-actions d-flex align-items-center">
-              <button class="btn btn-primary d-flex send-msg-btn" type="submit">
-                <i class="bx bx-paper-plane me-md-1 me-0"></i>
-                <span class="align-middle d-md-inline-block d-none">Enviar</span>
-              </button>
-            </div>
-          </form>
+        <div class="chat-history-footer" style="display: none;">
+          <div class="chat-history-footer" id="message-form-container">
+            <form class="form-send-message d-flex justify-content-between align-items-center" id="send-message-form">
+              <input class="form-control message-input border-0 me-3 shadow-none" placeholder="Escriba su mensaje aquí..." id="message-input">
+              <div class="message-actions d-flex align-items-center">
+                <button class="btn btn-primary d-flex send-msg-btn" type="submit">
+                  <i class="bx bx-paper-plane me-md-1 me-0"></i>
+                  <span class="align-middle d-md-inline-block d-none">Enviar</span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
         <!-- Chat message form -->
       </div>
@@ -172,12 +189,32 @@
     $('.chat-history-body').scrollTop(0);
   }
 
+  let isMuted = false;
+
+  $('#mute-button').click(function() {
+    $(this).toggleClass('btn-secondary');
+    isMuted = !isMuted;
+    $(this).find('i').toggleClass('bx-volume-full bx-volume-mute');
+    $(this).blur();
+    $(this).find('span').text(isMuted ? 'Activar' : 'Silenciar');
+  });
+
+  function updateMessageFormVisibility() {
+    const activeChatId = $('.app-chat-history').attr('data-active-chat');
+    if (activeChatId) {
+      $('#message-form-container').show();
+    } else {
+      $('#message-form-container').hide();
+    }
+  }
+
   var notificationSound = new Audio('/assets/audio/notification.mp3');
 
   function playNotificationSound() {
-    notificationSound.play().catch(error => console.error("Error al reproducir el sonido de notificaciÃ³n:", error));
+    if (!isMuted) {
+      notificationSound.play().catch(error => console.error("Error al reproducir el sonido de notificaciÃ³n:", error));
+    }
   }
-
 
   function loadChatMessages(phoneNumberId, contactName, contactAvatarUrl, userAvatarUrl) {
       resetScroll();
@@ -266,6 +303,7 @@
     $('.app-chat-history').attr('data-active-chat', phoneNumberId);
     $('.app-chat-history').attr('data-contact-name', contactName);
 
+    updateMessageFormVisibility();
     loadChatMessages(phoneNumberId, contactName, contactAvatarUrl, userAvatarUrl);
   });
 
