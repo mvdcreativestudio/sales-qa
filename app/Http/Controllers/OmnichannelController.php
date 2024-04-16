@@ -27,6 +27,29 @@ class OmnichannelController extends Controller
     */
     public function __construct(OmnichannelRepository $omnichannelRepo)
     {
+        $this->middleware(['check_permission:access_omnichannel', 'user_has_store'])->only(
+          [
+            'settings',
+            'updateMetaBusinessId',
+            'updateMetaAdminToken',
+            'associatePhoneNumberToStore',
+            'disassociatePhoneNumberFromStore',
+            'chats'
+          ]
+        );
+
+        $this->middleware('check_permission:access_chats')->only('chats');
+
+        $this->middleware('check_permission:access_settings')->only(
+          [
+            'settings',
+            'updateMetaBusinessId',
+            'updateMetaAdminToken',
+            'associatePhoneNumberToStore',
+            'disassociatePhoneNumberFromStore'
+          ]
+        );
+
         $this->omnichannelRepo = $omnichannelRepo;
     }
 

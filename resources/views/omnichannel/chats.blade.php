@@ -19,6 +19,7 @@
 @endsection
 
 @section('content')
+<h4 class="mb-4"><span class="text-muted fw-light">Omnicanalidad /</span> Chats de WhatsApp de {{ auth()->user()->store->phoneNumber->phone_number }}</h4>
 <div class="app-chat overflow-hidden card">
   <div class="row g-0">
     <!-- Sidebar Left -->
@@ -53,7 +54,7 @@
             <h5 class="text-primary mb-0">Conversaciones</h5>
           </li>
           @forelse ($chats as $chat)
-            <li class="chat-contact-list-item" data-phone-number-id="{{$chat->sender->phone_id == auth()->user()->store->phoneNumber->phone_id ? $chat->receiver->phone_id : $chat->sender->phone_id }}" data-contact-name="{{ $chat->sender->phone_id == auth()->user()->store->phoneNumber->phone_id ? $chat->receiver->phone_number_owner : $chat->sender->phone_number_owner }}" data-message-created="{{ $chat->message_created }}">
+            <li class="chat-contact-list-item" data-phone-number-id="{{$chat->sender->phone_id == auth()->user()->store->phoneNumber->phone_id ? $chat->receiver->phone_id : $chat->sender->phone_id }}" data-contact-name="{{$chat->sender->phone_id == auth()->user()->store->phoneNumber->phone_id ? $chat->receiver->phone_number_owner : $chat->sender->phone_number_owner }}" data-message-created="{{ $chat->message_created }}">
               <a class="d-flex align-items-center">
                 <div class="flex-shrink-0 avatar avatar-online">
                   <img src="https://ui-avatars.com/api/?background=random&name={{ urlencode($chat->sender->phone_id == auth()->user()->store->phoneNumber->phone_id ? $chat->receiver->phone_number_owner : $chat->sender->phone_number_owner ?? 'NA') }}" alt="Avatar" class="rounded-circle">
@@ -63,19 +64,19 @@
                     $messagePreview = '';
                     switch ($chat->message_type) {
                         case 'image':
-                            $messagePreview = '📷 ' . ($chat->message_text ?: 'Imagen');
+                            $messagePreview = 'ðŸ“· ' . ($chat->message_text ?: 'Imagen');
                             break;
                         case 'audio':
-                            $messagePreview = '🔊 ' . ($chat->message_text ?: 'Audio');
+                            $messagePreview = 'ðŸ”Š ' . ($chat->message_text ?: 'Audio');
                             break;
                         case 'document':
-                            $messagePreview = '📄 ' . ($chat->message_text ?: 'Documento');
+                            $messagePreview = 'ðŸ“„ ' . ($chat->message_text ?: 'Documento');
                             break;
                         case 'video':
-                            $messagePreview = '🎥 ' . ($chat->message_text ?: 'Video');
+                            $messagePreview = 'ðŸŽ¥ ' . ($chat->message_text ?: 'Video');
                             break;
                         case 'sticker':
-                            $messagePreview = '🌟 ' . ($chat->message_text ?: 'Sticker');
+                            $messagePreview = 'ðŸŒŸ ' . ($chat->message_text ?: 'Sticker');
                             break;
                         default:
                             $messagePreview = $chat->message_text;
@@ -111,7 +112,7 @@
               </div>
               <!-- Chat Header -->
               <div class="chat-contact-info chat-header-info flex-grow-1 ms-3">
-                <h6 class="m-0">Seleccioná un chat para comenzar</h6>
+                <h6 class="m-0">SeleccionÃ¡ un chat para comenzar</h6>
               </div>
               <!-- Chat Header -->
             </div>
@@ -123,7 +124,7 @@
               <div class="d-flex overflow-hidden">
                 <div class="chat-message-wrapper flex-grow-1">
                   <div class="chat-message-text">
-                    <p class="mb-0">Empezá a chatear seleccionando un chat en el listado de la izquierda !</p>
+                    <p class="mb-0">EmpezÃ¡ a chatear seleccionando un chat en el listado de la izquierda !</p>
                   </div>
                   <div class="text-end text-muted mt-1">
                     <i class='bx bx-check-double text-success'></i>
@@ -132,7 +133,7 @@
                 </div>
                 <div class="user-avatar flex-shrink-0 ms-3">
                   <div class="avatar avatar-sm">
-                    <img src="https://ui-avatars.com/api/?background=random&name=¿?" alt="Avatar" class="rounded-circle">
+                    <img src="https://ui-avatars.com/api/?background=random&name=Â¿?" alt="Avatar" class="rounded-circle">
                   </div>
                 </div>
               </div>
@@ -142,7 +143,7 @@
         <!-- Chat message form -->
         <div class="chat-history-footer">
           <form class="form-send-message d-flex justify-content-between align-items-center" id="send-message-form">
-            <input class="form-control message-input border-0 me-3 shadow-none" placeholder="Escriba su mensaje aquí..." id="message-input">
+	    <input class="form-control message-input border-0 me-3 shadow-none" placeholder="Escriba su mensaje aquÃ­..." id="message-input">
             <div class="message-actions d-flex align-items-center">
               <button class="btn btn-primary d-flex send-msg-btn" type="submit">
                 <i class="bx bx-paper-plane me-md-1 me-0"></i>
@@ -174,7 +175,7 @@
   var notificationSound = new Audio('/assets/audio/notification.mp3');
 
   function playNotificationSound() {
-    notificationSound.play().catch(error => console.error("Error al reproducir el sonido de notificación:", error));
+    notificationSound.play().catch(error => console.error("Error al reproducir el sonido de notificaciÃ³n:", error));
   }
 
 
@@ -189,7 +190,7 @@
               chatHistoryBody.empty();
 
               response.messages.forEach(function(message) {
-                  var isSender = message.from_phone_id === '{{ auth()->user()->store->phoneNumber->phone_id }}';
+                  var isSender = message.from_phone_id === '{{ auth()->user()->store->phoneNumber->phone_id ?? 'user_phone_number' }}'; // Ajusta segÃºn sea necesario
                   var messageClass = isSender ? 'chat-message-right' : '';
                   var messageElement = $(`<li class="chat-message ${messageClass}"></li>`);
 
@@ -272,8 +273,13 @@
 
   function handleNewMessage(message) {
     const currentChatId = $('.app-chat-history').attr('data-active-chat');
+    console.log(message, currentChatId)
     if (currentChatId === message.from_phone_id || currentChatId === message.to_phone_id) {
-      displayMessage(message, message.from_phone_id === '{{ auth()->user()->store->phoneNumber->phone_id }}');
+      displayMessage(message, message.from_phone_id === '{{ auth()->user()->store->phoneNumber->phone_id  }}');
+    } else if (message.from_phone_id === phoneId) {
+        if (currentChatId === message.to_phone_id) {
+          displayMessage(message, message.from_phone_id === '{{ auth()->user()->store->phoneNumber->phone_id  }}');
+        }
     }
   }
 
@@ -318,15 +324,15 @@
   function getMessagePreview(message) {
     switch (message.message_type) {
       case 'image':
-        return '📷 Imagen';
+        return 'ðŸ“· Imagen';
       case 'audio':
-        return '🔊 Audio';
+        return 'ðŸ”Š Audio';
       case 'document':
-        return '📄 Documento';
+        return 'ðŸ“„ Documento';
       case 'video':
-        return '🎥 Video';
+        return 'ðŸŽ¥ Video';
       case 'sticker':
-        return '🌟 Sticker';
+        return 'ðŸŒŸ Sticker';
       default:
         return message.message_text;
     }
@@ -360,11 +366,11 @@
     } else if (diffInHours < 24) {
         return `hace ${diffInHours} hora${diffInHours > 1 ? 's' : ''}`;
     } else if (diffInDays < 30) {
-        return `hace ${diffInDays} día${diffInDays > 1 ? 's' : ''}`;
+        return `hace ${diffInDays} dÃ­a${diffInDays > 1 ? 's' : ''}`;
     } else if (diffInMonths < 12) {
         return `hace ${diffInMonths} mes${diffInMonths > 1 ? 'es' : ''}`;
     } else {
-        return `hace ${diffInYears} año${diffInYears > 1 ? 's' : ''}`;
+        return `hace ${diffInYears} aÃ±o${diffInYears > 1 ? 's' : ''}`;
     }
   }
 
@@ -382,38 +388,38 @@
 
   function updateChatListOnNewMessage(message, fromPhoneNumberOwner) {
     const chatList = $('#chat-list');
-    const existingChat = chatList.find(`[data-phone-number-id="${message.from_phone_id}"]`);
+    const existingChat = chatList.find(`[data-phone-number-id="${message.from_phone_id === phoneId ? message.to_phone_id : message.from_phone_id}"]`);
     const firstChatAfterTitle = $('#chat-list .chat-contact-list-item:not(.chat-contact-list-item-title)').first();
 
     let messagePreview = getMessagePreview(message);
     const formattedDate = formatDateOrTime(message.message_created);
     const formattedMessageCreated = formatDateToStandard(message.message_created);
 
-    if (phoneId !== message.from_phone_id) {
-        if (existingChat.length) {
-          existingChat.find('.chat-contact-status').text(messagePreview);
-          existingChat.find('small.text-muted').text(formattedDate);
-          existingChat.attr('data-message-created', formattedMessageCreated);
-          updateChatTimestamps();
-          firstChatAfterTitle.before(existingChat);
-        } else {
-          const chatHtml = `
-            <li class="chat-contact-list-item" data-phone-number-id="${message.from_phone_id}" data-contact-name="${fromPhoneNumberOwner}" data-message-created="${message.message_created}">
-              <a class="d-flex align-items-center">
-                <div class="flex-shrink-0 avatar avatar-online">
-                  <img src="https://ui-avatars.com/api/?background=random&name=${encodeURIComponent(fromPhoneNumberOwner)}" alt="Avatar" class="rounded-circle">
-                </div>
-                <div class="chat-contact-info flex-grow-1 ms-3">
-                  <h6 class="chat-contact-name text-truncate m-0">${fromPhoneNumberOwner}</h6>
-                  <p class="chat-contact-status text-truncate mb-0 text-muted">${messagePreview}</p>
-                </div>
-                <small class="text-muted mb-auto">${formattedDate}</small>
-              </a>
-            </li>`;
 
-          firstChatAfterTitle.before($(chatHtml));
-        }
+    if (existingChat.length) {
+      existingChat.find('.chat-contact-status').text(messagePreview);
+      existingChat.find('small.text-muted').text(formattedDate);
+      existingChat.attr('data-message-created', formattedMessageCreated);
+      updateChatTimestamps();
+      firstChatAfterTitle.before(existingChat);
+    } else {
+      const chatHtml = `
+        <li class="chat-contact-list-item" data-phone-number-id="${message.from_phone_id}" data-contact-name="${fromPhoneNumberOwner}" data-message-created="${message.message_created}">
+          <a class="d-flex align-items-center">
+            <div class="flex-shrink-0 avatar avatar-online">
+              <img src="https://ui-avatars.com/api/?background=random&name=${encodeURIComponent(fromPhoneNumberOwner)}" alt="Avatar" class="rounded-circle">
+            </div>
+            <div class="chat-contact-info flex-grow-1 ms-3">
+              <h6 class="chat-contact-name text-truncate m-0">${fromPhoneNumberOwner}</h6>
+              <p class="chat-contact-status text-truncate mb-0 text-muted">${messagePreview}</p>
+            </div>
+            <small class="text-muted mb-auto">${formattedDate}</small>
+          </a>
+        </li>`;
+
+      firstChatAfterTitle.before($(chatHtml));
     }
+
 
     if ($('#chat-list .chat-title-empty').length) {
       $('#chat-list .chat-title-empty').remove();
@@ -474,7 +480,6 @@
             message_created: formatDateToSQL(new Date()),
             from_phone_id: activeChatId
           };
-          updateChatListOnNewMessage(message, contactName);
         } else {
           alert('Error al enviar el mensaje: ' + response.error);
         }
