@@ -62,4 +62,21 @@ class WhatsAppController extends Controller
 
         return response()->json(['messages' => $result['messages']]);
     }
+
+    /**
+     * Envía un mensaje de WhatsApp a un número de teléfono.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+    */
+    public function send(Request $request): JsonResponse
+    {
+        $phoneNumber = $request->input('phone_number');
+        $messageContent = $request->input('message');
+        $fromPhoneNumberId = $request->input('from_phone_number_id'); // Asegúrate de tener este ID almacenado o enviado desde el cliente
+
+        $result = $this->whatsAppRepo->sendMessage($phoneNumber, $messageContent, $fromPhoneNumberId);
+
+        return response()->json($result);
+    }
 }

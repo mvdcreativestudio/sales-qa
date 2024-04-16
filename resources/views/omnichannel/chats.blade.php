@@ -141,10 +141,10 @@
         </div>
         <!-- Chat message form -->
         <div class="chat-history-footer">
-          <form class="form-send-message d-flex justify-content-between align-items-center ">
-            <input class="form-control message-input border-0 me-3 shadow-none" placeholder="Escriba su mensaje aquí...">
+          <form class="form-send-message d-flex justify-content-between align-items-center" id="send-message-form">
+            <input class="form-control message-input border-0 me-3 shadow-none" placeholder="Escriba su mensaje aquí..." id="message-input">
             <div class="message-actions d-flex align-items-center">
-              <button class="btn btn-primary d-flex send-msg-btn">
+              <button class="btn btn-primary d-flex send-msg-btn" type="submit">
                 <i class="bx bx-paper-plane me-md-1 me-0"></i>
                 <span class="align-middle d-md-inline-block d-none">Enviar</span>
               </button>
@@ -431,6 +431,44 @@
       }
     });
   }
+
+  $('#send-message-form').on('submit', function(e) {
+    e.preventDefault();
+    const messageInput = $('#message-input');
+    const messageText = messageInput.val().trim();
+    if (!messageText) return;
+
+    const activeChatId = $('.app-chat-history').attr('data-active-chat');
+    const contactName = $('.app-chat-history').attr('data-contact-name');
+
+    messageInput.val('');
+
+    $.ajax({
+      url: '{{ route('omnichannel.send.message') }}',
+      method: 'POST',
+      data: {
+        phone_number: activeChatId,
+        message: messageText,
+        from_phone_number_id: '{{ auth()->user()->store->phoneNumber->phone_id }}'
+      },
+      success: function(response) {
+        if (response.status === 'success') {
+          const message = {
+            message_text: messageText,
+            message_type: 'text',
+            message_created: new Date(),
+            from_phone_id: '{{ auth()->user()->store->phoneNumber->phone_id }}'
+          };
+          displayMessage(message, true);
+        } else {
+          alert('Error al enviar el mensaje: ' + response.error);
+        }
+      },
+      error: function() {
+        alert('Error al enviar el mensaje.');
+      }
+    });
+  });
 
   document.addEventListener('DOMContentLoaded', () => {
     window.Echo.private(`messages.${phoneId}`).listen('.message.received', (e) => {

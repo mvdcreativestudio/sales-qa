@@ -80,6 +80,7 @@ Route::middleware([
       // Chat
       Route::get('/', [OmnichannelController::class, 'chats'])->name('omnichannel.chat');
       Route::get('/fetch-messages', [WhatsAppController::class, 'fetchMessages'])->name('omnichannel.fetch.messages');
+      Route::post('/send-message', [WhatsAppController::class, 'sendMessage'])->name('omnichannel.send.message');
     });
 
 });
