@@ -466,43 +466,73 @@ class WhatsAppRepository {
       return ['messages' => $messages, 'status' => 200];
   }
 
-    /**
-     * Envía un mensaje de WhatsApp a un número específico.
-     *
-     * @param string $phoneNumber El número de teléfono del destinatario.
-     * @param string $messageContent El contenido del mensaje a enviar.
-     * @param string $fromPhoneNumberId El ID de WhatsApp del número desde el cual se envía el mensaje.
-     * @return array Respuesta de la API de WhatsApp.
-    */
-    public function sendMessage(string $phoneNumber, string $messageContent, string $fromPhoneNumberId): array
-    {
-        $url = "{$this->baseUrl}/{$fromPhoneNumberId}/messages";
-        $payload = [
-            'messaging_product' => 'whatsapp',
-            'recipient_type' => 'individual',
-            'to' => $phoneNumber,
-            'type' => 'text',
-            'text' => [
-                'preview_url' => false,
-                'body' => $messageContent
-            ]
-        ];
+  /**
+   * Envía un mensaje de WhatsApp a un número específico.
+   *
+   * @param string $phoneNumber El número de teléfono del destinatario.
+   * @param string $messageContent El contenido del mensaje a enviar.
+   * @param string $fromPhoneNumberId El ID de WhatsApp del número desde el cual se envía el mensaje.
+   * @return array Respuesta de la API de WhatsApp.
+  */
+  public function sendMessage(string $phoneNumber, string $messageContent, string $fromPhoneNumberId): array
+  {
+      $receiverPhone = PhoneNumber::firstOrCreate(['phone_number' => $phoneNumber], [
+          'phone_number' => $phoneNumber,
+      ]);
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $this->token,
-            'Content-Type' => 'application/json'
-        ])->post($url, $payload);
+      $senderPhone = PhoneNumber::where('phone_id', $fromPhoneNumberId)->first();
+      if (!$senderPhone) {
+          Log::error("PhoneNumber con phone_id $fromPhoneNumberId no encontrado");
+          return [
+              'status' => 'error',
+              'error' => "PhoneNumber con phone_id $fromPhoneNumberId no encontrado"
+          ];
+      }
 
-        if ($response->successful()) {
-            return [
-                'status' => 'success',
-                'data' => $response->json()
-            ];
-        } else {
-            return [
-                'status' => 'error',
-                'error' => $response->body()
-            ];
-        }
-    }
+      $response = Http::withHeaders([
+          'Authorization' => 'Bearer ' . $this->token,
+          'Content-Type' => 'application/json'
+      ])->post("{$this->baseUrl}/{$fromPhoneNumberId}/messages", [
+          'messaging_product' => 'whatsapp',
+          'recipient_type' => 'individual',
+          'to' => $phoneNumber,
+          'type' => 'text',
+          'text' => [
+              'preview_url' => false,
+              'body' => $messageContent
+          ]
+      ]);
+
+      if ($response->successful()) {
+          try {
+              $message = Message::create([
+                  'from_phone_id' => $senderPhone->phone_id,
+                  'to_phone_id' => $receiverPhone->phone_id,
+                  'message_source' => 'WhatsApp',
+                  'message_type' => 'text',
+                  'message_text' => $messageContent,
+                  'created_at' => now(),
+              ]);
+
+              MessageReceived::dispatch($message, $senderPhone->phone_number_owner ?? 'Desconocido', true);
+
+              return [
+                  'status' => 'success',
+                  'data' => $response->json(),
+                  'message_id' => $message->id
+              ];
+          } catch (\Exception $e) {
+              Log::error("Error al guardar el mensaje: " . $e->getMessage());
+              return [
+                  'status' => 'error',
+                  'error' => $e->getMessage()
+              ];
+          }
+      } else {
+          return [
+              'status' => 'error',
+              'error' => $response->body()
+          ];
+      }
+  }
 }

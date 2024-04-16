@@ -27,6 +27,29 @@ class OmnichannelController extends Controller
     */
     public function __construct(OmnichannelRepository $omnichannelRepo)
     {
+        $this->middleware(['check_permission:access_omnichannel', 'user_has_store'])->only(
+          [
+            'settings',
+            'updateMetaBusinessId',
+            'updateMetaAdminToken',
+            'associatePhoneNumberToStore',
+            'disassociatePhoneNumberFromStore',
+            'chats'
+          ]
+        );
+
+        $this->middleware(['check_permission:access_chats', 'store_has_number'])->only('chats');
+
+        $this->middleware('check_permission:access_settings')->only(
+          [
+            'settings',
+            'updateMetaBusinessId',
+            'updateMetaAdminToken',
+            'associatePhoneNumberToStore',
+            'disassociatePhoneNumberFromStore'
+          ]
+        );
+
         $this->omnichannelRepo = $omnichannelRepo;
     }
 
@@ -36,22 +59,10 @@ class OmnichannelController extends Controller
      * @return \Illuminate\View\View
     */
     public function chats() {
-        $user = auth()->user();
-        $userStore = $user->store;
+      $phoneNumber = auth()->user()->store->phoneNumber;
+      $chats = $phoneNumber->getLastMessagesForChats();
 
-        if (!$userStore) {
-            return view('omnichannel.chats')->with('error', 'No tienes una tienda asociada.');
-        }
-
-        $phoneNumber = $userStore->phoneNumber;
-
-        if (!$phoneNumber) {
-            return view('omnichannel.chats')->with('error', 'Tu tienda no tiene un número de teléfono asociado.');
-        }
-
-        $chats = $phoneNumber->getLastMessagesForChats();
-
-        return view('omnichannel.chats', compact('chats'));
+      return view('omnichannel.chats', compact('chats'));
     }
 
 

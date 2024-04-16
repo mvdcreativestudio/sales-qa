@@ -19,6 +19,7 @@ class MessageReceived implements ShouldBroadcast
 
     public $message;
     public $fromPhoneNumberOwner;
+    public $isSender = false;
 
     /**
      * Crea una nueva instancia del evento.
@@ -28,10 +29,11 @@ class MessageReceived implements ShouldBroadcast
      *
      * @return void
     */
-    public function __construct(Message $message, string $fromPhoneNumberOwner)
+    public function __construct(Message $message, string $fromPhoneNumberOwner, bool $isSender = false)
     {
         $this->message = $message;
         $this->fromPhoneNumberOwner = $fromPhoneNumberOwner;
+        $this->isSender = $isSender;
     }
 
     /**
@@ -41,7 +43,11 @@ class MessageReceived implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('messages.' . $this->message->to_phone_id);
+        if ($this->isSender) {
+          return new PrivateChannel('messages.' . $this->message->from_phone_id);
+        } else {
+          return new PrivateChannel('messages.' . $this->message->to_phone_id);
+        }
     }
 
     /**

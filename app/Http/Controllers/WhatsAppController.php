@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Repositories\WhatsAppRepository;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Http\Requests\SendMessageRequest;
+use App\Http\Requests\FetchMessagesRequest;
 
 class WhatsAppController extends Controller
 {
@@ -46,10 +47,10 @@ class WhatsAppController extends Controller
     /**
      * Maneja la solicitud para buscar mensajes entre el número de teléfono de la tienda del usuario y otro número.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\FetchMessagesRequest $request
      * @return \Illuminate\Http\JsonResponse
     */
-    public function fetchMessages(Request $request): JsonResponse
+    public function fetchMessages(FetchMessagesRequest $request): JsonResponse
     {
         $userId = auth()->id();
         $contactPhoneNumber = $request->input('phone_number');
@@ -66,14 +67,14 @@ class WhatsAppController extends Controller
     /**
      * Envía un mensaje de WhatsApp a un número de teléfono.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\SendMessageRequest $request
      * @return \Illuminate\Http\JsonResponse
     */
-    public function send(Request $request): JsonResponse
+    public function send(SendMessageRequest $request): JsonResponse
     {
         $phoneNumber = $request->input('phone_number');
         $messageContent = $request->input('message');
-        $fromPhoneNumberId = $request->input('from_phone_number_id'); // Asegúrate de tener este ID almacenado o enviado desde el cliente
+        $fromPhoneNumberId = $request->input('from_phone_number_id');
 
         $result = $this->whatsAppRepo->sendMessage($phoneNumber, $messageContent, $fromPhoneNumberId);
 

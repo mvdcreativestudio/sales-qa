@@ -19,6 +19,22 @@
 @endsection
 
 @section('content')
+<h4 class="mb-4 d-flex">
+  <span class="text-muted fw-light">
+  Omnicanalidad /</span>
+
+  Chats de WhatsApp de {{ auth()->user()->store->phoneNumber->phone_number }}
+
+  <div class="mute-button">
+    <button class="btn btn-primary" id="mute-button" style="
+      padding: 3px;
+      padding-inline: 10px;
+      margin-left: 10px;
+      margin-top: -5px;
+      border: none;
+  "><i class="bx bx-volume-mute" style="margin-right: 5px;"></i><span>Silenciar</span></button>
+  </div>
+</h4>
 <div class="app-chat overflow-hidden card">
   <div class="row g-0">
     <!-- Sidebar Left -->
@@ -53,35 +69,35 @@
             <h5 class="text-primary mb-0">Conversaciones</h5>
           </li>
           @forelse ($chats as $chat)
-            <li class="chat-contact-list-item" data-phone-number-id="{{$chat->sender->phone_id}}" data-contact-name="{{$chat->sender->phone_number_owner}}" data-message-created="{{ $chat->message_created }}">
+            <li class="chat-contact-list-item" data-phone-number-id="{{$chat->sender->phone_id == auth()->user()->store->phoneNumber->phone_id ? $chat->receiver->phone_id : $chat->sender->phone_id }}" data-contact-name="{{$chat->sender->phone_id == auth()->user()->store->phoneNumber->phone_id ? $chat->receiver->phone_number_owner : $chat->sender->phone_number_owner }}" data-message-created="{{ $chat->message_created }}">
               <a class="d-flex align-items-center">
                 <div class="flex-shrink-0 avatar avatar-online">
-                  <img src="https://ui-avatars.com/api/?background=random&name={{ urlencode($chat->sender->phone_number_owner ?? 'NA') }}" alt="Avatar" class="rounded-circle">
+                  <img src="https://ui-avatars.com/api/?background=random&name={{ urlencode($chat->sender->phone_id == auth()->user()->store->phoneNumber->phone_id ? $chat->receiver->phone_number_owner : $chat->sender->phone_number_owner ?? 'NA') }}" alt="Avatar" class="rounded-circle">
                 </div>
                 <div class="chat-contact-info flex-grow-1 ms-3">
                   @php
                     $messagePreview = '';
                     switch ($chat->message_type) {
                         case 'image':
-                            $messagePreview = '📷 ' . ($chat->message_text ?: 'Imagen');
+                            $messagePreview = 'ðŸ“· ' . ($chat->message_text ?: 'Imagen');
                             break;
                         case 'audio':
-                            $messagePreview = '🔊 ' . ($chat->message_text ?: 'Audio');
+                            $messagePreview = 'ðŸ”Š ' . ($chat->message_text ?: 'Audio');
                             break;
                         case 'document':
-                            $messagePreview = '📄 ' . ($chat->message_text ?: 'Documento');
+                            $messagePreview = 'ðŸ“„ ' . ($chat->message_text ?: 'Documento');
                             break;
                         case 'video':
-                            $messagePreview = '🎥 ' . ($chat->message_text ?: 'Video');
+                            $messagePreview = 'ðŸŽ¥ ' . ($chat->message_text ?: 'Video');
                             break;
                         case 'sticker':
-                            $messagePreview = '🌟 ' . ($chat->message_text ?: 'Sticker');
+                            $messagePreview = 'ðŸŒŸ ' . ($chat->message_text ?: 'Sticker');
                             break;
                         default:
                             $messagePreview = $chat->message_text;
                     }
                   @endphp
-                  <h6 class="chat-contact-name text-truncate m-0">{{ $chat->sender->phone_number_owner ?? 'Desconocido' }}</h6>
+                  <h6 class="chat-contact-name text-truncate m-0">{{ $chat->sender->phone_id == auth()->user()->store->phoneNumber->phone_id ? $chat->receiver->phone_number_owner : ($chat->sender->phone_number_owner ?? 'Desconocido') }}</h6>
                   <p class="chat-contact-status text-truncate mb-0 text-muted">{{ $messagePreview }}</p>
                 </div>
                 <small class="text-muted mb-auto">{{ $chat->message_created->diffForHumans() }}</small>
@@ -111,7 +127,7 @@
               </div>
               <!-- Chat Header -->
               <div class="chat-contact-info chat-header-info flex-grow-1 ms-3">
-                <h6 class="m-0">Seleccioná un chat para comenzar</h6>
+                <h6 class="m-0">SeleccionÃ¡ un chat para comenzar</h6>
               </div>
               <!-- Chat Header -->
             </div>
@@ -123,7 +139,7 @@
               <div class="d-flex overflow-hidden">
                 <div class="chat-message-wrapper flex-grow-1">
                   <div class="chat-message-text">
-                    <p class="mb-0">Empezá a chatear seleccionando un chat en el listado de la izquierda !</p>
+                    <p class="mb-0">EmpezÃ¡ a chatear seleccionando un chat en el listado de la izquierda !</p>
                   </div>
                   <div class="text-end text-muted mt-1">
                     <i class='bx bx-check-double text-success'></i>
@@ -132,7 +148,7 @@
                 </div>
                 <div class="user-avatar flex-shrink-0 ms-3">
                   <div class="avatar avatar-sm">
-                    <img src="https://ui-avatars.com/api/?background=random&name=¿?" alt="Avatar" class="rounded-circle">
+                    <img src="https://ui-avatars.com/api/?background=random&name=Â¿?" alt="Avatar" class="rounded-circle">
                   </div>
                 </div>
               </div>
@@ -140,16 +156,18 @@
           </ul>
         </div>
         <!-- Chat message form -->
-        <div class="chat-history-footer">
-          <form class="form-send-message d-flex justify-content-between align-items-center" id="send-message-form">
-            <input class="form-control message-input border-0 me-3 shadow-none" placeholder="Escriba su mensaje aquí..." id="message-input">
-            <div class="message-actions d-flex align-items-center">
-              <button class="btn btn-primary d-flex send-msg-btn" type="submit">
-                <i class="bx bx-paper-plane me-md-1 me-0"></i>
-                <span class="align-middle d-md-inline-block d-none">Enviar</span>
-              </button>
-            </div>
-          </form>
+        <div class="chat-history-footer" style="display: none;">
+          <div class="chat-history-footer" id="message-form-container">
+            <form class="form-send-message d-flex justify-content-between align-items-center" id="send-message-form">
+              <input class="form-control message-input border-0 me-3 shadow-none" placeholder="Escriba su mensaje aquí..." id="message-input">
+              <div class="message-actions d-flex align-items-center">
+                <button class="btn btn-primary d-flex send-msg-btn" type="submit">
+                  <i class="bx bx-paper-plane me-md-1 me-0"></i>
+                  <span class="align-middle d-md-inline-block d-none">Enviar</span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
         <!-- Chat message form -->
       </div>
@@ -171,12 +189,32 @@
     $('.chat-history-body').scrollTop(0);
   }
 
+  let isMuted = false;
+
+  $('#mute-button').click(function() {
+    $(this).toggleClass('btn-secondary');
+    isMuted = !isMuted;
+    $(this).find('i').toggleClass('bx-volume-full bx-volume-mute');
+    $(this).blur();
+    $(this).find('span').text(isMuted ? 'Activar' : 'Silenciar');
+  });
+
+  function updateMessageFormVisibility() {
+    const activeChatId = $('.app-chat-history').attr('data-active-chat');
+    if (activeChatId) {
+      $('#message-form-container').show();
+    } else {
+      $('#message-form-container').hide();
+    }
+  }
+
   var notificationSound = new Audio('/assets/audio/notification.mp3');
 
   function playNotificationSound() {
-    notificationSound.play().catch(error => console.error("Error al reproducir el sonido de notificación:", error));
+    if (!isMuted) {
+      notificationSound.play().catch(error => console.error("Error al reproducir el sonido de notificaciÃ³n:", error));
+    }
   }
-
 
   function loadChatMessages(phoneNumberId, contactName, contactAvatarUrl, userAvatarUrl) {
       resetScroll();
@@ -189,7 +227,7 @@
               chatHistoryBody.empty();
 
               response.messages.forEach(function(message) {
-                  var isSender = message.from_phone_id === '{{ auth()->user()->phone_number ?? 'user_phone_number' }}'; // Ajusta según sea necesario
+                  var isSender = message.from_phone_id === '{{ auth()->user()->store->phoneNumber->phone_id ?? 'user_phone_number' }}'; // Ajusta segÃºn sea necesario
                   var messageClass = isSender ? 'chat-message-right' : '';
                   var messageElement = $(`<li class="chat-message ${messageClass}"></li>`);
 
@@ -265,6 +303,7 @@
     $('.app-chat-history').attr('data-active-chat', phoneNumberId);
     $('.app-chat-history').attr('data-contact-name', contactName);
 
+    updateMessageFormVisibility();
     loadChatMessages(phoneNumberId, contactName, contactAvatarUrl, userAvatarUrl);
   });
 
@@ -272,8 +311,13 @@
 
   function handleNewMessage(message) {
     const currentChatId = $('.app-chat-history').attr('data-active-chat');
+    console.log(message, currentChatId)
     if (currentChatId === message.from_phone_id || currentChatId === message.to_phone_id) {
-      displayMessage(message, message.from_phone_id === '{{ auth()->user()->phone_number ?? 'user_phone_number' }}');
+      displayMessage(message, message.from_phone_id === '{{ auth()->user()->store->phoneNumber->phone_id  }}');
+    } else if (message.from_phone_id === phoneId) {
+        if (currentChatId === message.to_phone_id) {
+          displayMessage(message, message.from_phone_id === '{{ auth()->user()->store->phoneNumber->phone_id  }}');
+        }
     }
   }
 
@@ -318,15 +362,15 @@
   function getMessagePreview(message) {
     switch (message.message_type) {
       case 'image':
-        return '📷 Imagen';
+        return 'ðŸ“· Imagen';
       case 'audio':
-        return '🔊 Audio';
+        return 'ðŸ”Š Audio';
       case 'document':
-        return '📄 Documento';
+        return 'ðŸ“„ Documento';
       case 'video':
-        return '🎥 Video';
+        return 'ðŸŽ¥ Video';
       case 'sticker':
-        return '🌟 Sticker';
+        return 'ðŸŒŸ Sticker';
       default:
         return message.message_text;
     }
@@ -360,11 +404,11 @@
     } else if (diffInHours < 24) {
         return `hace ${diffInHours} hora${diffInHours > 1 ? 's' : ''}`;
     } else if (diffInDays < 30) {
-        return `hace ${diffInDays} día${diffInDays > 1 ? 's' : ''}`;
+        return `hace ${diffInDays} dÃ­a${diffInDays > 1 ? 's' : ''}`;
     } else if (diffInMonths < 12) {
         return `hace ${diffInMonths} mes${diffInMonths > 1 ? 'es' : ''}`;
     } else {
-        return `hace ${diffInYears} año${diffInYears > 1 ? 's' : ''}`;
+        return `hace ${diffInYears} aÃ±o${diffInYears > 1 ? 's' : ''}`;
     }
   }
 
@@ -382,12 +426,13 @@
 
   function updateChatListOnNewMessage(message, fromPhoneNumberOwner) {
     const chatList = $('#chat-list');
-    const existingChat = chatList.find(`[data-phone-number-id="${message.from_phone_id}"]`);
+    const existingChat = chatList.find(`[data-phone-number-id="${message.from_phone_id === phoneId ? message.to_phone_id : message.from_phone_id}"]`);
     const firstChatAfterTitle = $('#chat-list .chat-contact-list-item:not(.chat-contact-list-item-title)').first();
 
     let messagePreview = getMessagePreview(message);
     const formattedDate = formatDateOrTime(message.message_created);
     const formattedMessageCreated = formatDateToStandard(message.message_created);
+
 
     if (existingChat.length) {
       existingChat.find('.chat-contact-status').text(messagePreview);
@@ -413,6 +458,7 @@
       firstChatAfterTitle.before($(chatHtml));
     }
 
+
     if ($('#chat-list .chat-title-empty').length) {
       $('#chat-list .chat-title-empty').remove();
     }
@@ -432,6 +478,19 @@
     });
   }
 
+  function formatDateToSQL(date) {
+    function pad(number) {
+        return (number < 10 ? '0' : '') + number;
+      }
+
+      return date.getFullYear() +
+        '-' + pad(date.getMonth() + 1) +
+        '-' + pad(date.getDate()) +
+        ' ' + pad(date.getHours()) +
+        ':' + pad(date.getMinutes()) +
+        ':' + pad(date.getSeconds());
+  }
+
   $('#send-message-form').on('submit', function(e) {
     e.preventDefault();
     const messageInput = $('#message-input');
@@ -444,7 +503,7 @@
     messageInput.val('');
 
     $.ajax({
-      url: '{{ route('omnichannel.send.message') }}',
+      url: '{{ route('api.send.messages') }}',
       method: 'POST',
       data: {
         phone_number: activeChatId,
@@ -456,10 +515,9 @@
           const message = {
             message_text: messageText,
             message_type: 'text',
-            message_created: new Date(),
-            from_phone_id: '{{ auth()->user()->store->phoneNumber->phone_id }}'
+            message_created: formatDateToSQL(new Date()),
+            from_phone_id: activeChatId
           };
-          displayMessage(message, true);
         } else {
           alert('Error al enviar el mensaje: ' + response.error);
         }
