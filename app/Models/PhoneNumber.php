@@ -66,11 +66,13 @@ class PhoneNumber extends Model
 
       // Obtener los últimos mensajes de cada conversación
       $lastMessages = Message::selectRaw('MAX(message_id) as last_message_id')
-          ->whereIn('from_phone_id', $contactPhoneNumbers)
-          ->orWhereIn('to_phone_id', $contactPhoneNumbers)
-          ->where(function ($query) {
-              $query->where('from_phone_id', $this->phone_id)
-                    ->orWhere('to_phone_id', $this->phone_id);
+          ->where(function ($query) use ($contactPhoneNumbers) {
+              $query->whereIn('from_phone_id', $contactPhoneNumbers)
+                    ->where('to_phone_id', $this->phone_id);
+              })
+          ->orWhere(function ($query) use ($contactPhoneNumbers) {
+              $query->whereIn('to_phone_id', $contactPhoneNumbers)
+                    ->where('from_phone_id', $this->phone_id);
           })
           ->groupBy(DB::raw('LEAST(from_phone_id, to_phone_id)'), DB::raw('GREATEST(from_phone_id, to_phone_id)'))
           ->pluck('last_message_id');
@@ -81,6 +83,6 @@ class PhoneNumber extends Model
           ->get();
 
       return $messagesWithSender;
-    }
+  }
 
 }

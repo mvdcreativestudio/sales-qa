@@ -465,4 +465,44 @@ class WhatsAppRepository {
 
       return ['messages' => $messages, 'status' => 200];
   }
+
+    /**
+     * Envía un mensaje de WhatsApp a un número específico.
+     *
+     * @param string $phoneNumber El número de teléfono del destinatario.
+     * @param string $messageContent El contenido del mensaje a enviar.
+     * @param string $fromPhoneNumberId El ID de WhatsApp del número desde el cual se envía el mensaje.
+     * @return array Respuesta de la API de WhatsApp.
+    */
+    public function sendMessage(string $phoneNumber, string $messageContent, string $fromPhoneNumberId): array
+    {
+        $url = "{$this->baseUrl}/{$fromPhoneNumberId}/messages";
+        $payload = [
+            'messaging_product' => 'whatsapp',
+            'recipient_type' => 'individual',
+            'to' => $phoneNumber,
+            'type' => 'text',
+            'text' => [
+                'preview_url' => false,
+                'body' => $messageContent
+            ]
+        ];
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+            'Content-Type' => 'application/json'
+        ])->post($url, $payload);
+
+        if ($response->successful()) {
+            return [
+                'status' => 'success',
+                'data' => $response->json()
+            ];
+        } else {
+            return [
+                'status' => 'error',
+                'error' => $response->body()
+            ];
+        }
+    }
 }
