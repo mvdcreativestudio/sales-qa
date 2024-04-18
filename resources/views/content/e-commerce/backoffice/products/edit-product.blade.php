@@ -28,7 +28,7 @@
 
 @section('page-script')
 @vite([
-  'resources/assets/js/custom-js/app-ecommerce-product-edit.js'
+  'resources/assets/js/app-ecommerce-product-edit.js'
 ])
 @endsection
 

@@ -4,7 +4,7 @@
 
 @section('page-script')
 @vite([
-  'resources/assets/js/custom-js/add-store.js'
+  'resources/assets/js/add-store.js'
 ])
 @endsection
 

@@ -12,7 +12,7 @@
 
 @section('page-script')
 @vite([
-  'resources/assets/js/custom-js/app-coupons-list.js'
+  'resources/assets/js/app-coupons-list.js'
 ])
 @endsection
 

@@ -12,7 +12,7 @@
 
 @section('page-script')
 @vite([
-  'resources/assets/js/custom-js/app-flavors-list.js'
+  'resources/assets/js/app-flavors-list.js'
 ])
 @endsection
 

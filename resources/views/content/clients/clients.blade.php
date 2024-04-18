@@ -27,7 +27,7 @@
 @endsection
 
 @section('page-script')
-@vite('resources/assets/js/custom-js/clients-list.js')
+@vite('resources/assets/js/clients-list.js')
 @endsection
 
 @section('content')
