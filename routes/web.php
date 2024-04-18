@@ -176,8 +176,6 @@ Route::get('/pending', [CheckoutController::class, 'pending'])->name('checkout.p
 Route::get('/failure', [CheckoutController::class, 'failure'])->name('checkout.failure');
 Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('apply.coupon');
 
-// Omnichannel public access
-Route::get('omnichannel', [OmnichannelController::class, 'index'])->name('omnichannel');
 
 // MercadoPago WebHooks
 Route::post('/mpagohook', [MercadoPagoController::class, 'webhooks'])->name('mpagohook');
