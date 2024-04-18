@@ -74,7 +74,14 @@ class CreatePermissions extends Command
                         'orders',
                         'products',
                         'product-categories',
-                        'marketing',
+                        'settings'
+                    ],
+                    'view_all' => false,
+                ],
+                [
+                    'slug' => 'marketing',
+                    'submenus' => [
+                        'coupons',
                         'settings'
                     ],
                     'view_all' => false,

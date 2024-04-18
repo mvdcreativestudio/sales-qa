@@ -26,4 +26,5 @@ return [
   'access_marketing' => 'Acceder a marketing',
   'access_settings' => 'Acceder a configuración',
   'access_chats' => 'Acceder a chats',
+  'access_coupons' => 'Acceder a cupones',
 ];

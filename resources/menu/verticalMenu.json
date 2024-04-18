@@ -69,12 +69,12 @@
         {
           "name": "Pedidos",
           "slug": "orders",
-          "url": "/ecommerce/orders"
+          "url": "orders"
         },
         {
           "name": "Productos",
           "slug": "products",
-          "url": "/ecommerce/products"
+          "url": "products"
         },
         {
           "url": "product-flavors",
@@ -84,12 +84,12 @@
         {
           "name": "Categorías",
           "slug": "product-categories",
-          "url": "/ecommerce/product-categories"
+          "url": "product-categories"
         },
         {
           "name": "Marketing",
           "slug": "marketing",
-          "url": "/ecommerce/marketing"
+          "url": "marketing"
         },
         {
           "name": "Configuración",
