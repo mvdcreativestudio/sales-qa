@@ -3,28 +3,27 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\{
-    RawMaterialController, EcommerceController, OmnichannelController, CrmController, InvoiceController,
-    ClientController, AccountingController, StoreController, RoleController, SupplierController, SupplierOrderController,
-    ProductController, ProductCategoryController, OrderController, CartController, CheckoutController, MercadoPagoController, CouponController
+    AccountingController,
+    CartController,
+    CheckoutController,
+    ClientController,
+    CrmController,
+    EcommerceController,
+    InvoiceController,
+    MercadoPagoController,
+    OmnichannelController,
+    OrderController,
+    ProductCategoryController,
+    ProductController,
+    RawMaterialController,
+    RoleController,
+    StoreController,
+    SupplierController,
+    SupplierOrderController,
+    WhatsAppController,
+    CouponController
 };
 
-use App\Http\Controllers\RawMaterialController;
-use App\Http\Controllers\EcommerceController;
-use App\Http\Controllers\CrmController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\AccountingController;
-use App\Http\Controllers\StoreController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\SupplierOrderController;
-use App\Http\Controllers\OmnichannelController;
-use App\Http\Controllers\WhatsAppController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProductCategoryController;
-use App\Http\Controllers\OrderController;
 
 // Autenticación y Verificación de Email
 Route::middleware([
@@ -158,7 +157,6 @@ Route::middleware([
       Route::get('/fetch-messages', [WhatsAppController::class, 'fetchMessages'])->name('omnichannel.fetch.messages');
     });
 
-});
 
 
 // Clients
