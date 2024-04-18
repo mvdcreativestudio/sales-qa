@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
     'is_admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
     'check_permission' => \App\Http\Middleware\CheckPermission::class,
     'user_has_store' => \App\Http\Middleware\EnsureUserHasStore::class,
+    'store_has_number' => \App\Http\Middleware\EnsureStoreHasNumber::class,
   ];
 }

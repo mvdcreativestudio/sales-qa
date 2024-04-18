@@ -27,8 +27,7 @@ class StoreStoreRequest extends FormRequest
     {
         $rules = [
             'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:255',
-            'address' => 'nullable|string|max:255',
+            'address' => 'string|max:255',
             'email' => 'required|email|unique:stores,email',
             'rut' => 'required|string|max:255|unique:stores,rut',
             'status' => 'required|boolean',

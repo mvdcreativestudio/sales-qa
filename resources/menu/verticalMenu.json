@@ -34,21 +34,22 @@
       "name": "Contabilidad",
       "icon": "menu-icon tf-icons bx bx-dollar",
       "slug": "accounting",
+      "url": "/accounting",
       "submenu": [
         {
-          "url": "/invoices",
           "name": "Facturas",
-          "slug": "invoices"
+          "slug": "invoices",
+          "url": "/invoices"
         },
         {
-          "url": "/receipts",
           "name": "Recibos",
-          "slug": "receipts"
+          "slug": "receipts",
+          "url": "/receipts"
         },
         {
-          "url": "/entries",
           "name": "Asientos",
-          "slug": "entries"
+          "slug": "entries",
+          "url": "/entries"
         }
       ]
     },
@@ -62,16 +63,18 @@
       "name": "E-Commerce",
       "icon": "menu-icon tf-icons bx bx-world",
       "slug": "ecommerce",
+      "url": "/ecommerce",
+      "slug": "ecommerce",
       "submenu": [
         {
-          "url": "orders",
           "name": "Pedidos",
-          "slug": "orders"
+          "slug": "orders",
+          "url": "/ecommerce/orders"
         },
         {
-          "url": "products",
           "name": "Productos",
-          "slug": "products"
+          "slug": "products",
+          "url": "/ecommerce/products"
         },
         {
           "url": "product-flavors",
@@ -79,14 +82,19 @@
           "slug": "product-flavors"
         },
         {
-          "url": "product-categories",
           "name": "Categorías",
-          "slug": "product-categories"
+          "slug": "product-categories",
+          "url": "/ecommerce/product-categories"
         },
         {
-          "url": "/ecommerce/settings",
+          "name": "Marketing",
+          "slug": "marketing",
+          "url": "/ecommerce/marketing"
+        },
+        {
           "name": "Configuración",
-          "slug": "settings"
+          "slug": "settings",
+          "url": "/ecommerce/settings"
         }
       ]
     },
@@ -106,7 +114,19 @@
       "name": "Omnicanalidad",
       "icon": "menu-icon tf-icons bx bx-network-chart",
       "slug": "omnichannel",
-      "url": "/omnichannel"
+      "url": "/omnichannel",
+      "submenu": [
+        {
+          "name": "Chats",
+          "slug": "chats",
+          "url": "/omnichannel"
+        },
+        {
+          "name": "Configuración",
+          "slug": "settings",
+          "url": "/omnichannel/settings"
+        }
+      ]
     },
     {
       "name": "Datacenter",

@@ -8,6 +8,24 @@ use App\Http\Controllers\{
     ProductController, ProductCategoryController, OrderController, CartController, CheckoutController, MercadoPagoController, CouponController
 };
 
+use App\Http\Controllers\RawMaterialController;
+use App\Http\Controllers\EcommerceController;
+use App\Http\Controllers\CrmController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\AccountingController;
+use App\Http\Controllers\StoreController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SupplierOrderController;
+use App\Http\Controllers\OmnichannelController;
+use App\Http\Controllers\WhatsAppController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\OrderController;
+
 // Autenticación y Verificación de Email
 Route::middleware([
     'auth:sanctum',
@@ -54,6 +72,14 @@ Route::middleware([
         Route::post('disassociate-user', [StoreController::class, 'disassociateUser'])->name('disassociateUser');
     });
 
+    // Tiendas / Franquicias
+    Route::resource('stores', StoreController::class);
+    Route::group(['prefix' => 'stores'], function () {
+      Route::get('/{store}/manage-users', [StoreController::class, 'manageUsers'])->name('stores.manageUsers');
+      Route::post('/{store}/associate-user', [StoreController::class, 'associateUser'])->name('stores.associateUser');
+      Route::post('/{store}/disassociate-user', [StoreController::class, 'disassociateUser'])->name('stores.disassociateUser');
+    });
+
     // Role management
     Route::prefix('roles/{role}')->name('roles.')->group(function () {
         Route::get('manage-users', [RoleController::class, 'manageUsers'])->name('manageUsers');
@@ -75,6 +101,21 @@ Route::middleware([
     Route::get('receipts', [AccountingController::class, 'receipts'])->name('receipts');
     Route::get('entries', [AccountingController::class, 'entries'])->name('entries');
     Route::get('entrie', [AccountingController::class, 'entrie'])->name('entrie');
+    // Roles
+    Route::resource('/roles', RoleController::class);
+    Route::group(['prefix' => 'roles'], function () {
+      Route::get('/{role}/manage-users', [RoleController::class, 'manageUsers'])->name('roles.manageUsers');
+      Route::post('/{role}/associate-user', [RoleController::class, 'associateUser'])->name('roles.associateUser');
+      Route::post('/{role}/disassociate-user', [RoleController::class, 'disassociateUser'])->name('roles.disassociateUser');
+      Route::get('/{role}/manage-permissions', [RoleController::class, 'managePermissions'])->name('roles.managePermissions');
+      Route::post('/{role}/assign-permissions', [RoleController::class, 'assignPermissions'])->name('roles.assignPermissions');
+    });
+
+    // Materias Primas
+    Route::resource('raw-materials', RawMaterialController::class);
+
+    // Proveedores
+    Route::resource('suppliers', SupplierController::class);
 
     // E-Commerce Settings
     Route::get('/ecommerce/marketing', [EcommerceController::class, 'marketing'])->name('marketing');
@@ -93,6 +134,38 @@ Route::middleware([
 });
 
 // Public E-Commerce Routes
+    // Ordenes de Compra
+    Route::resource('supplier-orders', SupplierOrderController::class);
+    Route::group(['prefix' => 'supplier-orders'], function () {
+      Route::get('/{id}/pdf', [SupplierOrderController::class, 'generatePdf'])->name('supplier-orders.generatePdf');
+    });
+
+    // Omnicanalidad
+    Route::group(['prefix' => 'omnichannel'], function () {
+      // Configuración de WhatsApp
+      Route::post('/update-meta-business-id', [OmnichannelController::class, 'updateMetaBusinessId'])->name('omnichannel.update.meta.business.id');
+      Route::post('/update-admin-token', [OmnichannelController::class, 'updateMetaAdminToken'])->name('omnichannel.update.admin.token');
+
+      // Asociar / Desasociar números de teléfono
+      Route::post('/associate-phone', [OmnichannelController::class, 'associatePhoneNumberToStore'])->name('omnichannel.associate.phone');
+      Route::post('/disassociate/{phone_id}', [OmnichannelController::class, 'disassociatePhoneNumberFromStore'])->name('omnichannel.disassociate');
+
+      // Configuración
+      Route::get('/settings', [OmnichannelController::class, 'settings'])->name('omnichannel.settings');
+
+      // Chat
+      Route::get('/', [OmnichannelController::class, 'chats'])->name('omnichannel.chat');
+      Route::get('/fetch-messages', [WhatsAppController::class, 'fetchMessages'])->name('omnichannel.fetch.messages');
+    });
+
+});
+
+
+// Clients
+Route::resource('clients', ClientController::class);
+
+
+// E-Commerce
 Route::get('shop', [EcommerceController::class, 'index'])->name('shop');
 Route::get('store/{storeId}', [EcommerceController::class, 'store'])->name('store');
 Route::post('/cart/select-store', [CartController::class, 'selectStore'])->name('cart.selectStore');

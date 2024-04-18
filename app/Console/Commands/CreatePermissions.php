@@ -57,14 +57,34 @@ class CreatePermissions extends Command
                 ],
                 [
                     'slug' => 'accounting',
+                    'submenus' => [
+                        'invoices',
+                        'receipts',
+                        'entries'
+                    ],
+                    'view_all' => false,
+                ],
+                [
+                    'slug' => 'clients',
                     'view_all' => false,
                 ],
                 [
                     'slug' => 'ecommerce',
+                    'submenus' => [
+                        'orders',
+                        'products',
+                        'product-categories',
+                        'marketing',
+                        'settings'
+                    ],
                     'view_all' => false,
                 ],
                 [
                     'slug' => 'omnichannel',
+                    'submenus' => [
+                        'chats',
+                        'settings'
+                    ],
                     'view_all' => false,
                 ],
                 [
@@ -89,25 +109,37 @@ class CreatePermissions extends Command
          // Asegurar que el rol de administrador existe
          $adminRole = Role::firstOrCreate(['name' => 'Administrador']);
 
-         foreach ($modulesJson['menu'] as $module) {
-             $permissionName = 'access_' . $module['slug'];
-             $viewAllPermissionName = $module['view_all'] ? 'view_all_' . $module['slug'] : null;
+        foreach ($modulesJson['menu'] as $module) {
+            $this->createPermission($module['slug'], $module['view_all']);
 
-             // Crear o obtener el permiso
-             $permission = Permission::firstOrCreate(['name' => $permissionName]);
-             $this->info('Permiso asegurado: ' . $permissionName);
+            if (array_key_exists('submenus', $module)) {
+                foreach ($module['submenus'] as $submenuSlug) {
+                    $this->createPermission($submenuSlug, false);
+                }
+            }
+        }
 
-             // Asignar el permiso al rol de administrador
-             $adminRole->givePermissionTo($permission);
+        $this->info('Todos los permisos han sido creados.');
+    }
 
-             if ($viewAllPermissionName) {
-                 $viewAllPermission = Permission::firstOrCreate(['name' => $viewAllPermissionName]);
-                 $this->info('Permiso de visualización total asegurado: ' . $viewAllPermissionName);
-                 // Asignar el permiso de visualización total al rol de administrador
-                 $adminRole->givePermissionTo($viewAllPermission);
-             }
-         }
+    private function createPermission($slug, $viewAll)
+    {
+        $permissionName = 'access_' . $slug;
+        if (!Permission::where('name', $permissionName)->exists()) {
+            Permission::create(['name' => $permissionName]);
+            $this->info('Permiso creado: ' . $permissionName);
+        } else {
+            $this->info('El permiso ya existe: ' . $permissionName);
+        }
 
-         $this->info('Todos los permisos han sido creados y asignados al rol de administrador.');
+        if ($viewAll) {
+            $viewAllPermissionName = 'view_all_' . $slug;
+            if (!Permission::where('name', $viewAllPermissionName)->exists()) {
+                Permission::create(['name' => $viewAllPermissionName]);
+                $this->info('Permiso de vista total creado: ' . $viewAllPermissionName);
+            } else {
+                $this->info('El permiso de vista total ya existe: ' . $viewAllPermissionName);
+            }
+        }
     }
 }
