@@ -9,5 +9,5 @@ class CompanySettings extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'address', 'city', 'state', 'country', 'phone', 'email', 'website', 'logo', 'rut'];
+    protected $fillable = ['name', 'address', 'city', 'state', 'country', 'phone', 'email', 'website', 'logo_white', 'logo_black', 'rut', 'allow_registration'];
 }

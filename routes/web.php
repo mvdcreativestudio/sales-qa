@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\{
+    DashboardController,
     AccountingController,
     CartController,
     CheckoutController,
@@ -21,7 +22,9 @@ use App\Http\Controllers\{
     SupplierController,
     SupplierOrderController,
     WhatsAppController,
-    CouponController
+    CouponController,
+    CompanySettingsController,
+    DatacenterController
 };
 
 
@@ -31,9 +34,9 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/', function () {
-        return view('content.dashboard.dashboard-mvd');
-    })->name('dashboard');
+
+    // Dashboard
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Data Tables
     Route::get('/clients/datatable', [ClientController::class, 'datatable'])->name('clients.datatable');
@@ -57,8 +60,16 @@ Route::middleware([
         'orders' => OrderController::class,
         'invoices' => InvoiceController::class,
         '/marketing/coupons' => CouponController::class,
-        'checkout' => CheckoutController::class
     ]);
+
+    // Datacenter
+    Route::get('/datacenter-sales', [DatacenterController::class, 'sales'])->name('datacenter.sales');
+    Route::get('/api/monthly-income', [DatacenterController::class, 'monthlyIncome']);
+    Route::get('/api/sales-by-store', [DatacenterController::class, 'salesByStore']);
+    Route::get('/sales-by-store', [DatacenterController::class, 'showSalesByStore'])->name('sales.by.store');
+
+
+
 
     // Product management
     Route::get('products/{id}/duplicate', [ProductController::class, 'duplicate'])->name('products.duplicate');
@@ -67,9 +78,12 @@ Route::middleware([
     // Store management
     Route::prefix('stores/{store}')->name('stores.')->group(function () {
         Route::get('manage-users', [StoreController::class, 'manageUsers'])->name('manageUsers');
+        Route::get('manage-hours', [StoreController::class, 'manageHours'])->name('manageHours');
         Route::post('associate-user', [StoreController::class, 'associateUser'])->name('associateUser');
         Route::post('disassociate-user', [StoreController::class, 'disassociateUser'])->name('disassociateUser');
-    });
+        Route::post('save-hours', [StoreController::class, 'saveHours'])->name('saveHours');
+        Route::post('toggle-store-status', [StoreController::class, 'toggleStoreStatus'])->name('toggle-status');
+      });
 
     // Tiendas / Franquicias
     Route::resource('stores', StoreController::class);
@@ -116,6 +130,9 @@ Route::middleware([
     // Proveedores
     Route::resource('suppliers', SupplierController::class);
 
+    // Company Settings
+    Route::resource('company-settings', CompanySettingsController::class);
+
     // E-Commerce Settings
     Route::get('/ecommerce/marketing', [EcommerceController::class, 'marketing'])->name('marketing');
     Route::get('/ecommerce/settings', [EcommerceController::class, 'settings'])->name('settings');
@@ -158,9 +175,11 @@ Route::middleware([
     });
 
 
-
-// Clients
-Route::resource('clients', ClientController::class);
+// Resources con acceso público
+Route::resources([
+  'clients' => ClientController::class,
+  'checkout' => CheckoutController::class,
+]);
 
 
 // E-Commerce

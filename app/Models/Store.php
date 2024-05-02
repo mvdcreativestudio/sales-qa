@@ -5,9 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 
 class Store extends Model
 {
+    use HasSlug;
+
     /**
      * Los atributos que pueden asignarse en masa.
      *
@@ -20,6 +24,8 @@ class Store extends Model
         'email',
         'rut',
         'status',
+        'slug',
+        'closed',
     ];
 
     /**
@@ -30,6 +36,12 @@ class Store extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    // Definir la relación con Order
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'store_id');  // Asegúrate de que 'store_id' sea la clave foránea correcta en la tabla de órdenes
     }
 
     /**
@@ -45,5 +57,17 @@ class Store extends Model
     public function mercadoPagoAccount()
     {
         return $this->hasOne(MercadoPagoAccount::class);
+    }
+
+    public function getSlugOptions() : SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('name')
+            ->saveSlugsTo('slug');
+    }
+
+    public function storeHours()
+    {
+        return $this->hasMany(StoreHours::class);
     }
 }

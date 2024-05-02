@@ -132,7 +132,7 @@
       "name": "Datacenter",
       "icon": "menu-icon tf-icons bx bx-line-chart",
       "slug": "datacenter",
-      "url": "/datacenter"
+      "url": "/datacenter-sales"
     },
     {
       "name": "CRM",
@@ -151,6 +151,12 @@
       "icon": "menu-icon tf-icons bx bx-user",
       "slug": "roles",
       "url": "/roles"
+    },
+    {
+      "name": "Configuración",
+      "icon": "menu-icon tf-icons bx bx-cog",
+      "slug": "company_settings",
+      "url": "/company-settings"
     }
   ]
 }

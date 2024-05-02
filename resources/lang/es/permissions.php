@@ -27,4 +27,5 @@ return [
   'access_settings' => 'Acceder a configuración',
   'access_chats' => 'Acceder a chats',
   'access_coupons' => 'Acceder a cupones',
+  'access_company_settings' => 'Acceder a configuración de empresa'
 ];

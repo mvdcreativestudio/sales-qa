@@ -56,6 +56,7 @@ class OrderRepository
                   'orders.coupon_amount',
                   'orders.discount',
                   'orders.total',
+                  'orders.products',
                   'orders.payment_status',
                   'orders.shipping_status',
                   'orders.payment_method',

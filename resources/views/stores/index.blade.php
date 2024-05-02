@@ -24,6 +24,7 @@
     window.storeEditTemplate = "{{ route('stores.edit', ':id') }}";
     window.storeDeleteTemplate = "{{ route('stores.destroy', ':id') }}";
     window.storeManageUsersTemplate = "{{ route('stores.manageUsers', ':id') }}";
+    window.storeManageHours = "{{ route('stores.manageHours', ':id') }}";
     window.csrfToken = "{{ csrf_token() }}";
     var stores = @json($stores);
 </script>

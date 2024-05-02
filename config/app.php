@@ -84,7 +84,7 @@ return [
     |
     */
 
-  'locale' => 'en',
+  'locale' => 'es',
 
   /*
     |--------------------------------------------------------------------------
@@ -175,6 +175,8 @@ return [
     Spatie\Permission\PermissionServiceProvider::class,
     Laraveles\Spanish\SpanishServiceProvider::class,
     App\Providers\ComposerServiceProvider::class,
+    App\Providers\CompanySettingsServiceProvider::class,
+
   ])->toArray(),
 
   /*
