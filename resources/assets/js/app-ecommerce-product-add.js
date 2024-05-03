@@ -5,24 +5,39 @@
 
 //Javascript to handle the e-commerce product add page
 
+
 (function () {
-  // Comment editor
+  document.addEventListener('DOMContentLoaded', function () {
+    const commentEditorElement = document.querySelector('.comment-editor');
 
-  const commentEditor = document.querySelector('.comment-editor');
+    if (commentEditorElement) {
+      const quill = new Quill(commentEditorElement, {
+        modules: {
+          toolbar: '.comment-toolbar'
+        },
+        placeholder: 'Descripción del producto',
+        theme: 'snow'
+      });
 
-  if (commentEditor) {
-    new Quill(commentEditor, {
-      modules: {
-        toolbar: '.comment-toolbar'
-      },
-      placeholder: 'Product Description',
-      theme: 'snow'
-    });
-  }
+      // Encuentra el formulario que contiene tu editor Quill
+      const form = commentEditorElement.closest('form');
 
-  // previewTemplate: Updated Dropzone default previewTemplate
+      // Asegúrate de que el formulario y el campo oculto existen
+      if (form) {
+        form.addEventListener('submit', function() {
+          // Encuentra el input oculto por su ID
+          const hiddenInput = document.getElementById('hiddenDescription');
 
-  // ! Don't change it unless you really know what you are doing
+          // Actualiza el valor del campo oculto con el contenido HTML de Quill
+          if (hiddenInput) {
+            hiddenInput.value = quill.root.innerHTML;
+          }
+        });
+      }
+    }
+  });
+
+
 
   const previewTemplate = `<div class="dz-preview dz-file-preview">
 <div class="dz-details">
@@ -92,47 +107,85 @@ $(function () {
     });
   }
 
-  var formRepeater = $('.form-repeater');
-
-  // Form Repeater
-  // ! Using jQuery each loop to add dynamic id and class for inputs. You may need to improve it based on form fields.
-  // -----------------------------------------------------------------------------------------------------------------
-
-  if (formRepeater.length) {
-    var row = 2;
-    var col = 1;
-    formRepeater.on('submit', function (e) {
-      e.preventDefault();
-    });
-    formRepeater.repeater({
-      show: function () {
-        var fromControl = $(this).find('.form-control, .form-select');
-        var formLabel = $(this).find('.form-label');
-
-        fromControl.each(function (i) {
-          var id = 'form-repeater-' + row + '-' + col;
-          $(fromControl[i]).attr('id', id);
-          $(formLabel[i]).attr('for', id);
-          col++;
-        });
-
-        row++;
-        $(this).slideDown();
-        $('.select2-container').remove();
-        $('.select2.form-select').select2({
-          placeholder: 'Placeholder text'
-        });
-        $('.select2-container').css('width', '100%');
-        $('.form-repeater:first .form-select').select2({
-          dropdownParent: $(this).parent(),
-          placeholder: 'Placeholder text'
-        });
-        $('.position-relative .select2').each(function () {
-          $(this).select2({
-            dropdownParent: $(this).closest('.position-relative')
-          });
-        });
-      }
-    });
-  }
 });
+
+
+// Switch de estado del producto
+document.addEventListener('DOMContentLoaded', function () {
+  var statusSwitch = document.getElementById('statusSwitch');
+
+  // Asegura que el valor inicial sea "1" cuando el switch está activado por defecto
+  statusSwitch.value = statusSwitch.checked ? '1' : '2';
+
+  statusSwitch.addEventListener('change', function() {
+    this.value = this.checked ? '1' : '2';
+  });
+});
+
+
+$(document).ready(function() {
+  $('#category-org').select2({
+      placeholder: "Seleccione la(s) categoría(s)",
+      allowClear: true
+  });
+});
+
+
+// Discard Button
+document.addEventListener('DOMContentLoaded', function () {
+  const discardButton = document.getElementById('discardButton');
+
+  discardButton.addEventListener('click', function () {
+      // Comprobar si algún campo del formulario ha sido llenado
+      let isFormFilled = Array.from(document.querySelector('form').elements).some(input => {
+          if (input.type !== "submit" && input.type !== "button" && input.value !== "") {
+              return true;
+          }
+      });
+
+      if (isFormFilled) {
+          Swal.fire({
+              title: '¿Estás seguro?',
+              text: "Si continúas, perderás los datos no guardados.",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Sí, salir',
+              cancelButtonText: 'Cancelar'
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  // Si el usuario confirma, retrocede en el historial
+                  history.back();
+              }
+          });
+      } else {
+          // Si el formulario no ha sido llenado, simplemente retrocede
+          history.back();
+      }
+  });
+
+  $(document).ready(function() {
+    // Función para manejar la visibilidad del contenedor de sabores
+    function toggleFlavorsContainer() {
+      var productType = $('#productType').val();
+      if (productType === 'configurable') {
+        $('#flavorsContainer').show();
+        $('#flavorsQuantityContainer').show();
+      } else {
+        $('#flavorsContainer').hide();
+        $('#flavorsQuantityContainer').hide();
+      }
+    }
+
+    // Llamada inicial para establecer la visibilidad correcta al cargar la página
+    toggleFlavorsContainer();
+
+    // Controlador de eventos para cuando cambia la selección del tipo de producto
+    $('#productType').change(function() {
+      toggleFlavorsContainer();
+    });
+  });
+
+});
+

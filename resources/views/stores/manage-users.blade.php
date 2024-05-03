@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Administrar Usuarios de la Tienda')
+@section('title', 'Administrar Usuarios de la Tienda - ' . $store->name)
 
 @section('vendor-style')
 @vite(['resources/assets/vendor/libs/select2/select2.scss'])

@@ -7,6 +7,8 @@
 // Datatable (jquery)
 $(function () {
   let borderColor, bodyBg, headingColor;
+  let currencySymbol = $('.datatables-products').data('symbol'); // Obtener el símbolo de moneda correctamente
+
 
   if (isDarkStyle) {
     borderColor = config.colors_dark.borderColor;
@@ -20,264 +22,134 @@ $(function () {
 
   // Variable declaration for table
   var dt_product_table = $('.datatables-products'),
-    productAdd = baseUrl + 'app/ecommerce/product/add',
-    statusObj = {
-      1: { title: 'Scheduled', class: 'bg-label-warning' },
-      2: { title: 'Publish', class: 'bg-label-success' },
-      3: { title: 'Inactive', class: 'bg-label-danger' }
-    },
-    categoryObj = {
-      0: { title: 'Household' },
-      1: { title: 'Office' },
-      2: { title: 'Electronics' },
-      3: { title: 'Shoes' },
-      4: { title: 'Accessories' },
-      5: { title: 'Game' }
-    },
-    stockObj = {
-      0: { title: 'Out_of_Stock' },
-      1: { title: 'In_Stock' }
-    },
-    stockFilterValObj = {
-      0: { title: 'Out of Stock' },
-      1: { title: 'In Stock' }
-    };
+    productAdd = baseUrl + 'products/create'
 
   // E-commerce Products datatable
 
   if (dt_product_table.length) {
     var dt_products = dt_product_table.DataTable({
-      ajax: assetsPath + 'json/ecommerce-product-list.json', // JSON file to add data
+      ajax: 'products/datatable',
       columns: [
         // columns according to JSON
-        { data: 'id' },
-        { data: 'id' },
-        { data: 'product_name' },
-        { data: 'category' },
-        { data: 'stock' },
+        { data: 'image' },
+        { data: 'name' },
         { data: 'sku' },
+        {
+          data: 'description',
+          render: function(data, type, row) {
+            var div = document.createElement("div");
+            div.innerHTML = data;
+            return div.textContent || div.innerText || "";
+          }
+        },
+        { data: 'type' },
+        { data: 'old_price' },
         { data: 'price' },
-        { data: 'quantity' },
+        { data: 'category' },
+        { data: 'store_name'},
         { data: 'status' },
-        { data: '' }
+        { data: ''}
       ],
       columnDefs: [
-        {
-          // For Responsive
-          className: 'control',
-          searchable: false,
-          orderable: false,
-          responsivePriority: 2,
-          targets: 0,
-          render: function (data, type, full, meta) {
-            return '';
+          {
+            // Actions
+            targets: -1,
+            title: 'Acciones',
+            searchable: false,
+            orderable: false,
+            render: function (data, type, full, meta) {
+              return (
+                  '<div class="d-inline-block text-nowrap">' +
+                  '<a href="' + baseUrl + 'products/' + full['id'] + '/edit" class="btn btn-sm btn-icon edit-button"><i class="bx bx-edit"></i></a>' +
+                  '<button class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded me-2"></i></button>' +
+                  '<div class="dropdown-menu dropdown-menu-end m-0">' +
+                  '<a href="' + baseUrl + 'products/' + full['id'] + '/show" class="dropdown-item">Ver producto</a>' +
+                  '<a href="javascript:void(0);" class="dropdown-item switch-status" data-id="' + full['id'] + '">' + (full['status'] === 1 ? 'Desactivar' : 'Activar') + '</a>' +
+                  '<a href="javascript:void(0);" class="dropdown-item text-danger delete-button" data-id="' + full['id'] + '">Eliminar</a>' +
+                  '</div>' +
+                  '</div>'
+              );
           }
         },
-        {
-          // For Checkboxes
-          targets: 1,
-          orderable: false,
-          checkboxes: {
-            selectAllRender: '<input type="checkbox" class="form-check-input">'
-          },
-          render: function () {
-            return '<input type="checkbox" class="dt-checkboxes form-check-input" >';
-          },
-          searchable: false
-        },
-        {
-          // Product name and product_brand
-          targets: 2,
-          responsivePriority: 1,
-          render: function (data, type, full, meta) {
-            var $name = full['product_name'],
-              $id = full['id'],
-              $product_brand = full['product_brand'],
-              $image = full['image'];
-            if ($image) {
-              // For Product image
 
-              var $output =
-                '<img src="' +
-                assetsPath +
-                'img/ecommerce-images/' +
-                $image +
-                '" alt="Product-' +
-                $id +
-                '" class="rounded-2">';
-            } else {
-              // For Product badge
-              var stateNum = Math.floor(Math.random() * 6);
-              var states = ['success', 'danger', 'warning', 'info', 'dark', 'primary', 'secondary'];
-              var $state = states[stateNum],
-                $name = full['product_brand'],
-                $initials = $name.match(/\b\w/g) || [];
-              $initials = (($initials.shift() || '') + ($initials.pop() || '')).toUpperCase();
-              $output = '<span class="avatar-initial rounded-2 bg-label-' + $state + '">' + $initials + '</span>';
-            }
-            // Creates full output for Product name and product_brand
-            var $row_output =
-              '<div class="d-flex justify-content-start align-items-center product-name">' +
-              '<div class="avatar-wrapper">' +
-              '<div class="avatar avatar me-2 rounded-2 bg-label-secondary">' +
-              $output +
-              '</div>' +
-              '</div>' +
-              '<div class="d-flex flex-column">' +
-              '<h6 class="text-body text-nowrap mb-0">' +
-              $name +
-              '</h6>' +
-              '<small class="text-muted text-truncate d-none d-sm-block">' +
-              $product_brand +
-              '</small>' +
-              '</div>' +
-              '</div>';
-            return $row_output;
-          }
-        },
         {
-          // Product Category
-
-          targets: 3,
-          responsivePriority: 5,
-          render: function (data, type, full, meta) {
-            var $category = categoryObj[full['category']].title;
-            var categoryBadgeObj = {
-              Household:
-                '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-warning me-2"><i class="bx bx-home-alt"></i></span>',
-              Office:
-                '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-success me-2"><i class="bx bx-briefcase"></i></span>',
-              Electronics:
-                '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-primary me-2"><i class="bx bx-mobile-alt"></i></span>',
-              Shoes:
-                '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-info me-2"><i class="bx bx-walk"></i></span>',
-              Accessories:
-                '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-secondary me-2"><i class="bx bxs-watch"></i></span>',
-              Game: '<span class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-dark me-2"><i class="bx bx-game"></i></span>'
-            };
-            return (
-              "<span class='text-truncate d-flex align-items-center'>" +
-              categoryBadgeObj[$category] +
-              $category +
-              '</span>'
-            );
-          }
-        },
-        {
-          // Stock
-          targets: 4,
-          orderable: false,
-          responsivePriority: 3,
-          render: function (data, type, full, meta) {
-            var $stock = full['stock'];
-            var stockSwitchObj = {
-              Out_of_Stock:
-                '<label class="switch switch-primary switch-sm">' +
-                '<input type="checkbox" class="switch-input" id="switch">' +
-                '<span class="switch-toggle-slider">' +
-                '<span class="switch-off">' +
-                '</span>' +
-                '</span>' +
-                '</label>',
-              In_Stock:
-                '<label class="switch switch-primary switch-sm">' +
-                '<input type="checkbox" class="switch-input" checked="">' +
-                '<span class="switch-toggle-slider">' +
-                '<span class="switch-on">' +
-                '</span>' +
-                '</span>' +
-                '</label>'
-            };
-            return (
-              "<span class='text-truncate'>" +
-              stockSwitchObj[stockObj[$stock].title] +
-              '<span class="d-none">' +
-              stockObj[$stock].title +
-              '</span>' +
-              '</span>'
-            );
-          }
-        },
-        {
-          // Sku
-          targets: 5,
-          render: function (data, type, full, meta) {
-            var $sku = full['sku'];
-
-            return '<span>' + $sku + '</span>';
-          }
-        },
-        {
-          // price
-          targets: 6,
-          render: function (data, type, full, meta) {
-            var $price = full['price'];
-
-            return '<span>' + $price + '</span>';
-          }
-        },
-        {
-          // qty
-          targets: 7,
-          responsivePriority: 4,
-          render: function (data, type, full, meta) {
-            var $qty = full['qty'];
-
-            return '<span>' + $qty + '</span>';
-          }
-        },
-        {
-          // Status
+          // Estado
           targets: -2,
+          searchable: true,
+          orderable: true,
           render: function (data, type, full, meta) {
-            var $status = full['status'];
+            if (data === 1) {  // Asumiendo que '1' representa 'Activo'
+              return '<span class="badge pill bg-success">Activo</span>';
+            } else {  // Asumiendo que cualquier otro caso es 'Inactivo'
+              return '<span class="badge pill bg-danger">Inactivo</span>';
+            }
+          }
+        },
 
-            return (
-              '<span class="badge ' +
-              statusObj[$status].class +
-              '" text-capitalized>' +
-              statusObj[$status].title +
-              '</span>'
-            );
+        {
+            targets: 0, // Assuming the 'image' column is the first one
+            title: 'Imagen',
+            render: function(data, type, full, meta) {
+                return '<img src="' + data + '" alt="Imagen del producto" style="max-width: 100px; max-height: 100px;">';
+            }
+        },
+        {
+          targets: 5,
+          render: function(data, type, full, meta) {
+              return currencySymbol + parseFloat(data).toFixed(0);
           }
         },
         {
-          // Actions
-          targets: -1,
-          title: 'Acciones',
-          searchable: false,
-          orderable: false,
-          render: function (data, type, full, meta) {
-            return (
-              '<div class="d-inline-block text-nowrap">' +
-              '<button class="btn btn-sm btn-icon"><i class="bx bx-edit"></i></button>' +
-              '<button class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded me-2"></i></button>' +
-              '<div class="dropdown-menu dropdown-menu-end m-0">' +
-              '<a href="javascript:0;" class="dropdown-item">View</a>' +
-              '<a href="javascript:0;" class="dropdown-item">Suspend</a>' +
-              '</div>' +
-              '</div>'
-            );
+          targets: 6,
+          render: function(data, type, full, meta) {
+              if (data !== null) {
+                  return currencySymbol + parseFloat(data).toFixed(0);
+              } else {
+                  return '-';
+              }
+          }
+        },
+        {
+          targets: 4, // Assuming 'type' is the 5th column (0-based index)
+          render: function(data, type, full, meta) {
+              if (data.toLowerCase() === 'configurable') {
+                  return 'Variable';
+              } else {
+                  return data.charAt(0).toUpperCase() + data.slice(1);
+              }
           }
         }
+
       ],
+
       order: [2, 'asc'], //set any columns order asc/desc
       dom:
-        '<"card-header d-flex border-top rounded-0 flex-wrap py-md-0"' +
-        '<"me-5 ms-n2 pe-5"f>' +
-        '<"d-flex justify-content-start justify-content-md-end align-items-baseline"<"dt-action-buttons d-flex align-items-start align-items-md-center justify-content-sm-center mb-3 mb-sm-0"lB>>' +
+        '<"card-header d-flex flex-column flex-md-row align-items-start align-items-md-center pt-0"<"ms-n2"f><"d-flex align-items-md-center justify-content-md-end mt-2 mt-md-0"l<"dt-action-buttons"B>>' +
         '>t' +
         '<"row mx-2"' +
         '<"col-sm-12 col-md-6"i>' +
         '<"col-sm-12 col-md-6"p>' +
         '>',
-      lengthMenu: [7, 10, 20, 50, 70, 100], //for length of menu
-      language: {
-        sLengthMenu: '_MENU_',
+        lengthMenu: [10, 25, 50, 100],
+        language: {
         search: '',
-        searchPlaceholder: 'Buscar producto',
-        info: 'Mostrando _START_ a _END_ de _TOTAL_ productos'
+        searchPlaceholder: 'Buscar...',
+        sLengthMenu: '_MENU_',
+        info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+        infoFiltered: "filtrados de _MAX_ productos",
+        paginate: {
+          first: '<<',
+          last: '>>',
+          next: '>',
+          previous: '<'
+        },
+        pagingType: "full_numbers",  // Use full numbers for pagination
+        dom: 'Bfrtip',
+        renderer: "bootstrap"
+
+
       },
+
       // Buttons with Dropdown
       buttons: [
         {
@@ -290,15 +162,16 @@ $(function () {
       ],
 
       initComplete: function () {
-        // Adding status filter once table initialized
+        // Adding type filter once table initialized
         this.api()
-          .columns(-2)
+
+          .columns(4) // Assuming 'tipo' column is at index 4
           .every(function () {
             var column = this;
             var select = $(
-              '<select id="ProductStatus" class="form-select text-capitalize"><option value="">Status</option></select>'
+              '<select id="ProductType" class="form-select"><option value="">Todos los tipos</option></select>'
             )
-              .appendTo('.product_status')
+              .appendTo('.product_type')
               .on('change', function () {
                 var val = $.fn.dataTable.util.escapeRegex($(this).val());
                 column.search(val ? '^' + val + '$' : '', true, false).draw();
@@ -309,55 +182,54 @@ $(function () {
               .unique()
               .sort()
               .each(function (d, j) {
-                select.append('<option value="' + statusObj[d].title + '">' + statusObj[d].title + '</option>');
+                select.append('<option value="' + d + '">' + d + '</option>');
               });
           });
         // Adding category filter once table initialized
         this.api()
-          .columns(3)
+          .columns(7)
           .every(function () {
-            var column = this;
-            var select = $(
-              '<select id="ProductCategory" class="form-select text-capitalize"><option value="">Category</option></select>'
-            )
-              .appendTo('.product_category')
+              var column = this;
+              var select = $('<select class="form-select"><option value="">Todas las categorías</option></select>')
+                  .appendTo('.product_category')
+                  .on('change', function () {
+                      var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                      column.search(val ? '^' + val + '$' : '', true, false).draw();
+                  });
+
+              column
+                  .data()
+                  .unique()
+                  .sort()
+                  .each(function (d, j) {
+                      select.append('<option value="' + d + '">' + d + '</option>');
+                  });
+          });
+          // Adding store filter once table initialized
+          this.api()
+          .columns(8)
+          .every(function () {
+              var column = this;
+              var select = $(
+                  '<select id="ProductStore" class="form-select"><option value="">Todos los locales</option></select>'
+              )
+              .appendTo('.product_store')
               .on('change', function () {
-                var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                column.search(val ? '^' + val + '$' : '', true, false).draw();
+                  var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                  column.search(val ? '^' + val + '$' : '', true, false).draw();
               });
 
-            column
+              column
               .data()
               .unique()
               .sort()
               .each(function (d, j) {
-                select.append('<option value="' + categoryObj[d].title + '">' + categoryObj[d].title + '</option>');
+                  select.append('<option value="' + d + '">' + d + '</option>');
               });
           });
-        // Adding stock filter once table initialized
-        this.api()
-          .columns(4)
-          .every(function () {
-            var column = this;
-            var select = $(
-              '<select id="ProductStock" class="form-select text-capitalize"><option value=""> Stock </option></select>'
-            )
-              .appendTo('.product_stock')
-              .on('change', function () {
-                var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                column.search(val ? '^' + val + '$' : '', true, false).draw();
-              });
+    }
 
-            column
-              .data()
-              .unique()
-              .sort()
-              .each(function (d, j) {
-                select.append('<option value="' + stockObj[d].title + '">' + stockFilterValObj[d].title + '</option>');
-              });
-          });
 
-      }
     });
     $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
     // To remove default btn-secondary in export buttons
@@ -371,6 +243,102 @@ $(function () {
   $('.datatables-products tbody').on('click', '.delete-record', function () {
     dt_products.row($(this).parents('tr')).remove().draw();
   });
+
+  // Toggle column visibility based on switches
+  $('.toggle-column').on('change', function() {
+    var column = dt_products.column($(this).data('column'));
+    column.visible(!column.visible());
+  });
+
+  // Handling click on the switch status button
+  dt_product_table.on('click', '.switch-status', function () {
+    var button = $(this);
+    var productId = button.data('id');
+    var newStatus = button.text().trim() === 'Activar' ? 1 : 2;  // Determine new status based on button text
+
+    $.ajax({
+      url: baseUrl + 'products/' + productId + '/switchStatus',
+      type: 'POST',
+      data: {
+        id: productId,
+        status: newStatus,
+        _token: $('meta[name="csrf-token"]').attr('content')  // CSRF token required by Laravel
+      },
+      success: function (response) {
+        Swal.fire({
+          title: '¡Correcto!',
+          text: response.message,
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+        dt_products.ajax.reload(null, false);  // Reload table data without resetting pagination
+      },
+      error: function (xhr, status, error) {
+        Swal.fire({
+          title: '¡Error!',
+          text: xhr.responseText,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+  });
+
+
+// Eliminar producto
+$(document).on('click', '.delete-button', function () {
+  var productId = $(this).data('id');
+
+  // Mostrar ventana de confirmación SweetAlert
+  Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Una vez eliminado, no podrás recuperar este producto.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+  }).then((result) => {
+      if (result.isConfirmed) {
+          // Obtener el token CSRF
+          var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+          // Realizar una solicitud AJAX para eliminar el producto
+          $.ajax({
+              type: "DELETE",
+              url: baseUrl + "products/" + productId,
+              data: {
+                  // Enviar el token CSRF en la solicitud
+                  _token: csrfToken
+              },
+              success: function (response) {
+                  // Mostrar mensaje de éxito con SweetAlert
+                  Swal.fire({
+                      title: '¡Eliminado!',
+                      text: 'El producto ha sido eliminado correctamente.',
+                      icon: 'success',
+                      showConfirmButton: false,
+                      timer: 1500
+                  });
+
+                  // Recargar la tabla después de eliminar el producto
+                  dt_products.ajax.reload(null, false);
+              },
+              error: function (xhr, status, error) {
+                  console.error(xhr.responseText);
+                  // Mostrar mensaje de error con SweetAlert
+                  Swal.fire({
+                      title: 'Error',
+                      text: 'Hubo un error al intentar eliminar el producto.',
+                      icon: 'error',
+                      confirmButtonText: 'OK'
+                  });
+              }
+          });
+      }
+  });
+});
 
 
 });

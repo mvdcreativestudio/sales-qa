@@ -13,6 +13,18 @@
       "url": "/raw-materials"
     },
     {
+      "name": "Proveedores",
+      "icon": "menu-icon tf-icons bx bx-user",
+      "slug": "suppliers",
+      "url": "/suppliers"
+    },
+    {
+      "name": "Ordenes de Compra",
+      "icon": "menu-icon tf-icons bx bx-shopping-bag",
+      "slug": "supplier-orders",
+      "url": "/supplier-orders"
+    },
+    {
       "name": "Stock",
       "icon": "menu-icon tf-icons bx bx-package",
       "slug": "stock",
@@ -21,27 +33,23 @@
     {
       "name": "Contabilidad",
       "icon": "menu-icon tf-icons bx bx-dollar",
-      "slug": [
-        "accounting",
-        "receipts",
-        "entries"
-      ],
-
+      "slug": "accounting",
+      "url": "/accounting",
       "submenu": [
         {
-          "url": "/invoices",
           "name": "Facturas",
-          "slug": "invoices"
+          "slug": "invoices",
+          "url": "/invoices"
         },
         {
-          "url": "/receipts",
           "name": "Recibos",
-          "slug": "receipts"
+          "slug": "receipts",
+          "url": "/receipts"
         },
         {
-          "url": "/entries",
           "name": "Asientos",
-          "slug": "entries"
+          "slug": "entries",
+          "url": "/entries"
         }
       ]
     },
@@ -54,27 +62,51 @@
     {
       "name": "E-Commerce",
       "icon": "menu-icon tf-icons bx bx-world",
-      "slug": ["orders", "products", "marketing", "settings"],
+      "slug": "ecommerce",
+      "url": "/ecommerce",
+      "slug": "ecommerce",
       "submenu": [
         {
-          "url": "/ecommerce/orders",
           "name": "Pedidos",
-          "slug": "orders"
+          "slug": "orders",
+          "url": "orders"
         },
         {
-          "url": "/ecommerce/products",
           "name": "Productos",
-          "slug": "products"
+          "slug": "products",
+          "url": "products"
         },
         {
-          "url": "/ecommerce/marketing",
+          "url": "product-flavors",
+          "name": "Sabores",
+          "slug": "product-flavors"
+        },
+        {
+          "name": "Categorías",
+          "slug": "product-categories",
+          "url": "product-categories"
+        },
+        {
           "name": "Marketing",
-          "slug": "marketing"
+          "slug": "marketing",
+          "url": "marketing"
         },
         {
-          "url": "/ecommerce/settings",
           "name": "Configuración",
-          "slug": "settings"
+          "slug": "settings",
+          "url": "/ecommerce/settings"
+        }
+      ]
+    },
+    {
+      "name": "Marketing",
+      "icon": "menu-icon tf-icons bx bx-coffee",
+      "slug": "accounting",
+      "submenu": [
+        {
+          "url": "/marketing/coupons",
+          "name": "Cupones",
+          "slug": "coupons"
         }
       ]
     },
@@ -82,7 +114,19 @@
       "name": "Omnicanalidad",
       "icon": "menu-icon tf-icons bx bx-network-chart",
       "slug": "omnichannel",
-      "url": "/omnichannel"
+      "url": "/omnichannel",
+      "submenu": [
+        {
+          "name": "Chats",
+          "slug": "chats",
+          "url": "/omnichannel"
+        },
+        {
+          "name": "Configuración",
+          "slug": "settings",
+          "url": "/omnichannel/settings"
+        }
+      ]
     },
     {
       "name": "Datacenter",
@@ -101,6 +145,12 @@
       "icon": "menu-icon tf-icons bx bx-store-alt",
       "slug": "stores",
       "url": "/stores"
+    },
+    {
+      "name": "Roles",
+      "icon": "menu-icon tf-icons bx bx-user",
+      "slug": "roles",
+      "url": "/roles"
     }
   ]
 }

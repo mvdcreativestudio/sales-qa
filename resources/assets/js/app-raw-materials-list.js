@@ -5,76 +5,113 @@ document.addEventListener('DOMContentLoaded', function () {
   var rawMaterialEdit = window.rawMaterialEditTemplate;
   var rawMaterialDelete = window.rawMaterialDeleteTemplate;
   var baseUrlAsset = window.baseUrlAsset;
+  var originUrlAsset = window.originUrlAsset;
+  var hasViewAllRawMaterialsPermission = window.hasViewAllRawMaterialsPermission;
+
+  var columns = [
+    { data: 'image_url' },
+    { data: 'name' },
+    { data: 'description' },
+    { data: 'unit_of_measure' },
+    { data: 'stock' }
+  ];
+
+  if (hasViewAllRawMaterialsPermission) {
+    columns.push({ data: 'store', searchable: true, orderable: true });
+  }
+
+  var columnsDefs = [
+    {
+      targets: 0,
+      searchable: false,
+      orderable: false,
+      render: function (data, type, row) {
+        if (!data) {
+          return `<img src="${originUrlAsset}/noimage.jpg" alt="Imagen por defecto" class="img-fluid rounded" style="max-width: 60px; height: auto;">`;
+        }
+        var imageUrl = baseUrlAsset + '/' + data;
+        return `<img src="${imageUrl}" alt="Imagen" class="img-fluid rounded" style="max-width: 60px; height: auto;">`;
+      }
+    },
+    {
+      targets: 1,
+      searchable: true,
+      responsivePriority: 1,
+      orderable: true,
+      render: function (data, type, row, meta) {
+        return '<span>' + data + '</span>';
+      }
+    },
+    {
+      targets: 2,
+      searchable: true,
+      responsivePriority: 3,
+      orderable: true,
+      render: function (data, type, row, meta) {
+        return data && data.length > 50 ? '<span>' + data.substr(0, 50) + '...' + '</span>' : data;
+      }
+    },
+    {
+      targets: 3,
+      searchable: true,
+      responsivePriority: 4,
+      orderable: true,
+      render: function (data, type, row, meta) {
+        return '<span>' + data + '</span>';
+      }
+    },
+    {
+      targets: 4,
+      searchable: true,
+      responsivePriority: 5,
+      orderable: true,
+      render: function (data, type, row, meta) {
+        return '<span>' + data + '</span>';
+      }
+    },
+    {
+      targets: hasViewAllRawMaterialsPermission ? 6 : 5,
+      searchable: false,
+      responsivePriority: 6,
+      orderable: false,
+      render: function (data, type, row, meta) {
+        return `
+            <div class="dropdown">
+              <button class="btn btn-icon btn-icon-only" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="bx bx-dots-horizontal-rounded"></i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end">
+                <a class="dropdown-item" href="${rawMaterialEdit.replace(':id', row.id)}">
+                  <i class="bx bx-pencil"></i> Editar
+                </a>
+                <form class="delete-form-${row.id}" action="${rawMaterialDelete.replace(':id', row.id)}" method="POST">
+                  <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <div class="dropdown-item text-danger delete-button" style="cursor: pointer;">
+                    <i class="bx bx-trash"></i> Eliminar
+                  </div>
+                </form>
+              </div>
+            </div>
+          `;
+      }
+    }
+  ];
+
+  if (hasViewAllRawMaterialsPermission) {
+    columnsDefs.push({
+      targets: 5,
+      render: function (data, type, row) {
+        return row.store ? row.store.name : 'Tienda sin nombre';
+      }
+    });
+  }
 
   if (dt_raw_materials_table.length) {
     dt_raw_materials_table.DataTable({
       data: rawMaterials,
-      columns: [{ data: 'image_url' }, { data: 'name' }, { data: 'description' }, { data: 'unit_of_measure' }],
-      columnDefs: [
-        {
-          targets: 0,
-          searchable: false,
-          orderable: false,
-          render: function (data, type, row) {
-            var imageUrl = baseUrlAsset + '/' + data;
-            return `<img src="${imageUrl}" alt="Imagen" class="img-fluid rounded" style="max-width: 60px; height: auto;">`;
-          }
-        },
-        {
-          targets: 1,
-          searchable: true,
-          responsivePriority: 1,
-          orderable: true,
-          render: function (data, type, row, meta) {
-            return '<span>' + data + '</span>';
-          }
-        },
-        {
-          targets: 2,
-          searchable: true,
-          responsivePriority: 3,
-          orderable: true,
-          render: function (data, type, row, meta) {
-            return data && data.length > 50 ? '<span>' + data.substr(0, 50) + '...' + '</span>' : data;
-          }
-        },
-        {
-          targets: 3,
-          searchable: true,
-          responsivePriority: 4,
-          orderable: true,
-          render: function (data, type, row, meta) {
-            return '<span>' + data + '</span>';
-          }
-        },
-        {
-          targets: 4,
-          searchable: false,
-          responsivePriority: 5,
-          orderable: false,
-          render: function (data, type, row, meta) {
-            return `
-                <div class="dropdown">
-                  <button class="btn btn-icon btn-icon-only" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="bx bx-dots-horizontal-rounded"></i>
-                  </button>
-                  <div class="dropdown-menu dropdown-menu-end">
-                    <a class="dropdown-item" href="${rawMaterialEdit.replace(':id', row.id)}">
-                      <i class="bx bx-pencil"></i> Editar
-                    </a>
-                    <form class="delete-form-${row.id}" action="${rawMaterialDelete.replace(':id', row.id)}" method="POST">
-                      <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
-                      <input type="hidden" name="_method" value="DELETE">
-                      <div class="dropdown-item text-danger delete-button" style="cursor: pointer;">
-                        <i class="bx bx-trash"></i> Eliminar
-                      </div>
-                    </form> 
-                  </div>
-                </div>
-              `;
-          }
-        }
-      ],
+      columns: columns,
+      columnDefs: columnsDefs,
       language: {
         searchPlaceholder: 'Buscar...',
         sLengthMenu: '_MENU_',

@@ -25,13 +25,21 @@ class StoreStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => 'required|string|max:255',
-            'phone' => 'string|max:255',
             'address' => 'string|max:255',
             'email' => 'required|email|unique:stores,email',
             'rut' => 'required|string|max:255|unique:stores,rut',
             'status' => 'required|boolean',
+            'accepts_mercadopago' => 'required|boolean',
         ];
+
+        if ($this->boolean('accepts_mercadopago')) {
+            $rules['mercadoPagoPublicKey'] = 'required|string|max:255';
+            $rules['mercadoPagoAccessToken'] = 'required|string|max:255';
+        }
+
+        return $rules;
     }
+
 }

@@ -11,7 +11,12 @@ document.addEventListener('DOMContentLoaded', function () {
       data: stores,
       columns: [
         { data: 'name' },
-        { data: 'phone' },
+        {
+          data: 'phone_number',
+          render: function (data, type, row) {
+            return data.phone_number ? data.phone_number : 'Sin teléfono asociado';
+          }
+        },
         { data: 'email' },
         { data: 'address' },
         { data: 'rut' },
@@ -47,6 +52,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="dropdown-menu dropdown-menu-end">
                   <a class="dropdown-item" href="${storeEdit.replace(':id', row.id)}">
                     <i class="bx bx-pencil"></i> Editar
+                  </a>
+                  <a class="dropdown-item" href="${storeManageUsers.replace(':id', row.id)}">
+                    <i class="bx bx-group"></i> Usuarios
                   </a>
                   <form class="delete-form-${row.id}" action="${storeDelete.replace(':id', row.id)}" method="POST">
                     <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
@@ -110,10 +118,32 @@ document.addEventListener('DOMContentLoaded', function () {
   $('div.dataTables_filter input').addClass('form-control');
   $('div.dataTables_length select').addClass('form-select');
 
-  $('.delete-button').click(function () {
+  $('.delete-button').click(function() {
     var form = $(this).closest('form');
-    if (confirm('¿Estás seguro de que deseas cambiar el estado de esta tienda?')) {
-      form.submit();
-    }
-  });
+    Swal.fire({
+        title: '¿Seguro?',
+        text: "Estás a punto de cambiar el estado de la tienda",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, cambiarlo!',
+        cancelButtonText: 'No, cancelar!',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+        ) {
+            Swal.fire(
+                'Cancelado',
+                'El estado de la tienda está seguro :)',
+                'error'
+            )
+        }
+    });
+});
+
 });

@@ -15,6 +15,9 @@ $customizerHidden = ($customizerHidden ?? '');
 
 @section('layoutContent')
 
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 @include('content/e-commerce/front/layouts/navbar')
 @include('content/e-commerce/front/layouts/spinner')
 
@@ -24,7 +27,7 @@ $customizerHidden = ($customizerHidden ?? '');
 
 <!--/ Content -->
 
-@include('content/e-commerce/front/layouts/footer')
+
 
 @endsection
 

@@ -70,7 +70,8 @@ return [
     |
     */
 
-  'timezone' => 'UTC',
+    'timezone' => 'America/Montevideo',
+  'timezone' => 'America/Argentina/Buenos_Aires',
 
   /*
     |--------------------------------------------------------------------------
@@ -96,7 +97,7 @@ return [
     |
     */
 
-  'fallback_locale' => 'en',
+  'fallback_locale' => 'es',
 
   /*
     |--------------------------------------------------------------------------
@@ -165,7 +166,7 @@ return [
          */
     App\Providers\AppServiceProvider::class,
     App\Providers\AuthServiceProvider::class,
-    // App\Providers\BroadcastServiceProvider::class,
+    App\Providers\BroadcastServiceProvider::class,
     App\Providers\EventServiceProvider::class,
     App\Providers\RouteServiceProvider::class,
         App\Providers\FortifyServiceProvider::class,
@@ -173,6 +174,7 @@ return [
     App\Providers\MenuServiceProvider::class,
     Spatie\Permission\PermissionServiceProvider::class,
     Laraveles\Spanish\SpanishServiceProvider::class,
+    App\Providers\ComposerServiceProvider::class,
   ])->toArray(),
 
   /*

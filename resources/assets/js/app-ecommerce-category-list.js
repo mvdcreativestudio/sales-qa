@@ -13,7 +13,7 @@ if (commentEditor) {
     modules: {
       toolbar: '.comment-toolbar'
     },
-    placeholder: 'Enter category description...',
+    placeholder: 'Ingrese la descripción de la categoría',
     theme: 'snow'
   });
 }
@@ -53,113 +53,20 @@ $(function () {
 
   if (dt_category_list_table.length) {
     var dt_category = dt_category_list_table.DataTable({
-      ajax: assetsPath + 'json/ecommerce-category-list.json', // JSON file to add data
+      ajax: 'product-categories/datatable',
       columns: [
         // columns according to JSON
-        { data: '' },
         { data: 'id' },
-        { data: 'categories' },
-        { data: 'total_products' },
-        { data: 'total_earnings' },
+        { data: 'name' },
+        { data: 'description' },
+        { data: 'status'},
         { data: '' }
       ],
       columnDefs: [
         {
-          // For Responsive
-          className: 'control',
-          searchable: false,
-          orderable: false,
-          responsivePriority: 1,
-          targets: 0,
-          render: function (data, type, full, meta) {
-            return '';
-          }
-        },
-        {
-          // For Checkboxes
-          targets: 1,
-          orderable: false,
-          searchable: false,
-          responsivePriority: 4,
-          checkboxes: true,
-          render: function () {
-            return '<input type="checkbox" class="dt-checkboxes form-check-input">';
-          },
-          checkboxes: {
-            selectAllRender: '<input type="checkbox" class="form-check-input">'
-          }
-        },
-        {
-          // Categories and Category Detail
-          targets: 2,
-          responsivePriority: 2,
-          render: function (data, type, full, meta) {
-            var $name = full['categories'],
-              $category_detail = full['category_detail'],
-              $image = full['cat_image'],
-              $id = full['id'];
-            if ($image) {
-              // For Product image
-              var $output =
-                '<img src="' +
-                assetsPath +
-                'img/ecommerce-images/' +
-                $image +
-                '" alt="Product-' +
-                $id +
-                '" class="rounded-2">';
-            } else {
-              // For Product badge
-              var stateNum = Math.floor(Math.random() * 6);
-              var states = ['success', 'danger', 'warning', 'info', 'dark', 'primary', 'secondary'];
-              var $state = states[stateNum],
-                $name = full['category_detail'],
-                $initials = $name.match(/\b\w/g) || [];
-              $initials = (($initials.shift() || '') + ($initials.pop() || '')).toUpperCase();
-              $output = '<span class="avatar-initial rounded-2 bg-label-' + $state + '">' + $initials + '</span>';
-            }
-            // Creates full output for Categories and Category Detail
-            var $row_output =
-              '<div class="d-flex align-items-center">' +
-              '<div class="avatar-wrapper me-2 rounded-2 bg-label-secondary">' +
-              '<div class="avatar">' +
-              $output +
-              '</div>' +
-              '</div>' +
-              '<div class="d-flex flex-column justify-content-center">' +
-              '<span class="text-body text-wrap fw-medium">' +
-              $name +
-              '</span>' +
-              '<span class="text-muted text-truncate mb-0 d-none d-sm-block"><small>' +
-              $category_detail +
-              '</small></span>' +
-              '</div>' +
-              '</div>';
-            return $row_output;
-          }
-        },
-        {
-          // Total products
-          targets: 3,
-          responsivePriority: 3,
-          render: function (data, type, full, meta) {
-            var $total_products = full['total_products'];
-            return '<div class="text-sm-end">' + $total_products + '</div>';
-          }
-        },
-        {
-          // Total Earnings
-          targets: 4,
-          orderable: false,
-          render: function (data, type, full, meta) {
-            var $total_earnings = full['total_earnings'];
-            return "<div class='fw-medium text-sm-end'>" + $total_earnings + '</div';
-          }
-        },
-        {
           // Actions
           targets: -1,
-          title: 'Actions',
+          title: 'Acciones',
           searchable: false,
           orderable: false,
           render: function (data, type, full, meta) {
@@ -184,14 +91,22 @@ $(function () {
         '>',
       lengthMenu: [7, 10, 20, 50, 70, 100], //for length of menu
       language: {
-        sLengthMenu: '_MENU_',
         search: '',
-        searchPlaceholder: 'Search Category'
+        searchPlaceholder: 'Buscar categoría...',
+        sLengthMenu: '_MENU_',
+        info: 'Mostrando _START_ a _END_ de _TOTAL_ categorías',
+        infoFiltered: "filtrados de _MAX_ categorías",
+        paginate: {
+          first: '<<',
+          last: '>>',
+          next: '>',
+          previous: '<'
+        },
       },
       // Button for offcanvas
       buttons: [
         {
-          text: '<i class="bx bx-plus me-0 me-sm-1"></i>Add Category',
+          text: '<i class="bx bx-plus me-0 me-sm-1"></i>Crear categoría',
           className: 'add-new btn btn-primary ms-2',
           attr: {
             'data-bs-toggle': 'offcanvas',
@@ -199,42 +114,12 @@ $(function () {
           }
         }
       ],
-      // For responsive popup
-      responsive: {
-        details: {
-          display: $.fn.dataTable.Responsive.display.modal({
-            header: function (row) {
-              var data = row.data();
-              return 'Details of ' + data['categories'];
-            }
-          }),
-          type: 'column',
-          renderer: function (api, rowIdx, columns) {
-            var data = $.map(columns, function (col, i) {
-              return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
-                ? '<tr data-dt-row="' +
-                    col.rowIndex +
-                    '" data-dt-column="' +
-                    col.columnIndex +
-                    '">' +
-                    '<td> ' +
-                    col.title +
-                    ':' +
-                    '</td> ' +
-                    '<td class="ps-0">' +
-                    col.data +
-                    '</td>' +
-                    '</tr>'
-                : '';
-            }).join('');
-
-            return data ? $('<table class="table"/><tbody />').append(data) : false;
-          }
-        }
-      }
     });
-    $('.dataTables_length').addClass('mt-0 mt-md-3');
-    $('.dt-action-buttons').addClass('pt-0');
+    $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
+    $('.dt-buttons > .btn-group > button').removeClass('btn-secondary');
+    $('.dt-buttons').addClass('d-flex flex-wrap');
+    $('.dataTables_length label select').addClass('form-select form-select-sm');
+    $('.dataTables_filter label input').addClass('form-control');
   }
 
   // Delete Record
@@ -250,42 +135,15 @@ $(function () {
   }, 300);
 });
 
-//For form validation
-(function () {
-  const eCommerceCategoryListForm = document.getElementById('eCommerceCategoryListForm');
+// Switch de estado de la categoría
+document.addEventListener('DOMContentLoaded', function () {
+  var statusSwitch = document.getElementById('statusSwitch');
 
-  //Add New customer Form Validation
-  const fv = FormValidation.formValidation(eCommerceCategoryListForm, {
-    fields: {
-      categoryTitle: {
-        validators: {
-          notEmpty: {
-            message: 'Please enter category title'
-          }
-        }
-      },
-      slug: {
-        validators: {
-          notEmpty: {
-            message: 'Please enter slug'
-          }
-        }
-      }
-    },
-    plugins: {
-      trigger: new FormValidation.plugins.Trigger(),
-      bootstrap5: new FormValidation.plugins.Bootstrap5({
-        // Use this for enabling/changing valid/invalid class
-        eleValidClass: 'is-valid',
-        rowSelector: function (field, ele) {
-          // field is the field name & ele is the field element
-          return '.mb-3';
-        }
-      }),
-      submitButton: new FormValidation.plugins.SubmitButton(),
-      // Submit the form when all fields are valid
-      // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
-      autoFocus: new FormValidation.plugins.AutoFocus()
-    }
+  // Asegura que el valor inicial sea "1" cuando el switch está activado por defecto
+  statusSwitch.value = statusSwitch.checked ? '1' : '2';
+
+  statusSwitch.addEventListener('change', function() {
+    this.value = this.checked ? '1' : '2';
   });
-})();
+});
+
