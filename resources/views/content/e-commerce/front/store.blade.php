@@ -189,9 +189,7 @@ Swal.fire({
                       $total += $priceToUse * $details['quantity'];
                   @endphp
               @endforeach
-              <h6>Subtotal: ${{ $total }}</h6>
-              <h6>Envío: $90</h6>
-              <h5 class="bold">Total: ${{ $total + 90 }}</h5>
+              <h5 class="bold">Subtotal: ${{ $total }}</h5>
           </div>
       @endif
       <button type="button" class="btn btn-label-secondary d-grid offcanvas-cart-button" data-bs-dismiss="offcanvas">Continuar comprando</button>

@@ -236,12 +236,12 @@ $configData = Helper::appClasses();
               @endif
               <div class="d-flex justify-content-between align-items-center mt-3">
                 <p class="mb-0">Envío</p>
-                <h6 class="mb-0">{{ $settings->currency_symbol }}{{$costoEnvio}}</h6>
+                <h6 class="mb-0" id="orderShippingCost">{{ $settings->currency_symbol }} - A calcular</h6>
               </div>
               <hr>
               <div class="d-flex justify-content-between align-items-center mt-3 pb-1">
                 <p class="mb-0">Total</p>
-                <h6 class="mb-0">{{ $settings->currency_symbol }}{{$totalPedido}}</h6>
+                <h6 class="mb-0" id="orderTotal">{{ $settings->currency_symbol }} - A calcular</h6>
               </div>
               <div class="d-grid mt-3">
                 @if(session('cart') && count(session('cart')) > 0)
@@ -249,12 +249,12 @@ $configData = Helper::appClasses();
                     <span class="me-2">Calcular envío</span>
                     <i class="bx bx-calculator scaleX-n1-rtl"></i>
                   </button>
-                  <button class="btn btn-success" disabled>
+                  <button class="btn btn-success" disabled type="submit" id="orderConfirm">
                     <span class="me-2">Confirmar pedido</span>
                     <i class="bx bx-right-arrow-alt scaleX-n1-rtl"></i>
                   </button>
                 @else
-                  <button class="btn btn-primary" disabled>
+                  <button class="btn btn-primary" disabled type="submit">
                     <span class="me-2">Confirmar pedido</span>
                     <i class="bx bx-right-arrow-alt scaleX-n1-rtl"></i>
                   </button>
@@ -389,9 +389,18 @@ document.getElementById('validate-address').addEventListener('click', async func
         if (data.status == 400) {
           handleApiReturns(data.code, data.status);
         } else {
-          if (data.status == 200) {
-            handleApiReturns('Tu envío fue calculado con exito.', data.status);
-            document.querySelector('button[type="submit"]').removeAttribute('disabled');
+          if (data.estimateId) {
+            handleApiReturns('Tu envío fue calculado con exito.', 200);
+
+            // Habilita el botón de confirmar pedido
+            document.getElementById('orderConfirm').removeAttribute('disabled');
+
+            // Actualiza el costo de envío
+            console.log(data)
+            document.getElementById('orderShippingCost').innerText = '{{ $settings->currency_symbol }}' + data.deliveryOffers[0].pricing.total;
+
+            // Actualiza el total
+            document.getElementById('orderTotal').innerText = '{{ $settings->currency_symbol }}' + (parseFloat(data.deliveryOffers[0].pricing.total) + parseFloat('{{ $subtotal }}'));
           }
         }
       })
@@ -404,9 +413,22 @@ document.getElementById('validate-address').addEventListener('click', async func
       let message = '';
 
       if (status === 200) {
+        alertDiv.classList.remove('d-none');
         alertDiv.classList.add('d-flex');
+        // Cambiar color de alerta
         alertDiv.classList.remove('alert-danger');
         alertDiv.classList.add('alert-success');
+
+        // Cambiar color span badge
+        alertDiv.querySelector('.badge').classList.remove('bg-danger');
+        alertDiv.querySelector('.badge').classList.add('bg-success');
+
+        // Cambiar color borde span badge
+        alertDiv.querySelector('.badge').classList.remove('border-label-danger');
+        alertDiv.querySelector('.badge').classList.add('border-label-success');
+
+        // Cambiar H6
+        alertDiv.querySelector('h6').innerText = '¡Correcto!';
         document.getElementById('alert-message-location').innerText = returnMessage;
         return;
       }
