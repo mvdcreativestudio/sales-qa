@@ -156,9 +156,6 @@ Route::middleware([
       Route::get('/', [OmnichannelController::class, 'chats'])->name('omnichannel.chat');
       Route::get('/fetch-messages', [WhatsAppController::class, 'fetchMessages'])->name('omnichannel.fetch.messages');
     });
-
-
-
 // Clients
 Route::resource('clients', ClientController::class);
 
@@ -181,3 +178,6 @@ Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('
 Route::post('/mpagohook', [MercadoPagoController::class, 'webhooks'])->name('mpagohook');
 
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
+
+
+// Pedidos Ya

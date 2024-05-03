@@ -49,7 +49,12 @@ class CartController extends Controller
           }
       }
 
-      $cartItemKey = $productId . '-' . implode('-', $flavorIds);
+      if (empty($flavors)) {
+          $cartItemKey = $productId;
+      } else {
+          $cartItemKey = $productId . '-' . implode('-', $flavorIds);
+      }
+
       if (isset($cart[$cartItemKey])) {
           $cart[$cartItemKey]['quantity'] += 1;
           foreach ($flavors as $id => $details) {

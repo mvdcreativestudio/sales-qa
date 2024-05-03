@@ -22,13 +22,13 @@ $configData = Helper::appClasses();
   'resources/assets/js/pages-pricing.js',
   'resources/assets/js/front-page-payment.js'
 ])
+<script src="https://maps.googleapis.com/maps/api/js?key={{ $googleMapsApiKey }}&libraries=places&callback=initAutocomplete" async defer></script>
 @endsection
 
 
 
 
 @section('content')
-
 <div class="video-container">
   <video autoplay muted loop id="myVideo" class="video-background">
       <source src="./assets/img/videos/back-chelato.mp4" type="video/mp4">
@@ -54,8 +54,16 @@ $configData = Helper::appClasses();
       <div class="d-flex flex-column ps-1">
         <h6 class="alert-heading d-flex align-items-center fw-bold mb-1">¡Error!</h6>
         <span>{{ session('error') }}</span>
+      </div>
     </div>
   @endif
+  <div id="alert-container-location" class="alert alert-danger d-none" role="alert">
+    <span class="badge badge-center rounded-pill bg-danger border-label-danger p-3 me-2"><i class="bx bx-map-pin fs-6"></i></span>
+    <div class="d-flex flex-column ps-1">
+      <h6 class="alert-heading d-flex align-items-center fw-bold mb-1">¡Error!</h6>
+      <span id="alert-message-location">Aaaa</span>
+    </div>
+  </div>
 </div>
 
 <section class="section-py bg-body first-section-pt mt-5 vh-100">
@@ -70,7 +78,7 @@ $configData = Helper::appClasses();
         </div>
       </form>
     @endif
-    <form action="{{ route('checkout.store') }}" method="POST">
+    <form action="{{ route('checkout.store') }}" id="checkout-form" method="POST">
       @csrf
       <div class="card px-3">
         <div class="row">
@@ -139,7 +147,7 @@ $configData = Helper::appClasses();
 
                 <div class="col-12 mt-3">
                   <label class="form-label" for="address">Dirección</label>
-                  <input type="text" id="address" name="address" class="form-control" placeholder="Calle, esquina, número de puerta" />
+                  <input id="address" name="address" class="form-control" placeholder="Calle, esquina, número de puerta" onFocus="geolocate()" role="presentation" autocomplete="off">
                 </div>
 
                 <div class="col-12 col-md-6 mt-3">
@@ -213,6 +221,10 @@ $configData = Helper::appClasses();
           @if(session('cart') && count(session('cart')) > 0)
             <div>
               <div class="d-flex justify-content-between align-items-center mt-3">
+                <p class="mb-0">Dirección de la tienda</p>
+                <h6 class="mb-0">{{ session('store')['address'] }}</h6>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-3">
                 <p class="mb-0">Subtotal</p>
                 <h6 class="mb-0">{{ $settings->currency_symbol }}{{$subtotal}}</h6>
               </div>
@@ -233,7 +245,11 @@ $configData = Helper::appClasses();
               </div>
               <div class="d-grid mt-3">
                 @if(session('cart') && count(session('cart')) > 0)
-                  <button class="btn btn-success">
+                  <button type="button" id="validate-address" class="btn btn-primary mb-2" type="button">
+                    <span class="me-2">Calcular envío</span>
+                    <i class="bx bx-calculator scaleX-n1-rtl"></i>
+                  </button>
+                  <button class="btn btn-success" disabled>
                     <span class="me-2">Confirmar pedido</span>
                     <i class="bx bx-right-arrow-alt scaleX-n1-rtl"></i>
                   </button>
@@ -253,5 +269,194 @@ $configData = Helper::appClasses();
     </form>
   </div>
 </section>
+
+<script>
+
+let autocomplete;
+
+function initAutocomplete() {
+    autocomplete = new google.maps.places.Autocomplete(
+        (document.getElementById('address')), {
+            types: ['geocode'],
+        });
+    autocomplete.setFields(['address_component']);
+}
+
+function geolocate() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const geolocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            const circle = new google.maps.Circle({
+                center: geolocation,
+                radius: position.coords.accuracy
+            });
+            autocomplete.setBounds(circle.getBounds());
+        });
+    }
+}
+
+document.getElementById('validate-address').addEventListener('click', async function(event) {
+  if (document.getElementById('customRadioPedidosYa').checked) {
+    event.preventDefault();
+
+    const googleMapsApiKey = '{{ $googleMapsApiKey }}';
+
+    const referenceId = 'Chelato_PeYa_REF-' + Date.now();
+
+    const userAddress = document.getElementById('address').value;
+    const storeAddress = '{{ session("store")["address"] }}';
+
+    async function getAddressDetails(address) {
+
+      if (!address) {
+        alertDiv = document.getElementById('alert-container-location');
+        alertDiv.classList.remove('d-none');
+        alertDiv.classList.add('d-flex');
+        document.getElementById('alert-message-location').innerText = 'Por favor, complete todos los datos.';
+        return;
+      }
+
+      const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURI(address)}&key=${googleMapsApiKey}`);
+      const data = await response.json();
+
+      if (data.status === 'ZERO_RESULTS') {
+        alertDiv = document.getElementById('alert-container-location');
+        alertDiv.classList.remove('d-none');
+        alertDiv.classList.add('d-flex');
+        document.getElementById('alert-message-location').innerText = 'No se encontraron resultados para la dirección ingresada.';
+        return;
+      }
+
+      return {
+        addressStreet: data.results[0].formatted_address,
+        city: data.results[0].address_components.find(comp => comp.types.includes("locality")).long_name,
+        latitude: data.results[0].geometry.location.lat,
+        longitude: data.results[0].geometry.location.lng
+      };
+    }
+
+    const userDetails = await getAddressDetails(userAddress);
+    const storeDetails = await getAddressDetails(storeAddress);
+
+    if (!userDetails || !storeDetails) {
+      return;
+    }
+
+    const itemsJson = '{!! json_encode(session("cart")) !!}';
+
+    const itemsParsed = JSON.parse(itemsJson);
+
+    const items = Object.values(itemsParsed).map(item => {
+      return {
+        type: "STANDARD",
+        description: item.name,
+        value: item.price,
+        sku: item.id,
+        quantity: item.quantity,
+        volume: 2500,
+        weight: 1
+      };
+    });
+
+    var requestData = {
+      referenceId: referenceId,
+      items: items,
+      isTest: true,
+      waypoints: [{
+        type: "PICK_UP",
+        ...storeDetails,
+        phone: "+541234567890",
+        name: '{{ session("store")["name"] }}',
+      }, {
+        type: "DROP_OFF",
+        ...userDetails,
+        phone: document.getElementById('phone').value,
+        name: document.getElementById('name').value + " " + document.getElementById('lastname').value
+      }]
+    };
+
+    fetch('/api/pedidos-ya/estimate-order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData)
+    }).then(response => response.json())
+      .then(data => {
+        if (data.status == 400) {
+          handleApiReturns(data.code, data.status);
+        } else {
+          if (data.status == 200) {
+            handleApiReturns('Tu envío fue calculado con exito.', data.status);
+            document.querySelector('button[type="submit"]').removeAttribute('disabled');
+          }
+        }
+      })
+      .catch(error => {
+        console.log('Error:', error);
+      });
+
+    function handleApiReturns(returnMessage, status = 400) {
+      const alertDiv = document.getElementById('alert-container-location');
+      let message = '';
+
+      if (status === 200) {
+        alertDiv.classList.add('d-flex');
+        alertDiv.classList.remove('alert-danger');
+        alertDiv.classList.add('alert-success');
+        document.getElementById('alert-message-location').innerText = returnMessage;
+        return;
+      }
+
+      switch (returnMessage) {
+        case 'WAYPOINTS_OUT_OF_ZONE':
+          message = 'La dirección ingresada está fuera de la zona de entrega.';
+          break;
+        case 'WAYPOINTS_NOT_FOUND':
+          message = 'No se pudo encontrar la latitud/longitud para uno o más puntos.';
+          break;
+        case 'MAX_DISTANCE_EXCEEDED':
+          message = 'La distancia máxima permitida fue superada.';
+          break;
+        case 'MAX_WAYPOINTS_EXCEEDED':
+          message = 'Se excedió el número máximo de puntos permitidos.';
+          break;
+        case 'MAX_VALUE_EXCEEDED':
+          message = 'El valor total de los artículos excede el seguro.';
+          break;
+        case 'MAX_VOLUME_EXCEEDED':
+          message = 'El límite de volumen fue excedido.';
+          break;
+        case 'MAX_WEIGHT_EXCEEDED':
+          message = 'El límite de peso fue excedido.';
+          break;
+        case 'NOT_SUPPORTED_COLLECT_MONEY':
+          message = 'La opción de cobrar en efectivo no está disponible. Contacte a su gestor de cuenta de PedidosYa.';
+          break;
+        case 'COLLECT_MONEY_EXCEEDED':
+          message = 'El monto especificado para cobrar en el punto de entrega supera el máximo permitido.';
+          break;
+        case 'INVALID_DELIVERY_TIME':
+          message = 'El tiempo de entrega propuesto debe estar dentro del horario programado.';
+          break;
+        case 'JSON_INVALID':
+          message = 'JSON inválido.';
+          break;
+        default:
+          message = 'Falta uno de los datos o existe un error en la solicitud.';
+          break;
+      }
+
+      alertDiv.classList.remove('d-none');
+      alertDiv.classList.add('d-flex');
+      document.getElementById('alert-message-location').innerText = message;
+    }
+
+  }
+});
+</script>
 
 @endsection
