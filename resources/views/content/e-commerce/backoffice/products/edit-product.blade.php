@@ -318,7 +318,7 @@
             <span class="note needsclick btn bg-label-primary d-inline" id="btnBrowse">Buscar imagen</span>
           </div>
           <div class="fallback">
-            <input name="image" type="file" />
+            <input name="image" type="file" required/>
           </div>
         </div>
       </div>

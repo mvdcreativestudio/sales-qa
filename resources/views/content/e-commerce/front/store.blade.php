@@ -144,7 +144,7 @@ Swal.fire({
             @if(session('cart'))
                 @foreach(session('cart') as $id => $details)
                     <div class="card cart-product-item">
-                        <img src="../{{ $details['image'] }}" alt="{{ $details['name'] }}" class="cart-product-img">
+                        <img src="./{{ $details['image'] }}" alt="{{ $details['name'] }}" class="cart-product-img">
                         <div class="product-card-text">
                             <h5 class="product-name">{{ $details['name'] }}</h5>
                             <div class="cart-product-variants-container text-center justify-content-center">

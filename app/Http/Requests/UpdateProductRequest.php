@@ -8,7 +8,7 @@ class UpdateProductRequest extends FormRequest
 {
     public function authorize()
     {
-        return true;  // Considera las validaciones de permisos adecuadas
+        return true;
     }
 
     public function rules()
