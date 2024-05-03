@@ -6,6 +6,7 @@
 @vite([
   'resources/assets/js/add-store.js'
 ])
+<script src="https://maps.googleapis.com/maps/api/js?key={{ $googleMapsApiKey }}&libraries=places&callback=initAutocomplete" async defer></script>
 @endsection
 
 @section('content')
@@ -30,7 +31,7 @@
 
                     <div class="mb-3">
                         <label class="form-label" for="store-address">Dirección</label>
-                        <input type="text" class="form-control" id="store-address" name="address" required placeholder="Dirección de la tienda">
+                        <input type="text" class="form-control" id="store-address" name="address" required placeholder="Calle, esquina, número de puerta" onFocus="geolocate()" role="presentation" autocomplete="off">
                     </div>
 
                     <div class="mb-3">
@@ -101,4 +102,30 @@
         </div>
     </form>
 </div>
+<script>
+  let autocomplete;
+
+  function initAutocomplete() {
+    autocomplete = new google.maps.places.Autocomplete(document.getElementById('store-address'), {
+      types: ['geocode']
+    });
+    autocomplete.setFields(['address_component']);
+  }
+
+  function geolocate() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        const geolocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        const circle = new google.maps.Circle({
+          center: geolocation,
+          radius: position.coords.accuracy
+        });
+        autocomplete.setBounds(circle.getBounds());
+      });
+    }
+  }
+</script>
 @endsection

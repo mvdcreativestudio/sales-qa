@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class MercadoPagoService
 {
-  
+
     public function __construct()
     {
         // Configurar el acceso a la API de MercadoPago
@@ -57,11 +57,11 @@ class MercadoPagoService
     }
 
     public function setCredentials($publicKey, $accessToken)
-  {
-    // Configurar el acceso a la API de MercadoPago con las credenciales de la tienda
-    SDK::setPublicKey($publicKey);
-    SDK::setAccessToken($accessToken);
-  }
+    {
+      // Configurar el acceso a la API de MercadoPago con las credenciales de la tienda
+      SDK::setPublicKey($publicKey);
+      SDK::setAccessToken($accessToken);
+    }
 
 
 }

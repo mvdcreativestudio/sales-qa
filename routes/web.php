@@ -175,6 +175,7 @@ Route::middleware([
     });
 
 
+
 // Resources con acceso público
 Route::resources([
   'clients' => ClientController::class,
@@ -200,3 +201,6 @@ Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('
 Route::post('/mpagohook', [MercadoPagoController::class, 'webhooks'])->name('mpagohook');
 
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
+
+
+// Pedidos Ya

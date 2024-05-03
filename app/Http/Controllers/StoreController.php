@@ -50,7 +50,7 @@ class StoreController extends Controller
      */
     public function create(): View
     {
-        return view('stores.create');
+        return view( 'stores.create', [ 'googleMapsApiKey' => config('services.google.maps_api_key') ] );
     }
 
     public function store(StoreStoreRequest $request): RedirectResponse
@@ -96,7 +96,10 @@ class StoreController extends Controller
      */
     public function edit(Store $store): View
     {
-        return view('stores.edit', compact('store'));
+        return view('stores.edit', [
+            'store' => $store,
+            'googleMapsApiKey' => config('services.google.maps_api_key'),
+        ]);
     }
 
     /**
