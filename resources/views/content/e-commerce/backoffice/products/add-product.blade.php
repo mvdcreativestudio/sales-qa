@@ -37,6 +37,16 @@
   <span class="text-muted fw-light">E-Commerce /</span><span> Crear producto</span>
 </h4>
 
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <div class="app-ecommerce">
 
   <!-- Add Product -->
@@ -67,7 +77,7 @@
         <div class="card-body">
           <div class="mb-3">
             <label class="form-label" for="ecommerce-product-name">Nombre</label>
-            <input type="text" class="form-control" id="ecommerce-product-name" placeholder="Nombre del producto" name="name" aria-label="Nombre del producto">
+            <input type="text" class="form-control" id="ecommerce-product-name" placeholder="Nombre del producto" name="name" aria-label="Nombre del producto" required>
           </div>
           <div class="row mb-3">
             <div class="col"><label class="form-label" for="ecommerce-product-sku">SKU</label>
@@ -239,7 +249,7 @@
           <!-- Base Price -->
           <div class="mb-3">
             <label class="form-label" for="ecommerce-product-price">Precio normal</label>
-            <input type="number" class="form-control" id="ecommerce-product-price" placeholder="Precio" name="old_price" aria-label="Product price">
+            <input type="number" class="form-control" id="ecommerce-product-price" placeholder="Precio" name="old_price" aria-label="Product price" required>
           </div>
           <!-- Discounted Price -->
           <div class="mb-3">
@@ -272,7 +282,7 @@
             <label class="form-label mb-1" for="vendor">
               Local
             </label>
-            <select id="vendor" class="select2 form-select" data-placeholder="Seleccionar local" name="store_id">
+            <select id="vendor" class="select2 form-select" data-placeholder="Seleccionar local" name="store_id" required>
               <option value="">Seleccionar local</option>
               @foreach ($stores as $store)
                 <option value="{{ $store->id }}">{{ $store->name }}</option>
@@ -307,7 +317,7 @@
             <span class="note needsclick btn bg-label-primary d-inline" id="btnBrowse">Buscar imagen</span>
           </div>
           <div class="fallback">
-            <input name="image" type="file" />
+            <input name="image" type="file" required/>
           </div>
         </div>
       </div>

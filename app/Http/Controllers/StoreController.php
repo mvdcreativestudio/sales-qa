@@ -6,6 +6,7 @@ use App\Models\Store;
 use App\Repositories\StoreRepository;
 use App\Http\Requests\StoreStoreRequest;
 use App\Http\Requests\UpdateStoreRequest;
+use App\Http\Requests\StoreStoreHourRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
@@ -189,4 +190,49 @@ class StoreController extends Controller
 
         return redirect()->back()->with('success', 'Usuario desasociado con éxito.');
     }
+
+    public function manageHours(Store $store): View
+    {
+        $stores = $this->storeRepository->getAll();
+        $storeHours = $store->storeHours->keyBy('day');
+        return view('stores.manage-hours', compact('store', 'storeHours'));
+    }
+
+
+
+    public function saveHours(Store $store, Request $request): RedirectResponse
+    {
+        $hoursData = $request->all();
+        \Log::info('Datos del formulario recibidos:', $hoursData);
+        $this->storeRepository->saveStoreHours($store, $hoursData['hours']);
+        return redirect()->route('stores.manageHours', ['store' => $store->id])->with('success', 'Horarios actualizados con éxito.');
+    }
+
+    public function toggleStoreStatus(Request $request, $storeId)
+    {
+        $store = Store::findOrFail($storeId);
+        $newClosedState = $request->input('closed');
+
+        $store->closed = $newClosedState;
+        $store->save();
+
+        return response()->json(['message' => 'Estado actualizado correctamente', 'newState' => $store->closed]);
+    }
+
+    public function getAllStoreStatuses()
+    {
+    // Recupera todas las tiendas con los campos id y closed.
+    $stores = Store::select('id', 'closed')->get();
+
+    // Transforma el estado 'closed' a una representación más legible.
+    $storeStatuses = $stores->map(function ($store) {
+        return [
+            'id' => $store->id,
+            'status' => $store->closed ? 'closed' : 'open'
+        ];
+    });
+
+    return response()->json($storeStatuses);
+    }
+
 }

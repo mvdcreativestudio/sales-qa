@@ -14,9 +14,13 @@ document.addEventListener('DOMContentLoaded', function () {
         {
           data: 'phone_number',
           render: function (data, type, row) {
+            if (!data) {
+              return 'Sin teléfono asociado';
+            }
             return data.phone_number ? data.phone_number : 'Sin teléfono asociado';
           }
         },
+
         { data: 'email' },
         { data: 'address' },
         { data: 'rut' },
@@ -55,6 +59,9 @@ document.addEventListener('DOMContentLoaded', function () {
                   </a>
                   <a class="dropdown-item" href="${storeManageUsers.replace(':id', row.id)}">
                     <i class="bx bx-group"></i> Usuarios
+                  </a>
+                  <a class="dropdown-item" href="${storeManageHours.replace(':id', row.id)}">
+                    <i class="bx bx-time"></i> Modificar Horarios
                   </a>
                   <form class="delete-form-${row.id}" action="${storeDelete.replace(':id', row.id)}" method="POST">
                     <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">

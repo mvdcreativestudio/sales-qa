@@ -117,7 +117,7 @@ class CheckoutController extends Controller
               $flavors = [];
               if (!empty($item['flavors'])) {
                   foreach ($item['flavors'] as $flavorId => $flavorInfo) {
-                      $flavors[] = $flavorInfo['name'] . ' (' . $flavorInfo['quantity'] . 'x)';
+                    $flavors[] = $flavorInfo['name'] . ' (x' . $flavorInfo['quantity'] . ')';
                   }
               }
 
@@ -126,6 +126,7 @@ class CheckoutController extends Controller
                   'price' => $price,
                   'quantity' => $item['quantity'],
                   'flavors' => implode(', ', $flavors),
+                  'image' => $item['image'],
               ];
           }
 
@@ -267,15 +268,6 @@ public function applyCoupon(Request $request)
         Log::error('Error applying coupon', ['coupon_code' => $request->input('coupon_code', 'N/A'), 'error' => $e->getMessage()]);
         return back()->with('error', 'Ocurrió un error al aplicar el cupón. Por favor, intente nuevamente.');
     }
-}
-
-
-
-
-
-
-
-
-
+  }
 
 }
