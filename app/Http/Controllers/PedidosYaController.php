@@ -11,7 +11,7 @@ class PedidosYaController extends Controller
   public function estimateOrder(Request $request): Response
   {
       $url = 'https://courier-api.pedidosya.com/v3/shippings/estimates';
-      $apiKey = '6734-290238-d2faf4c0-68cc-404e-59af-23099503d167';
+      $apiKey = config('services.pedidosya.api_key');
 
       $response = Http::withHeaders([
           'Authorization' => 'Bearer ' . $apiKey,

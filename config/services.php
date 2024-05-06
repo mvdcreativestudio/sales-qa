@@ -40,4 +40,8 @@ return [
         'maps_api_key' => env('GOOGLE_MAPS_API_KEY'),
     ],
 
+    'pedidosya' => [
+        'api_key' => env('PEDIDOS_YA_API_KEY'),
+    ],
+
 ];

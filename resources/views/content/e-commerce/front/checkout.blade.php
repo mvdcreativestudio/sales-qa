@@ -80,6 +80,9 @@ $configData = Helper::appClasses();
     @endif
     <form action="{{ route('checkout.store') }}" id="checkout-form" method="POST">
       @csrf
+
+      <input type="hidden" name="shipping_cost" id="shippingCostInput" value="0">
+
       <div class="card px-3">
         <div class="row">
           <div class="col-lg-7 card-body border-end">
@@ -236,12 +239,12 @@ $configData = Helper::appClasses();
               @endif
               <div class="d-flex justify-content-between align-items-center mt-3">
                 <p class="mb-0">Envío</p>
-                <h6 class="mb-0" id="orderShippingCost">{{ $settings->currency_symbol }} - A calcular</h6>
+                <h6 class="mb-0" id="orderShippingCost">A calcular</h6>
               </div>
               <hr>
               <div class="d-flex justify-content-between align-items-center mt-3 pb-1">
                 <p class="mb-0">Total</p>
-                <h6 class="mb-0" id="orderTotal">{{ $settings->currency_symbol }} - A calcular</h6>
+                <h6 class="mb-0" id="orderTotal">A calcular</h6>
               </div>
               <div class="d-grid mt-3">
                 @if(session('cart') && count(session('cart')) > 0)
@@ -249,18 +252,17 @@ $configData = Helper::appClasses();
                     <span class="me-2">Calcular envío</span>
                     <i class="bx bx-calculator scaleX-n1-rtl"></i>
                   </button>
-                  <button class="btn btn-success" disabled type="submit" id="orderConfirm">
+                  <button class="btn btn-success" disabled id="orderConfirm">
                     <span class="me-2">Confirmar pedido</span>
                     <i class="bx bx-right-arrow-alt scaleX-n1-rtl"></i>
                   </button>
                 @else
-                  <button class="btn btn-primary" disabled type="submit">
+                  <button class="btn btn-primary" disabled>
                     <span class="me-2">Confirmar pedido</span>
                     <i class="bx bx-right-arrow-alt scaleX-n1-rtl"></i>
                   </button>
                 @endif
               </div>
-              {{-- <p class="mt-4 pt-2">By continuing, you accept to our Terms of Services and Privacy Policy. Please note that payments are non-refundable.</p> --}}
             </div>
           </div>
           @endif
@@ -395,8 +397,10 @@ document.getElementById('validate-address').addEventListener('click', async func
             // Habilita el botón de confirmar pedido
             document.getElementById('orderConfirm').removeAttribute('disabled');
 
+            // Actualiza el costo de envío en el input hidden
+            document.getElementById('shippingCostInput').value = data.deliveryOffers[0].pricing.total;
+
             // Actualiza el costo de envío
-            console.log(data)
             document.getElementById('orderShippingCost').innerText = '{{ $settings->currency_symbol }}' + data.deliveryOffers[0].pricing.total;
 
             // Actualiza el total
