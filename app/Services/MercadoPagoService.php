@@ -38,6 +38,10 @@ class MercadoPagoService
         }
         $preference->items = $items;
 
+        $preference->shipments = (object) [
+            'mode' => 'Pedidos Ya',
+            'cost' => (float) $order->shipping,
+        ];
 
         $preference->back_urls = array(
           "success" => "https://google.com",
