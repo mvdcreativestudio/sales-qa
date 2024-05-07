@@ -18,16 +18,28 @@ class CartController extends Controller
 
     public function selectStore(Request $request)
     {
-        $store = Store::find($request->input('storeId'));
-        if (!$store) {
-            return Redirect::back()->with('error', 'La tienda no existe.');
-        }
-        session(['store' => ['id' => $store->id, 'name' => $store->name, 'address' => $store->address]]);
-        return Redirect::route('store', ['storeId' => $store->id]);
+      // Limpiar toda la sesión
+      $request->session()->flush();
+
+      $store = Store::find($request->input('storeId'));
+
+      if (!$store) {
+          return Redirect::back()->with('error', 'La tienda no existe.');
+      }
+      // Almacenar la nueva tienda en la sesión
+      $request->session()->put('store', [
+          'id' => $store->id,
+          'name' => $store->name,
+          'address' => $store->address
+      ]);
+
+      // Redirigir a la página de la tienda seleccionada
+      return Redirect::route('store', ['storeId' => $store->id]);
     }
 
+
     public function addToCart(Request $request, $productId)
-  {
+    {
       $product = Product::find($productId);
       if (!$product) {
           return Redirect::back()->with('error', 'El producto no existe.');
