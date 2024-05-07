@@ -30,7 +30,7 @@ $configData = Helper::appClasses();
                   {{$order->client->state}}, {{$order->client->country}}<br />
                 </address>
                 <p class="mb-0 mt-3">
-                  +59899807750
+                  {{$order->client->phone}}
                 </p>
               </li>
               <li class="list-group-item flex-fill p-4 text-heading">
@@ -53,28 +53,28 @@ $configData = Helper::appClasses();
                 <li class="list-group-item p-4">
                     <div class="d-flex gap-3">
                         <div class="flex-shrink-0">
-                            <img src="{{ asset($product['image'] ?? '') }}" alt="{{ $product['name'] ?? '' }}" class="w-px-100">
+                            <img src="{{ asset($product['image'] ?? 'path/to/default/image.jpg') }}" alt="{{ $product['name'] ?? 'Product Image' }}" class="w-px-100 success-product-img">
                         </div>
                         <div class="flex-grow-1">
                             <div class="row">
                                 <div class="col-md-8">
                                     <a href="javascript:void(0)" class="text-body">
-                                        <h6 class="mb-0">{{ $product['name'] ?? '' }}</h6>
+                                        <h6 class="mb-0">{{ $product['name'] ?? 'Product Name' }}</h6>
                                     </a>
-                                    @if(isset($product['flavors']) && is_array($product['flavors']))
-                                      <small class="mt-0">
-                                          {{ implode(', ', $product['flavors']) }}
-                                      </small>
+                                    @if(!empty($product['flavors']))
+                                        <small class="mt-0">
+                                            {{ $product['flavors'] }}
+                                        </small>
                                     @endif
-                                  <p>Cantidad: {{ $product['quantity'] ?? '' }}</p>
+                                    <p>Cantidad: {{ $product['quantity'] ?? '1' }}</p>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="text-md-end">
                                         <div class="my-2 my-lg-4">
                                             @if(isset($product['old_price']))
-                                                <s class="text-muted">${{ $product['old_price'] }}</s>
+                                                <s class="text-muted">${{ number_format($product['old_price'], 2) }}</s>
                                             @endif
-                                            <span class="text-primary">${{ $product['price'] ?? '' }}</span>
+                                            <span class="text-primary">${{ number_format($product['price'], 2) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -83,8 +83,6 @@ $configData = Helper::appClasses();
                     </div>
                 </li>
               @endforeach
-
-
             </ul>
         </div>
 

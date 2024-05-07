@@ -37,6 +37,16 @@
   <span class="text-muted fw-light">E-Commerce /</span><span> Editar producto</span>
 </h4>
 
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <div class="app-ecommerce">
 
   <!-- Add Product -->
@@ -308,7 +318,7 @@
             <span class="note needsclick btn bg-label-primary d-inline" id="btnBrowse">Buscar imagen</span>
           </div>
           <div class="fallback">
-            <input name="image" type="file" />
+            <input name="image" type="file" required/>
           </div>
         </div>
       </div>

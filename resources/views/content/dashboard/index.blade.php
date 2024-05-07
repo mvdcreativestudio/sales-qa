@@ -2,6 +2,9 @@
 
 @section('title', 'Dashboard')
 
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+
 @section('vendor-style')
 @vite('resources/assets/vendor/libs/apex-charts/apex-charts.scss')
 @endsection
@@ -17,11 +20,12 @@
 @section('page-script')
 @vite(['resources/assets/js/cards-statistics.js'])
 @vite(['resources/assets/js/ui-cards-analytics.js'])
-
 @endsection
 
 
 @section('content')
+
+
 
 @if (session('error'))
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -44,6 +48,86 @@
       </div>
     </div>
   </div> --}}
+
+  <!-- Toastr CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+<script>
+  function toggleStoreStatus(storeId, element) {
+    const isOpen = element.checked ? 0 : 1;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    fetch(`stores/${storeId}/toggle-store-status`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken
+      },
+      body: JSON.stringify({ closed: isOpen })
+    })
+    .then(response => response.json())
+    .then(data => {
+      toastr.success('Estado actualizado');
+      // Recarga la página tras un breve retraso
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000); // retraso de 1 segundo
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      toastr.error('Error actualizando el estado');
+      // Se invierte la selección del checkbox para coincidir con el estado actual (previo a la petición)
+      element.checked = !element.checked;
+    });
+  }
+</script>
+
+
+
+  <!-- Abierto / Cerrado Stores -->
+  <div class="row mb-4">
+    @foreach($stores as $store)
+    <div class="col-sm-6 col-lg-3 mb-4">
+        <div class="card card-border-shadow-{{ $store->statusClass }} h-100">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between col-10">
+                    <div class="d-flex">
+                        <div class="avatar me-3">
+                            <span class="avatar-initial rounded bg-label-{{ $store->statusClass }}"><i class="bx {{ $store->statusIcon }}"></i></span>
+                        </div>
+                        <div>
+                            <h5 class="mb-0">{{ $store->name }}</h5>
+                            @if($store->status == 'Cerrada')
+                              <small class="text-danger">{{ $store->status }}</small>
+                            @else
+                              <small class="text-success">{{ $store->status }}</small>
+                            @endif
+                        </div>
+                    </div>
+                    <div>
+                      <label class="switch">
+                        <input type="checkbox" class="switch-input" {{ $store->status == 'Cerrada' ? '' : 'checked' }} onchange="toggleStoreStatus({{ $store->id }}, this)">
+                        <span class="switch-toggle-slider">
+                            <span class="switch-on">
+                              <i class="bx bx-check"></i>
+                            </span>
+                            <span class="switch-off">
+                              <i class="bx bx-x"></i>
+                            </span>
+                        </span>
+                      </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
+  </div>
+
 
   <!-- single card  -->
   <div class="col-12">

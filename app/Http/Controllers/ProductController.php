@@ -10,10 +10,20 @@ use App\Models\Flavor;
 use App\Http\Requests\StoreFlavorRequest;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Log;
+use App\Repositories\ProductRepository;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 
 
 class ProductController extends Controller
 {
+
+  protected $productRepo;
+
+  public function __construct(ProductRepository $productRepo)
+  {
+      $this->productRepo = $productRepo;
+  }
 
   public function index()
   {
@@ -28,59 +38,10 @@ class ProductController extends Controller
     return view('content.e-commerce.backoffice.products.add-product', compact('stores', 'categories', 'flavors'));
   }
 
-  public function store(Request $request)
+  public function store(StoreProductRequest $request)
   {
-    $product = new Product();
-    $product->name = $request->name;
-    $product->sku = $request->sku;
-    $product->description = $request->description;
-    $product->type = $request->type;
-    $product->max_flavors = $request->max_flavors;
-    $product->old_price = $request->old_price;
-    $product->price = $request->price;
-    $product->discount = $request->discount;
-    $product->store_id = $request->store_id;
-    $product->status = $request->status;
-    $product->stock = $request->stock;
-
-    // Agregar logs para depuración
-    Log::debug('Request data:', $request->all());
-
-    if ($request->hasFile('image')) {
-        $file = $request->file('image');
-        Log::debug('File info:', ['name' => $file->getClientOriginalName(), 'size' => $file->getSize(), 'mime_type' => $file->getMimeType(), 'path' => $file->getRealPath()]);
-
-        // Obtener el nombre original del archivo
-        $filename = time() . '.' . $file->getClientOriginalExtension();
-
-        // Mover el archivo a la nueva ubicación
-        $path = $file->move(public_path('assets/img/ecommerce-images'), $filename);
-
-        // Guardar la ruta en la base de datos
-        $product->image = 'assets/img/ecommerce-images/' . $filename;
-    } else {
-        Log::debug('No image file found in the request');
-    }
-
-    // Verificar si se guardará como borrador
-    if ($request->action === 'save_draft') {
-        $product->draft = 1;
-    } else {
-        $product->draft = 0;
-    }
-
-    $product->save();
-
-    // Sincroniza las categorías después de guardar el producto
-    $product->categories()->sync($request->input('categories', []));
-
-    //Manejo de sabores
-    if ($request->filled('flavors')) {
-    $product->flavors()->sync($request->flavors);
-    }
-
-    // Redireccionar al usuario a la lista de clientes con un mensaje de éxito
-    return redirect()->route('products.index')->with('success', 'Producto creado correctamente.');
+      $product = $this->productRepo->createProduct($request);
+      return redirect()->route('products.index')->with('success', 'Producto creado correctamente.');
   }
 
 
@@ -112,57 +73,23 @@ class ProductController extends Controller
   }
 
 
-  public function update(Request $request, $id)
-{
-    $product = Product::findOrFail($id);
-
-    // Actualiza solo los campos necesarios
-    $product->update([
-        'name' => $request->input('name'),
-        'sku' => $request->input('sku'),
-        'description' => $request->input('description'),
-        'type' => $request->input('type'),
-        'max_flavors' => $request->input('max_flavors'),
-        'old_price' => $request->input('old_price'),
-        'price' => $request->input('price'),
-        'discount' => $request->input('discount'),
-        'store_id' => $request->input('store_id'),
-        'status' => $request->input('status'),
-        'stock' => $request->input('stock'),
-    ]);
-
-    // Sincroniza las categorías
-    $product->categories()->sync($request->input('categories', []));
-
-    // Sincroniza los sabores
-    if ($request->filled('flavors')) {
-        $product->flavors()->sync($request->input('flavors', []));
-    }
-
+  public function update(UpdateProductRequest $request, $id)
+  {
+    $product = $this->productRepo->updateProduct($id, $request);
     return redirect()->route('products.index')->with('success', 'Producto actualizado correctamente.');
-}
+  }
 
 
   public function switchStatus()
   {
-      $product = Product::findOrFail(request('id'));
-      if ($product->status == '1') {
-          $product->status = '2';
-      } else {
-          $product->status = '1';
-      }
-      $product->save();
-
-      return response()->json(['success' => true, 'message' => 'Estado del producto actualizado correctamente.']);
+    $product = $this->productRepo->switchProductStatus(request('id'));
+    return response()->json(['success' => true, 'message' => 'Estado del producto actualizado correctamente.']);
   }
 
   public function destroy($id)
   {
-      $product = Product::findOrFail($id);
-      $product->is_trash = 1;
-      $product->save();
-
-      return response()->json(['success' => true, 'message' => 'Producto eliminado correctamente.']);
+    $this->productRepo->deleteProduct($id);
+    return response()->json(['success' => true, 'message' => 'Producto eliminado correctamente.']);
   }
 
 

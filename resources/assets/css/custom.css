@@ -258,6 +258,10 @@
   line-height: 1.4;
 }
 
+.success-product-img {
+  border-radius: 20px;
+}
+
 /* Store */
 
 .store-category-title {

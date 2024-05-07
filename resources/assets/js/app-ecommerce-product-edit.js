@@ -38,26 +38,17 @@ function initQuillEditor() {
     }
 }
 
-function initDropzone() {
-    const dropzoneElement = document.querySelector('#dropzone-basic');
-    if (dropzoneElement) {
-        const myDropzone = new Dropzone(dropzoneElement, {
-            url: '/file/post', // Set the correct server URL or route
-            thumbnailWidth: 80,
-            thumbnailHeight: 80,
-            parallelUploads: 20,
-            previewTemplate: document.querySelector('#preview-template').innerHTML,
-            autoQueue: false, // Make sure the files aren't queued until manually added
-            previewsContainer: "#previews", // Define the container to display the previews
-            clickable: ".fileinput-button" // Define the element that should be used as click trigger to select files
-        });
 
-        myDropzone.on("addedfile", function (file) {
-            if (this.files.length > 1) {
-                this.removeFile(this.files[0]);  // Only one file permitted
-            }
-        });
-    }
+const dropzoneBasic = document.querySelector('#dropzone-basic');
+if (dropzoneBasic) {
+  const myDropzone = new Dropzone(dropzoneBasic, {
+    previewTemplate: previewTemplate,
+    parallelUploads: 1,
+    maxFilesize: 5,
+    acceptedFiles: '.jpg,.jpeg,.png,.gif',
+    addRemoveLinks: true,
+    maxFiles: 1
+  });
 }
 
 function initSelect2Components() {

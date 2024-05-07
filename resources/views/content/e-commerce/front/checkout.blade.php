@@ -380,7 +380,7 @@ document.getElementById('validate-address').addEventListener('click', async func
       }]
     };
 
-    fetch('/api/pedidos-ya/estimate-order', {
+    fetch('api/pedidos-ya/estimate-order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
