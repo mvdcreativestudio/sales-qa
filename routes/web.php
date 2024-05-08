@@ -184,23 +184,23 @@ Route::resources([
 
 
 // E-Commerce
-Route::get('shop', [EcommerceController::class, 'index'])->name('shop');
-Route::get('store/{storeId}', [EcommerceController::class, 'store'])->name('store');
-Route::post('/cart/select-store', [CartController::class, 'selectStore'])->name('cart.selectStore');
-Route::post('/cart/add/{productId}', [CartController::class, 'addToCart'])->name('cart.add');
-Route::get('/session/clear', [CartController::class, 'clearSession'])->name('session.clear');
-Route::get('/checkout/{orderId}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
-Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
-Route::get('/success/{orderId}', [CheckoutController::class, 'success'])->name('checkout.success');
-Route::get('/pending', [CheckoutController::class, 'pending'])->name('checkout.pending');
-Route::get('/failure', [CheckoutController::class, 'failure'])->name('checkout.failure');
-Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('apply.coupon');
+Route::get('shop', [EcommerceController::class, 'index'])->name('shop'); // Seleccionar Tienda
+
+Route::get('store/{storeId}', [EcommerceController::class, 'store'])->name('store'); // Tienda
+
+Route::post('/cart/select-store', [CartController::class, 'selectStore'])->name('cart.selectStore'); // Seleccionar Tienda en el Carrito
+Route::post('/cart/add/{productId}', [CartController::class, 'addToCart'])->name('cart.add'); // Agregar al Carrito
+
+Route::get('/session/clear', [CartController::class, 'clearSession'])->name('session.clear'); // Limpiar Sesión
+
+Route::get('/checkout/{orderId}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment'); // Pago de Orden
+Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success'); // Pago Exitoso
+Route::get('/checkout/pending/{order}', [CheckoutController::class, 'pending'])->name('checkout.pending'); // Pago Pendiente
+Route::get('/checkout/failure/{order}', [CheckoutController::class, 'failure'])->name('checkout.failure'); // Pago Fallido
+
+Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('apply.coupon'); // Aplicar Cupón
 
 
 // MercadoPago WebHooks
 Route::post('/mpagohook', [MercadoPagoController::class, 'webhooks'])->name('mpagohook');
-
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
-
-
-// Pedidos Ya

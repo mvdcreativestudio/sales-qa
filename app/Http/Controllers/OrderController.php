@@ -7,29 +7,51 @@ use App\Repositories\OrderRepository;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Order;
 use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 
 class OrderController extends Controller
 {
+    /**
+     * El repositorio para las operaciones de pedidos.
+     *
+     * @var OrderRepository
+    */
     protected $orderRepository;
 
+    /**
+     * Inyecta el repositorio en el controlador y los middleware.
+     *
+     * @param  OrderRepository  $orderRepository
+    */
     public function __construct(OrderRepository $orderRepository)
     {
         $this->orderRepository = $orderRepository;
     }
 
-    public function index()
+    /**
+     * Muestra una lista de todos los pedidos.
+     *
+     * @return View
+    */
+    public function index(): View
     {
-        return view('content.e-commerce.backoffice.orders.orders', [
-            'orders' => $this->orderRepository->getAllOrders()
-        ]);
+        $orders = $this->orderRepository->getAllOrders();
+        return view('content.e-commerce.backoffice.orders.orders', compact('orders'));
     }
 
-    public function create()
+    /**
+     * Muestra el formulario para crear un nuevo pedido.
+     *
+     * @return View
+    */
+    public function create(): View
     {
         return view('content.e-commerce.backoffice.orders.add-order');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validatedData = $request->validate([
             'name' => 'required|max:255',
@@ -52,13 +74,13 @@ class OrderController extends Controller
         }
     }
 
-    public function show(Order $order)
+    public function show(Order $order): View
     {
         $order = $this->orderRepository->loadOrderRelations($order);
         return view('content.e-commerce.backoffice.orders.show-order', compact('order'));
     }
 
-    public function destroy($id)
+    public function destroy(int $id): JsonResponse
     {
         try {
             $this->orderRepository->destroyOrder($id);

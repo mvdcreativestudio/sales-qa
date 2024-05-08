@@ -28,3 +28,4 @@ Route::post('/send-message', [WhatsAppController::class, 'send'])->name('api.sen
 
 // Pedidos Ya
 Route::post('/pedidos-ya/estimate-order', [PedidosYaController::class, 'estimateOrder'])->name('api.pedidos-ya.estimate-order');
+Route::post('/pedidos-ya/confirm-order', [PedidosYaController::class, 'confirmOrder'])->name('api.pedidos-ya.confirm-order');

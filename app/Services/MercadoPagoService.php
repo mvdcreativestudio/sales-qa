@@ -36,22 +36,21 @@ class MercadoPagoService
             $item->unit_price = $itemData['unit_price'];
             $items[] = $item->toArray();
         }
+
         $preference->items = $items;
 
         $preference->shipments = (object) [
-            'mode' => 'Pedidos Ya',
+            'mode' => 'not_specified',
             'cost' => (float) $order->shipping,
         ];
 
         $preference->back_urls = array(
-          "success" => "https://google.com",
-          "failure" => "https://mvdcreativestudio.com",
-          "pending" => "https://sumeria.com.uy"
-      );
-          $preference->auto_return = "all";
+          "success" => "https://chelato.test/checkout/success/{$order->id}",
+          "failure" => "https://chelato.test/checkout/failure/{$order->id}",
+          "pending" => "https://chelato.test/checkout/pending/{$order->id}"
+        );
 
-        // // Configurar las URLs de retorno
-        // $preference->notification_url = route('mercadopago.webhooks');
+        $preference->auto_return = "all";
 
         // Guardar la preferencia
         $preference->save();

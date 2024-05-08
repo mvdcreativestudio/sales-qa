@@ -82,6 +82,7 @@ $configData = Helper::appClasses();
       @csrf
 
       <input type="hidden" name="shipping_cost" id="shippingCostInput" value="0">
+      <input type="hidden" name="estimate_id" id="estimateIdInput" value="">
 
       <div class="card px-3">
         <div class="row">
@@ -399,6 +400,9 @@ document.getElementById('validate-address').addEventListener('click', async func
 
             // Actualiza el costo de envío en el input hidden
             document.getElementById('shippingCostInput').value = data.deliveryOffers[0].pricing.total;
+
+            // Actualiza el id de la estimación
+            document.getElementById('estimateIdInput').value = data.estimateId;
 
             // Actualiza el costo de envío
             document.getElementById('orderShippingCost').innerText = '{{ $settings->currency_symbol }}' + data.deliveryOffers[0].pricing.total;
