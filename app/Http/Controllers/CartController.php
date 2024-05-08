@@ -3,30 +3,60 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product;
 use App\Models\Store;
-use App\Models\Flavor;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Log;
+use App\Repositories\CartRepository;
+use App\Http\Requests\AddToCartRequest;
+use App\Http\Requests\UpdateCartRequest;
+use App\Http\Requests\SelectStoreRequest;
 
 class CartController extends Controller
 {
-    public function index()
+    /**
+     * El repositorio para la gestión del carrito de compras.
+     *
+     * @var CartRepository
+     */
+    protected $cartRepository;
+
+    /**
+     * Crea una nueva instancia del controlador.
+     *
+     * @param CartRepository $cartRepository
+     */
+
+    public function __construct(CartRepository $cartRepository)
+    {
+        $this->cartRepository = $cartRepository;
+    }
+
+
+    /**
+     * Muestra la página del carrito de compras.
+     * @return View
+     */
+    public function index(): View
     {
         return view('content.e-commerce.front.cart');
     }
 
-    public function selectStore(Request $request)
+
+
+    public function selectStore(SelectStoreRequest $request)
     {
-      // Limpiar toda la sesión
+      // Limpiar la sesión
       $request->session()->flush();
 
-      $store = Store::find($request->input('storeId'));
+      // Encuentra la tienda usando el `storeId` validado
+      $storeId = $request->input('storeId');
+      $store = Store::find($storeId);
 
+      // Esto no debería ser necesario con la validación de `exists`, pero es una comprobación adicional
       if (!$store) {
           return Redirect::back()->with('error', 'La tienda no existe.');
       }
-      // Almacenar la nueva tienda en la sesión
+
+      // Guardar la tienda seleccionada en la sesión
       $request->session()->put('store', [
           'id' => $store->id,
           'name' => $store->name,
@@ -38,125 +68,84 @@ class CartController extends Controller
     }
 
 
-    public function addToCart(Request $request, $productId)
+
+    /**
+     * Añadir un producto al carrito.
+     *
+     * @param AddToCartRequest $request
+     */
+
+    public function addToCart(AddToCartRequest $request, $productId)
     {
-      $product = Product::find($productId);
-      if (!$product) {
-          return Redirect::back()->with('error', 'El producto no existe.');
-      }
 
-      $cart = session('cart', []);
-      $flavorIds = $request->input('flavors', []);
+        $result = $this->cartRepository->addProduct($request, $productId);
 
-      // Asegurarse de contar sabores duplicados correctamente
-      $flavors = [];
-      foreach ($flavorIds as $flavorId) {
-          $flavor = Flavor::find($flavorId);
-          if ($flavor) {
-              if (!isset($flavors[$flavorId])) {
-                  $flavors[$flavorId] = ['name' => $flavor->name, 'quantity' => 1];
-              } else {
-                  $flavors[$flavorId]['quantity'] += 1;
-              }
-          }
-      }
-
-      if (empty($flavors)) {
-          $cartItemKey = $productId;
-      } else {
-          $cartItemKey = $productId . '-' . implode('-', $flavorIds);
-      }
-
-      if (isset($cart[$cartItemKey])) {
-          $cart[$cartItemKey]['quantity'] += 1;
-          foreach ($flavors as $id => $details) {
-              if (isset($cart[$cartItemKey]['flavors'][$id])) {
-                  $cart[$cartItemKey]['flavors'][$id]['quantity'] += $details['quantity'];
-              } else {
-                  $cart[$cartItemKey]['flavors'][$id] = $details;
-              }
-          }
-      } else {
-          $cart[$cartItemKey] = [
-              "id" => $product->id,
-              "name" => $product->name,
-              "sku" => $product->sku,
-              "description" => $product->description,
-              "type" => $product->type,
-              "quantity" => 1,
-              "old_price" => $product->old_price ?? 0,  // Default to 0 if not set
-              "price" => $product->price ?? $product->old_price ?? 0,  // Use old_price if price is not set
-              "image" => $product->image,
-              "flavors" => $flavors
-          ];
-      }
-
-      session(['cart' => $cart]);
-      $this->updateSubtotal();
-
-      return Redirect::back()->with('success', 'Producto añadido al carrito con éxito!');
-    }
-
-
-    public function updateCart(Request $request)
-    {
-        $productId = $request->id;
-        $quantity = $request->quantity;
-
-        $cart = session('cart', []);
-        if (isset($cart[$productId])) {
-            $cart[$productId]['quantity'] = $quantity;
-            session(['cart' => $cart]);
-            $this->updateSubtotal();
-            return Redirect::back()->with('success', 'Carrito actualizado con éxito!');
+        if ($result['success']) {
+            return Redirect::back()->with('success', $result['message']);
+        } else {
+            return Redirect::back()->with('error', $result['message']);
         }
 
-        return Redirect::back()->with('error', 'Producto no encontrado en el carrito.');
     }
 
-    public function removeFromCart(Request $request)
+
+    /**
+     * Actualizar la cantidad de un producto en el carrito.
+     *
+     * @param UpdateCartRequest $request
+     */
+
+    public function updateCart(UpdateCartRequest $request)
     {
-        $productId = $request->id;
-        $cart = session('cart', []);
-        if (isset($cart[$productId])) {
-            unset($cart[$productId]);
-            session(['cart' => $cart]);
-            $this->updateSubtotal();
-            return Redirect::back()->with('success', 'Producto eliminado del carrito con éxito!');
-        }
+      $productId = $request->input('id');
+      $quantity = $request->input('quantity');
 
-        return Redirect::back()->with('error', 'Producto no encontrado en el carrito.');
+      $result = $this->cartRepository->updateProductQuantity($productId, $quantity);
+
+      if ($result['success']) {
+          return Redirect::back()->with('success', $result['message']);
+      } else {
+          return Redirect::back()->with('error', $result['message']);
+      }
     }
+
+
+    /**
+     * Eliminar un producto del carrito.
+     *
+     * @param Request $request
+     */
+
+    public function removeItem(Request $request)
+    {
+        $result = $this->cartRepository->removeItem($request->input('key'));
+
+        return Redirect::back()->with($result['status'], $result['message']);
+    }
+
+
+    /**
+     * Limpiar el carrito.
+     *
+     * @return Redirect
+     */
 
     public function clearCart()
     {
-        session()->forget('cart');
-        session()->forget('subtotal');
+        $this->cartRepository->clearCart();
         return Redirect::back()->with('success', 'Carrito vaciado con éxito.');
     }
 
+
+    /**
+     * Limpiar toda la sesión.
+     *
+     * @return Redirect
+     */
+
     public function clearSession()
     {
-        session()->flush();
+        $this->cartRepository->clearSession();
         return Redirect::to('/')->with('success', 'Sesión limpiada correctamente.');
     }
-
-    private function updateSubtotal() {
-      $cart = session('cart', []);
-      $subtotal = 0;
-
-      foreach ($cart as $item) {
-          $itemSubtotal = $item['price'] * $item['quantity'];
-          $subtotal += $itemSubtotal;
-          // Depuración para ver los subtotales de cada item
-          Log::debug('Updating cart subtotal: Item Price', ['price' => $item['price']]);
-          Log::debug('Updating cart subtotal: Item Quantity', ['quantity' => $item['quantity']]);
-          Log::debug('Updating cart subtotal: Item Subtotal', ['itemSubtotal' => $itemSubtotal]);
-      }
-
-      session(['subtotal' => $subtotal]);
-      Log::debug('Total Subtotal Updated', ['subtotal' => $subtotal]);
-  }
-
-
 }

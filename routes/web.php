@@ -11,7 +11,6 @@ use App\Http\Controllers\{
     CrmController,
     EcommerceController,
     InvoiceController,
-    MercadoPagoController,
     OmnichannelController,
     OrderController,
     ProductCategoryController,
@@ -24,7 +23,7 @@ use App\Http\Controllers\{
     WhatsAppController,
     CouponController,
     CompanySettingsController,
-    DatacenterController
+    DatacenterController,
 };
 
 
@@ -188,6 +187,7 @@ Route::get('shop', [EcommerceController::class, 'index'])->name('shop');
 Route::get('store/{storeId}', [EcommerceController::class, 'store'])->name('store');
 Route::post('/cart/select-store', [CartController::class, 'selectStore'])->name('cart.selectStore');
 Route::post('/cart/add/{productId}', [CartController::class, 'addToCart'])->name('cart.add');
+Route::post('/cart/remove-item', [CartController::class, 'removeItem'])->name('cart.removeItem');
 Route::get('/session/clear', [CartController::class, 'clearSession'])->name('session.clear');
 Route::get('/checkout/{orderId}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
 Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
@@ -197,10 +197,8 @@ Route::get('/failure', [CheckoutController::class, 'failure'])->name('checkout.f
 Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('apply.coupon');
 
 
-// MercadoPago WebHooks
-Route::post('/mpagohook', [MercadoPagoController::class, 'webhooks'])->name('mpagohook');
-
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
 
 
-// Pedidos Ya
+
+

@@ -7,46 +7,74 @@ use App\Models\Client;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Order;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-
 
 class DatacenterRepository
 {
-  // Sales Datacenter
+    // Método para obtener el rango de fechas
+    public function getDateRange($period, $startDate = null, $endDate = null)
+    {
+        $today = Carbon::today();
+        $start = $startDate ? Carbon::parse($startDate) : $today;
+        $end = $endDate ? Carbon::parse($endDate) : $today;
 
-    //Counts
+        switch ($period) {
+            case 'today':
+                return [$today, $today->copy()->endOfDay()];
+            case 'week':
+                // Asegúrate de que el primer día de la semana sea lunes u otro día según tus preferencias.
+                $weekStart = $today->copy()->startOfWeek(Carbon::MONDAY);
+                $weekEnd = $today->copy()->endOfWeek(Carbon::SUNDAY);
+                return [$weekStart, $weekEnd];
+            case 'month':
+                $monthStart = $today->copy()->startOfMonth();
+                $monthEnd = $today->copy()->endOfMonth();
+                return [$monthStart, $monthEnd];
+            case 'year':
+                $yearStart = $today->copy()->startOfYear();
+                $yearEnd = $today->copy()->endOfYear();
+                return [$yearStart, $yearEnd];
+            case 'custom':
+                // Asegura que se devuelvan las fechas proporcionadas para el filtro personalizado.
+                return [$start->startOfDay(), $end->endOfDay()];
+            default:
+                // Por defecto, usar el rango del año actual.
+                return [$today->copy()->startOfYear(), $today->copy()->endOfYear()];
+        }
+    }
 
-    // Contar la cantidad de locales
+    // Contar la cantidad de locales (sin filtro de fecha)
     public function countStores()
     {
         return Store::count();
     }
 
-    // Contar la cantidad de clientes
-    public function countClients()
+    // Contar la cantidad de clientes con filtro
+    public function countClients($startDate, $endDate)
     {
-        return Client::count();
+        return Client::whereBetween('created_at', [$startDate, $endDate])->count();
     }
 
-    // Contar la cantidad de productos
-    public function countProducts()
+    // Contar la cantidad de productos con filtro
+    public function countProducts($startDate, $endDate)
     {
-        return Product::count();
+        return Product::whereBetween('created_at', [$startDate, $endDate])->count();
     }
 
-    // Contar la cantidad de categorías
+    // Contar la cantidad de categorías (sin filtro de fecha)
     public function countCategories()
     {
         return ProductCategory::count();
     }
 
-    // Contar la cantidad de órdenes entregadas
-    public function countOrders()
+    // Contar la cantidad de órdenes entregadas con filtro
+    public function countOrders($startDate, $endDate)
     {
-        $deliveredOrders = Order::where('shipping_status', 'delivered')->count();
-        $shippedOrders = Order::where('shipping_status', 'shipped')->count();
-        $pendingOrders = Order::where('shipping_status', 'pending')->count();
-        $cancelledOrders = Order::where('shipping_status', 'cancelled')->count();
+        $deliveredOrders = Order::whereBetween('date', [$startDate, $endDate])->where('shipping_status', 'delivered')->count();
+        $shippedOrders = Order::whereBetween('date', [$startDate, $endDate])->where('shipping_status', 'shipped')->count();
+        $pendingOrders = Order::whereBetween('date', [$startDate, $endDate])->where('shipping_status', 'pending')->count();
+        $cancelledOrders = Order::whereBetween('date', [$startDate, $endDate])->where('shipping_status', 'cancelled')->count();
 
         return [
             'delivered' => $deliveredOrders,
@@ -56,74 +84,67 @@ class DatacenterRepository
         ];
     }
 
-    // Montos
-
-    // Ingresos E-Commerce
-    public function ecommerceIncomes()
+    // Ingresos E-Commerce con filtro
+    public function ecommerceIncomes($startDate, $endDate)
     {
-        $totalPaidOrders = Order::where('payment_status', 'paid')
-        ->where('origin', 'ecommerce')
-        ->sum('total');
+        $totalPaidOrders = Order::whereBetween('date', [$startDate, $endDate])
+            ->where('payment_status', 'paid')
+            ->where('origin', 'ecommerce')
+            ->sum('total');
 
         return number_format($totalPaidOrders, 0, ',', '.');
     }
 
-    // Ingresos físicos
-    public function physicalIncomes()
+    // Ingresos físicos con filtro
+    public function physicalIncomes($startDate, $endDate)
     {
-        $totalPaidOrders = Order::where('payment_status', 'paid')
-        ->where('origin', 'physical')
-        ->sum('total');
+        $totalPaidOrders = Order::whereBetween('date', [$startDate, $endDate])
+            ->where('payment_status', 'paid')
+            ->where('origin', 'physical')
+            ->sum('total');
 
         return number_format($totalPaidOrders, 0, ',', '.');
     }
 
-    // Ingresos totales
-    public function totalIncomes()
+    // Ingresos totales con filtro
+    public function totalIncomes($startDate, $endDate)
     {
-        $totalPaidOrders = Order::where('payment_status', 'paid')->sum('total');
+        $totalPaidOrders = Order::whereBetween('date', [$startDate, $endDate])
+            ->where('payment_status', 'paid')
+            ->sum('total');
 
         return number_format($totalPaidOrders, 0, ',', '.');
     }
 
-    // Media mensual
+    // Media mensual (sin filtro ya que es un cálculo histórico)
     public function averageMonthlySales()
     {
-    // Selecciona el total de ventas pagadas por mes
-    $monthlySales = Order::select(DB::raw('SUM(total) as total'), DB::raw('YEAR(date) as year'), DB::raw('MONTH(date) as month'))
-                         ->where('payment_status', 'paid')
-                         ->groupBy('year', 'month')
-                         ->orderBy('year', 'asc')
-                         ->orderBy('month', 'asc')
-                         ->get();
+        $monthlySales = Order::select(DB::raw('SUM(total) as total'), DB::raw('YEAR(date) as year'), DB::raw('MONTH(date) as month'))
+            ->where('payment_status', 'paid')
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
 
-    if ($monthlySales->isEmpty()) {
-        return 0; // Retorna 0 si no hay ventas
+        if ($monthlySales->isEmpty()) {
+            return 0;
+        }
+
+        $totalSales = $monthlySales->sum('total');
+        $countMonths = $monthlySales->count();
+        $averageMonthlySales = $totalSales / $countMonths;
+
+        return number_format($averageMonthlySales, 0, ',', '.');
     }
 
-    // Suma todos los totales mensuales
-    $totalSales = $monthlySales->sum('total');
-    // Cuenta el número de meses con ventas
-    $countMonths = $monthlySales->count();
-
-    // Calcula la media mensual de ventas
-    $averageMonthlySales = $totalSales / $countMonths;
-
-    return number_format($averageMonthlySales, 0, ',', '.');
-  }
-
-    // KPI'S
-
-    // Ticket Medio
-    public function averageTicket()
+    // Ticket medio con filtro
+    public function averageTicket($startDate, $endDate)
     {
-        $totalPaidOrders = Order::where('payment_status', 'paid')->sum('total');
-        $totalPaidOrdersCount = Order::where('payment_status', 'paid')->count();
+        $totalPaidOrders = Order::whereBetween('date', [$startDate, $endDate])->where('payment_status', 'paid')->sum('total');
+        $totalPaidOrdersCount = Order::whereBetween('date', [$startDate, $endDate])->where('payment_status', 'paid')->count();
 
         return number_format($totalPaidOrders / $totalPaidOrdersCount, 0, ',', '.');
     }
-
-    // Gráficas
 
     // Ventas por mes
     public function getMonthlyIncomeData() {
@@ -134,6 +155,7 @@ class DatacenterRepository
                   ->get();
     }
 
+    
     // Ventas por local en porcentaje para gráfica de torta
     public function getSalesByStoreData()
     {
@@ -155,48 +177,42 @@ class DatacenterRepository
         return $data;
     }
 
-    // Porcentaje de ventas por local para tabla
-    public function getSalesPercentByStore()
+    // Porcentaje de ventas por local para tabla con filtro
+    public function getSalesPercentByStore($startDate, $endDate)
     {
-        $totalPaidOrders = Order::where('payment_status', 'paid')->sum('total');
-        $stores = Store::with(['orders' => function ($query) {
-            $query->where('payment_status', 'paid');
+        $totalPaidOrders = Order::whereBetween('date', [$startDate, $endDate])->where('payment_status', 'paid')->sum('total');
+        $stores = Store::with(['orders' => function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('date', [$startDate, $endDate])->where('payment_status', 'paid');
         }])->get();
 
         $data = [];
         foreach ($stores as $store) {
             $storeTotal = $store->orders->sum('total');
-            $percent = $totalPaidOrders > 0 ? ($storeTotal / $totalPaidOrders) * 100 : 0; // Calcula el porcentaje
+            $percent = $totalPaidOrders > 0 ? ($storeTotal / $totalPaidOrders) * 100 : 0;
             $data[] = [
                 'store' => $store->name,
-                'percent' => round($percent, 2), // Redondea el porcentaje a dos decimales
+                'percent' => round($percent, 2),
                 'storeTotal' => number_format($storeTotal, 0, ',', '.'),
             ];
         }
 
-        // Ordena los datos por el total de ventas de forma descendente
-        usort($data, function($a, $b) {
+        usort($data, function ($a, $b) {
             return $b['storeTotal'] <=> $a['storeTotal'];
         });
 
         return $data;
     }
 
-
-    public function getSalesPercentByProduct()
+    // Porcentaje de ventas por producto para tabla con filtro
+    public function getSalesPercentByProduct($startDate, $endDate)
     {
-        // Primero, obtiene todas las órdenes pagadas
-        $orders = Order::where('payment_status', 'paid')->get();
+        $orders = Order::whereBetween('date', [$startDate, $endDate])->where('payment_status', 'paid')->get();
 
-        // Preparar un array para almacenar el total de ventas por producto
         $productSales = [];
 
-        // Iterar sobre cada orden para procesar los productos
         foreach ($orders as $order) {
-            // Decodificar el JSON de los productos
             $products = json_decode($order->products, true);
 
-            // Sumar las ventas de cada producto
             foreach ($products as $product) {
                 if (!isset($productSales[$product['name']])) {
                     $productSales[$product['name']] = [
@@ -209,12 +225,10 @@ class DatacenterRepository
             }
         }
 
-        // Calcular el total de ingresos de todas las ventas
         $totalSales = array_sum(array_map(function ($product) {
             return $product['total'];
         }, $productSales));
 
-        // Preparar los datos finales para la respuesta
         $data = [];
         foreach ($productSales as $name => $info) {
             $percent = $totalSales > 0 ? ($info['total'] / $totalSales) * 100 : 0;
@@ -225,14 +239,10 @@ class DatacenterRepository
             ];
         }
 
-        // Ordena los datos por el total de ventas de forma descendente
-        usort($data, function($a, $b) {
+        usort($data, function ($a, $b) {
             return $b['productTotal'] <=> $a['productTotal'];
         });
 
         return $data;
     }
-
-
-
 }
