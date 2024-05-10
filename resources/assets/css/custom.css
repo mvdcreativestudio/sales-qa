@@ -469,3 +469,18 @@ tr.odd {
   margin-top: 60px;
 }
 
+@keyframes slideIn {
+  from {
+      opacity: 0;
+      transform: translateY(20px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+.animated-card {
+  animation: slideIn 0.6s ease-in-out;
+}
+

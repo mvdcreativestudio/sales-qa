@@ -11,7 +11,6 @@ use App\Http\Controllers\{
     CrmController,
     EcommerceController,
     InvoiceController,
-    MercadoPagoController,
     OmnichannelController,
     OrderController,
     ProductCategoryController,
@@ -24,7 +23,8 @@ use App\Http\Controllers\{
     WhatsAppController,
     CouponController,
     CompanySettingsController,
-    DatacenterController
+    DatacenterController,
+    MercadoPagoController,
 };
 
 
@@ -67,9 +67,6 @@ Route::middleware([
     Route::get('/api/monthly-income', [DatacenterController::class, 'monthlyIncome']);
     Route::get('/api/sales-by-store', [DatacenterController::class, 'salesByStore']);
     Route::get('/sales-by-store', [DatacenterController::class, 'showSalesByStore'])->name('sales.by.store');
-
-
-
 
     // Product management
     Route::get('products/{id}/duplicate', [ProductController::class, 'duplicate'])->name('products.duplicate');
@@ -147,10 +144,8 @@ Route::middleware([
     // Flavor editing
     Route::get('/flavors/{id}', [ProductController::class, 'editFlavor'])->name('flavors.edit');
     Route::put('/flavors/{id}', [ProductController::class, 'updateFlavor'])->name('flavors.update');
-});
 
-// Public E-Commerce Routes
-    // Ordenes de Compra
+    // Ordenes a Proveedores
     Route::resource('supplier-orders', SupplierOrderController::class);
     Route::group(['prefix' => 'supplier-orders'], function () {
       Route::get('/{id}/pdf', [SupplierOrderController::class, 'generatePdf'])->name('supplier-orders.generatePdf');
@@ -173,7 +168,7 @@ Route::middleware([
       Route::get('/', [OmnichannelController::class, 'chats'])->name('omnichannel.chat');
       Route::get('/fetch-messages', [WhatsAppController::class, 'fetchMessages'])->name('omnichannel.fetch.messages');
     });
-
+});
 
 
 // Resources con acceso público
@@ -203,4 +198,5 @@ Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('
 
 // MercadoPago WebHooks
 Route::post('/mpagohook', [MercadoPagoController::class, 'webhooks'])->name('mpagohook');
+
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);

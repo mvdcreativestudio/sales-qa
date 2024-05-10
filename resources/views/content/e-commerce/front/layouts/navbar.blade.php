@@ -1,5 +1,6 @@
 @php
   $stores = App\Models\Store::all();
+  $selectedStoreId = session('store')['id'] ?? null;
 @endphp
 
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -20,16 +21,11 @@
       </ul>
       <ul class="navbar-nav navbar-nav-scroll">
         <li>
-          <a class="nav-link nav-link-menu" aria-current="page" href="#">Iniciar Sesión</a>
-        </li>
-        <li>
-          <a href="" class="nav-link nav-link-menu"><i class="fa-regular fa-user"></i></a>
-        </li>
-        <li>
-          <a href="#" class="nav-link nav-link-menu" onclick="confirmChangeStore()"><i class="fa-solid fa-cart-shopping"></i> Cambiar de tienda</a>
-        </li>
-        <li>
-          <a href="" class="nav-link nav-link-menu"><i class="fa-solid fa-bars"></i></a>
+          @if(session('store') && session('store')['id'] == $selectedStoreId)
+          <a href="#" class="nav-link nav-link-menu" onclick="confirmChangeStore()">Cambiar de tienda</a>
+          @else
+          <a href="#" class="nav-link nav-link-menu" data-bs-toggle="modal" data-bs-target="#selectStoreModal">Seleccionar tienda</a>
+          @endif
         </li>
       </ul>
     </div>
@@ -45,20 +41,26 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body pt-2">
-        <div class="alert alert-danger" role="alert">
-          Perderás los productos que hayas agregado al carrito.
-        </div>
+        @if(session('cart') && count(session('cart')) > 0)
+          <div class="alert alert-danger" role="alert">
+            Perderás los productos que hayas agregado al carrito.
+          </div>
+        @endif
         <form id="changeStoreForm" action="{{ route('cart.selectStore') }}" method="POST">
           @csrf
           <div class="mb-3">
             <label for="storeId" class="form-label">Seleccionar tienda:</label>
             <select class="form-select" name="storeId" id="storeId">
               @foreach($stores as $store)
-              <option value="{{ $store->id }}">{{ $store->name }}</option>
+                <option value="{{ $store->id }}" {{ $selectedStoreId == $store->id ? 'selected' : '' }}>{{ $store->name }}</option>
               @endforeach
             </select>
           </div>
-          <button type="submit" class="btn btn-primary">Cambiar tienda</button>
+          @if(session('store') && session('store')['id'] == $selectedStoreId)
+            <button type="submit" class="btn btn-primary">Cambiar tienda</button>
+          @else
+            <button type="submit" class="btn btn-primary">Seleccionar tienda</button>
+          @endif
         </form>
       </div>
     </div>

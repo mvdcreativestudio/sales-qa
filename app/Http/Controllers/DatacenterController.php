@@ -15,31 +15,37 @@ class DatacenterController extends Controller
         $this->datacenterRepo = $datacenterRepo;
     }
 
-    public function sales()
+    public function sales(Request $request)
     {
-      // Counts
-      $storesCount = $this->datacenterRepo->countStores();
-      $registredClients = $this->datacenterRepo->countClients();
-      $productsCount = $this->datacenterRepo->countProducts();
-      $categoriesCount = $this->datacenterRepo->countCategories();
-      $ordersCount = $this->datacenterRepo->countOrders();
+        // Filtra según el rango de fechas o periodo predeterminado (año, mes, semana, hoy)
+        $period = $request->input('period', 'year'); // 'year', 'month', 'week', 'today', o 'custom'
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
-      // Incomes
-      $ecommerceIncomes = $this->datacenterRepo->ecommerceIncomes();
-      $physicalIncomes = $this->datacenterRepo->physicalIncomes();
-      $totalIncomes = $this->datacenterRepo->totalIncomes();
-      $averageMonthlySales = $this->datacenterRepo->averageMonthlySales();
+        // Obtén el rango de fechas basado en el periodo seleccionado
+        list($startDate, $endDate) = $this->datacenterRepo->getDateRange($period, $startDate, $endDate);
 
-      // Average Ticket
-      $averageTicket = $this->datacenterRepo->averageTicket();
+        // Filtra los datos con las fechas correspondientes
+        $storesCount = $this->datacenterRepo->countStores();
+        $registredClients = $this->datacenterRepo->countClients($startDate, $endDate);
+        $productsCount = $this->datacenterRepo->countProducts($startDate, $endDate);
+        $categoriesCount = $this->datacenterRepo->countCategories();
+        $ordersCount = $this->datacenterRepo->countOrders($startDate, $endDate);
 
-      // Tabla de Locales / Productos / Categorías
-      $salesByStore = $this->datacenterRepo->getSalesPercentByStore();
-      $salesByProduct = $this->datacenterRepo->getSalesPercentByProduct();
+        // Ingresos
+        $ecommerceIncomes = $this->datacenterRepo->ecommerceIncomes($startDate, $endDate);
+        $physicalIncomes = $this->datacenterRepo->physicalIncomes($startDate, $endDate);
+        $totalIncomes = $this->datacenterRepo->totalIncomes($startDate, $endDate);
+        $averageMonthlySales = $this->datacenterRepo->averageMonthlySales($startDate, $endDate);
 
+        // Ticket Medio
+        $averageTicket = $this->datacenterRepo->averageTicket($startDate, $endDate);
 
+        // Tabla de Locales / Productos
+        $salesByStore = $this->datacenterRepo->getSalesPercentByStore($startDate, $endDate);
+        $salesByProduct = $this->datacenterRepo->getSalesPercentByProduct($startDate, $endDate);
 
-      return view('datacenter.datacenter-sales', compact('storesCount', 'registredClients', 'productsCount', 'categoriesCount', 'ordersCount', 'ecommerceIncomes', 'physicalIncomes', 'totalIncomes', 'averageTicket', 'salesByStore', 'averageMonthlySales', 'salesByProduct'));
+        return view('datacenter.datacenter-sales', compact('storesCount', 'registredClients', 'productsCount', 'categoriesCount', 'ordersCount', 'ecommerceIncomes', 'physicalIncomes', 'totalIncomes', 'averageTicket', 'salesByStore', 'averageMonthlySales', 'salesByProduct', 'period', 'startDate', 'endDate'));
     }
 
     // Gráfica de lineas - GMV Mensual

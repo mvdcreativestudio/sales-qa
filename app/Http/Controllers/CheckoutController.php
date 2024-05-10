@@ -171,6 +171,7 @@ class CheckoutController extends Controller
               $preferenceData = [
                   'items' => $items,
                   'payer' => ['email' => $clientData['email']],
+                  'external_reference' => (string) $order->id
               ];
 
               Log::info('Creando preferencia de pago con los siguientes datos:', $preferenceData);
