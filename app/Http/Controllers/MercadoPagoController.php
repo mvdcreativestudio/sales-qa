@@ -2,33 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use MercadoPago\SDK;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Log;
+use App\Services\MercadoPagoService;
+use App\Repositories\MercadoPagoRepository;
 
 class MercadoPagoController extends Controller
 {
-  public function __construct()
-  {
-    SDK::setAccessToken(config('services.mercadopago.access_token'));
-  }
+    private $mpService;
 
-  public function webhooks(Request $request)
-{
-    // Obtener la secret key desde las variables de entorno
-    $secretKey = '3710b5958d74218400f731bff6165a242c30851b8935c97912dcb753ed3587a9';
+    public function __construct(MercadoPagoRepository $mercadopagorepo, MercadoPagoService $mpService)
+    {
+      $this->mercadopagorepo = $mercadopagorepo;
+      $this->mpService = $mpService;
+    }
 
-    // Registrar los datos recibidos antes de calcular la firma HMAC
-    Log::info('Datos recibidos de MercadoPago:', [
-        'headers' => $request->header(),
-        'body' => $request->all(),
-    ]);
+    public function webhooks(Request $request)
+    {
+        Log::info('Datos recibidos de MercadoPago:', [
+            'headers' => $request->header(),
+            'body' => $request->all(),
+        ]);
 
-    // Asegurarse de que el cuerpo de la solicitud tiene el formato esperado
-    $payload = $request->all();
-    if (isset($payload['data']) && isset($payload['data']['id'])) {
-        // Extraer la firma del encabezado
         $xSignatureParts = explode(',', $request->header('x-signature'));
         $xSignatureData = [];
         foreach ($xSignatureParts as $part) {
@@ -36,35 +31,53 @@ class MercadoPagoController extends Controller
             $xSignatureData[trim($key)] = trim($value);
         }
 
-        $dataID = $payload['data']['id'];
-        $ts = isset($xSignatureData['ts']) ? $xSignatureData['ts'] : '';
-        $receivedHash = isset($xSignatureData['v1']) ? $xSignatureData['v1'] : '';
+        $ts = $xSignatureData['ts'] ?? '';
+        $receivedHash = $xSignatureData['v1'] ?? '';
+        $payload = $request->all();
+        $dataId = $payload['data']['id'] ?? null;
+        $resourceUrl = $payload['resource'] ?? null;
+        $id = $dataId ?: basename(parse_url($resourceUrl, PHP_URL_PATH));
+        $topic = $payload['topic'] ?? $payload['type'] ?? null;
 
-        // Construir el mensaje a firmar
-        $message = "id:$dataID;request-id:{$request->header('x-request-id')};ts:$ts;";
+        if ($id) {
+            if ($this->mpService->verifyHMAC($id, $request->header('x-request-id'), $ts, $receivedHash)) {
+                Log::info('La verificación HMAC pasó correctamente');
 
-        // Crear una firma HMAC utilizando la función hash_hmac
-        $generatedHash = hash_hmac('sha256', $message, $secretKey);
+                switch ($topic) {
+                  case 'payment':
+                    Log::info("Procesando 'payment' con ID: $id");
+                    $paymentInfo = $this->mpService->getPaymentInfo($id);
 
-        // Comparar la firma generada con la firma recibida
-        if (hash_equals($generatedHash, $receivedHash)) {
-            // La firma coincide, lo que significa que la notificación es auténtica
-            // Realiza las acciones necesarias en respuesta a la notificación recibida
-            // Devuelve un HTTP STATUS 200 (OK) o 201 (CREATED) para confirmar la recepción
-            Log::info('La verificación HMAC pasó correctamente');
-            return response()->json(['message' => 'HMAC verification passed'], 200);
+                    if ($paymentInfo) {
+                        Log::info("Información del pago recibida:", $paymentInfo);
+
+                        // Aquí deberías agregar la lógica para actualizar el estado del pago a 'paid' en el repositorio
+                        $orderId = $paymentInfo['metadata']['order_id']; // Obtiene el ID de la orden desde el metadata
+                        $this->mercadopagorepo->updatePaymentStatus($orderId, 'paid'); // Método para actualizar el estado del pago
+
+                        Log::info("Estado del pago actualizado a 'paid' para la orden con ID: $orderId");
+                    } else {
+                        Log::error("No se pudo obtener información del pago con ID: $id");
+                    }
+
+                    return response()->json(['message' => 'Notification received'], 200);
+
+
+                  case 'merchant_order':
+                        // Implementar lógica similar para 'merchant_order'
+                        return response()->json(['message' => 'Notification received'], 200);
+
+                  default:
+                        Log::warning("Tipo de notificación no soportado: $topic");
+                        return response()->json(['error' => 'Unsupported notification type'], 400);
+                }
+            } else {
+                Log::error('La verificación HMAC falló');
+                return response()->json(['error' => 'HMAC verification failed'], 400);
+            }
         } else {
-            // La firma no coincide, lo que indica un posible intento de falsificación
-            // Devuelve un HTTP STATUS 400 (Bad Request) u otro código de error apropiado
-            Log::error('La verificación HMAC falló');
-            return response()->json(['error' => 'HMAC verification failed'], 400);
+            Log::error('El índice "data" o "resource" no está presente en los datos de la solicitud');
+            return response()->json(['error' => 'Invalid request data'], 400);
         }
-    } else {
-        // Si el índice 'data' o 'data.id' no está presente, registra un error y devuelve una respuesta de error
-        Log::error('El índice "data" o "data.id" no está presente en los datos de la solicitud');
-        return response()->json(['error' => 'Invalid request data'], 400);
     }
-}
-
-
 }
