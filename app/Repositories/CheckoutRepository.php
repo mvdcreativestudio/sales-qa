@@ -54,6 +54,18 @@ class CheckoutRepository
     return compact('order');
   }
 
+    /**
+   * Obtiene los datos para mostrar en la página de fallido.
+   *
+   * @param int $orderId
+   * @return array
+  */
+  public function failure(int $orderId): array
+  {
+    $order = Order::with('client')->find($orderId);
+    return compact('order');
+  }
+
   /**
    * Procesa y almacena una nueva orden.
    *
@@ -179,6 +191,7 @@ class CheckoutRepository
   {
     $subtotal = session('subtotal', 0);
 
+    
     if ($subtotal <= 0) {
         throw new \Exception('Parece que hay un error con el carrito. Por favor, intentalo nuevamente.');
     }

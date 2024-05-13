@@ -74,6 +74,18 @@ class CheckoutController extends Controller
     return view('content.e-commerce.front.checkout-success', $order);
   }
 
+    /**
+   * Muestra la página de fallo de la compra.
+   *
+   * @param  int  $orderId
+   * @return View
+  */
+  public function failure(int $orderId): View
+  {
+    $order = $this->checkoutRepository->failure($orderId);
+    return view('content.e-commerce.front.checkout-failure', $order);
+  }
+
   /**
    * Almacena una nueva orden en la base de datos.
    *
@@ -94,7 +106,7 @@ class CheckoutController extends Controller
   public function applyCoupon(ApplyCouponRequest $request): RedirectResponse
   {
     try {
-        $couponData = $this->checkoutRepository->applyCoupon($request->coupon_code);
+        $couponData = $this->checkoutRepository->applyCouponToSession($request->coupon_code);
         return back()->with('success', 'El cupón "' . $couponData['code'] . '" se ha aplicado correctamente.');
     } catch (\Exception $e) {
         Log::error('Error applying coupon', ['coupon_code' => $request->coupon_code, 'error' => $e->getMessage()]);
