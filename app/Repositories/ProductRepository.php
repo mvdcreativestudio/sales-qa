@@ -3,80 +3,281 @@
 namespace App\Repositories;
 
 use App\Models\Product;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use App\Http\Requests\StoreProductRequest;
+use Yajra\DataTables\DataTables;
+use App\Models\ProductCategory;
+use App\Models\Store;
+use Illuminate\Database\Eloquent\Collection;
+use App\Models\Flavor;
+use App\Http\Requests\UpdateProductRequest;
+use App\Http\Requests\StoreFlavorRequest;
+use App\Http\Requests\StoreMultipleFlavorsRequest;
+use App\Http\Requests\UpdateFlavorRequest;
+
 
 class ProductRepository
 {
-    public function createProduct(Request $request)
-    {
-        $product = new Product();
-        $product->fill($request->only([
-            'name', 'sku', 'description', 'type', 'max_flavors', 'old_price',
-            'price', 'discount', 'store_id', 'status', 'stock'
-        ]));
+  /**
+   * Muestra el formulario para crear un nuevo producto.
+   *
+   * @return array
+  */
+  public function create(): array
+  {
+    $categories = ProductCategory::all();
+    $stores = Store::all();
+    $flavors = Flavor::all();
 
-        Log::debug('Request data:', $request->all());
+    return compact('stores', 'categories', 'flavors');
+  }
 
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            Log::debug('File info:', [
-                'name' => $file->getClientOriginalName(),
-                'size' => $file->getSize(),
-                'mime_type' => $file->getMimeType(),
-                'path' => $file->getRealPath()
-            ]);
+  /**
+   * Almacena un nuevo producto en base de datos.
+   *
+   * @param  StoreProductRequest  $request
+   * @return Product
+  */
+  public function createProduct(StoreProductRequest $request): Product
+  {
+    $product = new Product(); // Se crea una nueva instancia del modelo Product.
+    $product->fill($request->only([
+        'name', 'sku', 'description', 'type', 'max_flavors', 'old_price',
+        'price', 'discount', 'store_id', 'status', 'stock'
+    ])); // Se rellenan los campos del producto con los datos del formulario.
 
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->move(public_path('assets/img/ecommerce-images'), $filename);
-            $product->image = 'assets/img/ecommerce-images/' . $filename;
-        } else {
-            Log::debug('No image file found in the request');
-        }
-
-        $product->draft = $request->action === 'save_draft' ? 1 : 0;
-        $product->save();
-
-        // Sincronizar relaciones
-        $product->categories()->sync($request->input('categories', []));
-        if ($request->filled('flavors')) {
-            $product->flavors()->sync($request->flavors);
-        }
-
-        return $product;
+    if ($request->hasFile('image')) { // Si se ha subido un archivo de imagen.
+        $file = $request->file('image');
+        $filename = time() . '.' . $file->getClientOriginalExtension();
+        $path = $file->move(public_path('assets/img/ecommerce-images'), $filename);
+        $product->image = 'assets/img/ecommerce-images/' . $filename;
     }
 
-    public function updateProduct($id, Request $request)
-    {
-        $product = Product::findOrFail($id);
-        $product->update($request->only([
-            'name', 'sku', 'description', 'type', 'max_flavors', 'old_price',
-            'price', 'discount', 'store_id', 'status', 'stock'
-        ]));
+    $product->draft = $request->action === 'save_draft' ? 1 : 0; // Se establece el estado de borrador del producto.
+    $product->save(); // Se guarda el producto en la base de datos.
 
-        $product->categories()->sync($request->input('categories', []));
-        if ($request->filled('flavors')) {
-            $product->flavors()->sync($request->flavors);
-        }
-
-        return $product;
+    $product->categories()->sync($request->input('categories', [])); // Se sincronizan las categorías del producto.
+    if ($request->filled('flavors')) { // Si se han seleccionado sabores.
+        $product->flavors()->sync($request->flavors); // Se sincronizan los sabores del producto.
     }
 
-    public function deleteProduct($id)
-    {
-        $product = Product::findOrFail($id);
-        $product->is_trash = 1;
-        $product->save();
+    return $product;
+  }
 
-        return $product;
+  /**
+   * Obtiene los datos de los productos para DataTables.
+   *
+   * @return mixed
+  */
+  public function getProductsForDataTable(): mixed
+  {
+    $query = Product::with(['categories:id,name', 'store:id,name'])
+        ->select(['id', 'name', 'sku', 'description', 'type', 'old_price', 'price', 'discount', 'image', 'store_id', 'status', 'stock', 'draft'])
+        ->where('is_trash', '!=', 1);
+
+    return DataTables::of($query)
+      ->addColumn('category', function ($product) {
+        return $product->categories->implode('name', ', ');
+      })
+      ->addColumn('store_name', function ($product) {
+        return $product->store->name;
+      })
+      ->make(true);
+  }
+
+  /**
+   * Devuelve un producto específico.
+   *
+   * @param  int  $id
+   * @return array
+  */
+  public function edit(int $id): array
+  {
+    $product = Product::with('categories', 'flavors')->findOrFail($id);
+    $categories = ProductCategory::all();
+    $stores = Store::all();
+    $flavors = Flavor::all();
+
+    return compact('product', 'stores', 'categories', 'flavors');
+  }
+
+  /**
+   * Actualiza un producto específico en la base de datos.
+   *
+   * @param  int  $id
+   * @param  UpdateProductRequest  $request
+   * @return Product
+  */
+  public function update(int $id, UpdateProductRequest $request): Product
+  {
+    $product = Product::findOrFail($id); // Se obtiene el producto a actualizar.
+    $product->update($request->only([
+        'name', 'sku', 'description', 'type', 'max_flavors', 'old_price',
+        'price', 'discount', 'store_id', 'status', 'stock'
+    ])); // Se actualizan los campos del producto con los datos del formulario.
+
+    if ($request->hasFile('image')) { // Si se ha subido un archivo de imagen.
+      $file = $request->file('image');
+      $filename = time() . '.' . $file->getClientOriginalExtension();
+      $path = $file->move(public_path('assets/img/ecommerce-images'), $filename);
+      if ($path) {
+          $product->image = 'assets/img/ecommerce-images/' . $filename;
+          $product->save();
+      }
     }
 
-    public function switchProductStatus($id)
-    {
-        $product = Product::findOrFail($id);
-        $product->status = $product->status == '1' ? '2' : '1';
-        $product->save();
-
-        return $product;
+    $product->categories()->sync($request->input('categories', [])); // Se sincronizan las categorías del producto.
+    if ($request->filled('flavors')) { // Si se han seleccionado sabores.
+        $product->flavors()->sync($request->flavors); // Se sincronizan los sabores del producto.
     }
+
+    return $product;
+  }
+
+  /**
+   * Cambia el estado de un producto.
+   *
+   * @param  int  $id
+   * @return Product
+  */
+  public function switchProductStatus(int $id): Product
+  {
+    $product = Product::findOrFail($id);
+    $product->status = $product->status == '1' ? '2' : '1';
+    $product->save();
+
+    return $product;
+  }
+
+  /**
+   * Elimina un producto de la base de datos.
+   *
+   * @param  int  $id
+   * @return Product
+  */
+  public function delete(int $id): Product
+  {
+    $product = Product::findOrFail($id);
+    $product->is_trash = 1;
+    $product->save();
+
+    return $product;
+  }
+
+  /**
+   * Obtiene los sabores de los productos.
+   *
+   * @return Collection
+  */
+  public function flavors(): Collection
+  {
+    return Flavor::all();
+  }
+
+  /**
+   * Obtiene los datos de los sabores para DataTables.
+   *
+   * @return mixed
+  */
+  public function flavorsDatatable(): mixed
+  {
+    $flavors = Flavor::all();
+
+    return DataTables::of($flavors)
+        ->addColumn('action', function($flavor){
+            return '<a href="#" class="btn btn-primary btn-sm">Editar</a>';
+        })
+        ->rawColumns(['action'])
+        ->make(true);
+  }
+
+  /**
+   * Almacena los sabores
+   *
+   * @param  StoreFlavorRequest  $request
+   * @return Flavor
+  */
+  public function storeFlavor(StoreFlavorRequest $request): Flavor
+  {
+    $flavor = new Flavor();
+    $flavor->name = $request->name;
+    $flavor->status = $request->status ?? 'active';
+
+    $flavor->save();
+
+    return $flavor;
+  }
+
+  /**
+   * Almacena múltiples sabores
+   *
+   * @param  StoreMultipleFlavorsRequest  $request
+   * @return void
+  */
+  public function storeMultipleFlavors(StoreMultipleFlavorsRequest $request): void
+  {
+    $data = json_decode($request->getContent(), true);
+    $names = $data['name'];
+    $status = $data['status'] ?? 'active';
+
+    foreach ($names as $name) {
+        $flavor = new Flavor();
+        $flavor->name = trim($name);
+        $flavor->status = $status;
+        $flavor->save();
+    }
+  }
+
+  /**
+   * Muestra el formulario para editar un sabor.
+   *
+   * @param  int  $id
+   * @return Flavor
+  */
+  public function editFlavor(int $id): Flavor
+  {
+    return Flavor::findOrFail($id);
+  }
+
+  /**
+   * Actualiza un sabor específico en la base de datos.
+   *
+   * @param  UpdateFlavorRequest  $request
+   * @param  int  $id
+   * @return array
+  */
+  public function updateFlavor(UpdateFlavorRequest $request, int $id): array
+  {
+    $flavor = Flavor::findOrFail($id);
+    $flavor->name = $request->name;
+    $flavor->save();
+
+    return compact('flavor');
+  }
+
+  /**
+   * Cambia el estado de un sabor.
+   *
+   * @param  int  $id
+   * @return Flavor
+  */
+  public function switchFlavorStatus(int $id): Flavor
+  {
+    $flavor = Flavor::findOrFail($id);
+    $flavor->status = $flavor->status === 'active' ? 'inactive' : 'active';
+    $flavor->save();
+
+    return $flavor;
+  }
+
+  /**
+   * Elimina un sabor de la base de datos.
+   *
+   * @param  int  $id
+   * @return bool
+  */
+  public function destroyFlavor(int $id): bool
+  {
+    $flavor = Flavor::findOrFail($id);
+    return $flavor->delete();
+  }
 }

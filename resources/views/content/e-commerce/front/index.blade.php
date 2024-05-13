@@ -20,6 +20,15 @@
 
 
 <div class="ecommerce-background vh-100"  id="selectStore">
+  @if(session('error'))
+    <div class="alert alert-danger d-flex text-center" role="alert">
+      <div class="d-flex flex-column ps-1 text-center justify-content-center w-100">
+        <h6 class="alert-heading d-flex align-items-center fw-bold mb-1 text-center m-auto">¡Error!</h6>
+        <span>{{ session('error') }}</span>
+      </div>
+    </div>
+  @endif
+  @if(session('store') == null)
   <div class="vendors-container container mt-5">
     <div class="row text-center justify-content-center">
       <h4>Selecciona tu local más cercano</h4>
@@ -47,6 +56,15 @@
       </form>
     </div>
   </div>
+  @else
+  <div class="vendors-container container mt-5">
+    <div class="row text-center justify-content-center">
+      <h4>Finaliza tu pedido</h4>
+      <a href="{{ route('store', ['storeId' => session('store')['id']]) }}" class="btn btn-primary col-md-3 col-6 mt-2 mb-4">Ir a la tienda</a>
+
+    </div>
+  </div>
+  @endif
 
   <div class="d-flex quienes-somos-home container-fluid mt-3">
     <div class="col-6 text-center quienes-somos-container container">

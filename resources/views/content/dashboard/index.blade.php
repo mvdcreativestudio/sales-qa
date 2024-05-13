@@ -89,15 +89,23 @@
 
 
   <!-- Abierto / Cerrado Stores -->
-  <div class="row mb-4">
+  <div class="row g-4 mt-0 pt-0 mb-4">
     @foreach($stores as $store)
-    <div class="col-sm-6 col-lg-3 mb-4">
-        <div class="card card-border-shadow-{{ $store->statusClass }} h-100">
+    <div class="col-sm-6 col-lg-3">
+        @if($store->status == 'Cerrada')
+          <div class="card card-border-shadow-danger">
+        @else
+          <div class="card card-border-shadow-success">
+        @endif
             <div class="card-body p-4">
-                <div class="d-flex justify-content-between col-10">
+                <div class="d-flex justify-content-between align-items-center col-10">
                     <div class="d-flex">
                         <div class="avatar me-3">
-                            <span class="avatar-initial rounded bg-label-{{ $store->statusClass }}"><i class="bx {{ $store->statusIcon }}"></i></span>
+                          @if( $store->status == 'Cerrada' )
+                            <span class="avatar-initial rounded bg-label-danger"><i class="fa-regular fa-circle-xmark"></i></span>
+                          @else
+                            <span class="avatar-initial rounded bg-label-success"><i class="fa-regular fa-circle-check"></i></span>
+                          @endif
                         </div>
                         <div>
                             <h5 class="mb-0">{{ $store->name }}</h5>

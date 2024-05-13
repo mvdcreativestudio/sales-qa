@@ -12,11 +12,15 @@
 
 @section('vendor-script')
 @vite('resources/assets/vendor/libs/apex-charts/apexcharts.js',)
+
 @endsection
 
 @section('page-script')
-@vite(['resources/assets/js/ui-cards-analytics.js'])
+@vite(['resources/assets/js/ui-cards-analytics.js']),
 @endsection
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
 @section('content')
 
@@ -28,9 +32,45 @@
 
 
 <div class="row">
+  <!-- Filtros Temporales -->
+  <div class="col-12 text-end" data-aos="fade-right">
+    <form method="GET" action="{{ route('datacenter.sales') }}">
+      <div class="d-inline-flex gap-2">
+        <select name="period" class="form-select" id="timePeriodSelector">
+          <option value="today" {{ $period == 'today' ? 'selected' : '' }}>Hoy</option>
+          <option value="week" {{ $period == 'week' ? 'selected' : '' }}>Esta Semana</option>
+          <option value="month" {{ $period == 'month' ? 'selected' : '' }}>Este Mes</option>
+          <option value="year" {{ $period == 'year' ? 'selected' : '' }}>Este Año</option>
+          <option value="custom" {{ $period == 'custom' ? 'selected' : '' }}>Personalizado</option>
+        </select>
+
+        <!-- Fechas Personalizadas -->
+        <input type="date" name="start_date" id="startDate" class="form-control" value="{{ $startDate->format('Y-m-d') }}" {{ $period != 'custom' ? 'disabled' : '' }}>
+        <input type="date" name="end_date" id="endDate" class="form-control" value="{{ $endDate->format('Y-m-d') }}" {{ $period != 'custom' ? 'disabled' : '' }}>
+
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById('timePeriodSelector').addEventListener('change', function() {
+  var isCustom = this.value === 'custom';
+  document.getElementById('startDate').disabled = !isCustom;
+  document.getElementById('endDate').disabled = !isCustom;
+});
+</script>
+
+
+<script>
+  AOS.init();
+</script>
+
+<div class="row">
   <!-- single card  -->
   <div class="col-12">
-    <div class="card mb-4">
+    <div class="card mb-4" data-aos="fade-up">
       <div class="card-widget-separator-wrapper">
         <div class="card-body card-widget-separator">
           <div class="row gy-4 gy-sm-1">
@@ -101,7 +141,7 @@
 
   <!-- Card Border Shadow -->
   <div class="col-sm-6 col-lg-3 mb-4">
-    <div class="card card-border-shadow-primary h-100">
+    <div class="card animated-card card-border-shadow-primary h-100">
       <div class="card-body">
         <div class="d-flex align-items-center mb-2 pb-1">
           <div class="avatar me-2">
@@ -121,7 +161,7 @@
     </div>
   </div>
   <div class="col-sm-6 col-lg-3 mb-4">
-    <div class="card card-border-shadow-warning h-100">
+    <div class="card animated-card card-border-shadow-warning h-100">
       <div class="card-body">
         <div class="d-flex align-items-center mb-2 pb-1">
           <div class="avatar me-2">
@@ -141,7 +181,7 @@
     </div>
   </div>
   <div class="col-sm-6 col-lg-3 mb-4">
-    <div class="card card-border-shadow-danger h-100">
+    <div class="card animated-card card-border-shadow-danger h-100">
       <div class="card-body">
         <div class="d-flex align-items-center mb-2 pb-1">
           <div class="avatar me-2">
@@ -161,7 +201,7 @@
     </div>
   </div>
   <div class="col-sm-6 col-lg-3 mb-4">
-    <div class="card card-border-shadow-info h-100">
+    <div class="card animated-card card-border-shadow-info h-100">
       <div class="card-body">
         <div class="d-flex align-items-center mb-2 pb-1">
           <div class="avatar me-2">
@@ -180,7 +220,7 @@
 
   <!-- Total Income -->
   <div class="col-12 mb-4">
-    <div class="card">
+    <div class="card" data-aos="flip-right">
       <div class="row row-bordered g-0">
         <div class="col-md-8">
           <div class="card-header">
@@ -195,7 +235,7 @@
           <div class="card-header d-flex justify-content-between">
             <div>
               <h5 class="card-title mb-0">Reporte</h5>
-              <small class="card-subtitle">Media mensual: {{ $settings->currency_symbol }}{{$averageMonthlySales}}</small>
+              <small class="card-subtitle">Promedio mensual histórico: {{ $settings->currency_symbol }}{{$averageMonthlySales}}</small>
             </div>
             <div class="dropdown">
               <button class="btn p-0" type="button" id="totalIncome" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -265,7 +305,7 @@
 
   <!-- Reasons for delivery exceptions -->
   <div class="col-md-3 col-12">
-    <div class="card h-100">
+    <div class="card h-100" data-aos="zoom-in">
       <div class="card-header d-flex align-items-center justify-content-between">
         <div class="card-title mb-0">
           <h5 class="m-0 me-2">Ventas por local</h5>
@@ -288,7 +328,7 @@
   <!--/ Reasons for delivery exceptions -->
    <!-- pill table -->
    <div class="col-md-9 col-12 mb-4 order-2 order-xl-0">
-    <div class="card h-100 text-center">
+    <div class="card h-100 text-center" data-aos="fade-left" data-aos-anchor="#example-anchor" data-aos-offset="500" data-aos-duration="500">
       <div class="card-header">
         <ul class="nav nav-pills nav- card-header-pills" role="tablist">
           <li class="nav-item">

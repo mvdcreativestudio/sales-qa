@@ -15,6 +15,16 @@
 </div>
 
 <div class="container store-container">
+  @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 
   @if(session('success'))
 <script>
@@ -143,35 +153,51 @@ Swal.fire({
           <div class="cart-product-list">
             @if(session('cart'))
                 @foreach(session('cart') as $id => $details)
+                    <!-- Dentro de cada artículo del carrito -->
                     <div class="card cart-product-item">
-                        <img src="../{{ $details['image'] }}" alt="{{ $details['name'] }}" class="cart-product-img">
-                        <div class="product-card-text">
-                            <h5 class="product-name">{{ $details['name'] }}</h5>
-                            <div class="cart-product-variants-container text-center justify-content-center">
-                                @if ($details['price'] == null)
-                                    <small class="cart-product-variants">{{ $details['quantity'] }} x ${{ $details['old_price'] }}</small>
+                      <img src="../{{ $details['image'] }}" alt="{{ $details['name'] }}" class="cart-product-img">
+                      <div class="product-card-text">
+                          <h5 class="product-name">{{ $details['name'] }}</h5>
+                          <div class="cart-product-variants-container text-center justify-content-center">
+                              @if ($details['price'] == null)
+                                  <small class="cart-product-variants">{{ $details['quantity'] }} x ${{ $details['old_price'] }}</small>
+                              @else
+                                  <small class="cart-product-variants">{{ $details['quantity'] }} x ${{ $details['price'] }}</small>
+                              @endif
+                          </div>
+                          <!-- Si hay sabores asociados al producto -->
+                          @if(isset($details['flavors']) && is_array($details['flavors']) && count($details['flavors']) > 0)
+                            <div class="cart-flavors">
+                                @foreach($details['flavors'] as $flavorId => $flavorDetails)
+                                @if($flavorDetails['quantity'] > 1)
+                                  <p class="text-muted m-0 p-0">{{ $flavorDetails['name'] }} (x{{ $flavorDetails['quantity'] }})</p>
                                 @else
-                                    <small class="cart-product-variants">{{ $details['quantity'] }} x ${{ $details['price'] }}</small>
+                                  <p class="text-muted m-0 p-0">{{ $flavorDetails['name'] }}</p>
                                 @endif
+                                @endforeach
                             </div>
-                            @if(isset($details['flavors']) && is_array($details['flavors']) && count($details['flavors']) > 0)
-                              <div class="cart-flavors">
-                                  @foreach($details['flavors'] as $flavorId => $flavorDetails)
-                                  @if($flavorDetails['quantity'] > 1)
-                                    <p class="text-muted m-0 p-0">{{ $flavorDetails['name'] }} (x{{ $flavorDetails['quantity'] }})</p>
-                                  @else
-                                    <p class="text-muted m-0 p-0">{{ $flavorDetails['name'] }}</p>
-                                  @endif
-                                  @endforeach
-                              </div>
-                            @endif
-                            @if ($details['price'] == null)
-                                <p class="product-price">${{ $details['old_price'] * $details['quantity'] }}</p>
-                            @else
-                                <p class="product-price">${{ $details['price'] * $details['quantity'] }}</p>
-                            @endif
-                        </div>
+                          @endif
+
+                          <!-- Precio Total del artículo -->
+                          @if ($details['price'] == null)
+                              <p class="product-price">${{ $details['old_price'] * $details['quantity'] }}</p>
+                          @else
+                              <p class="product-price">${{ $details['price'] * $details['quantity'] }}</p>
+                          @endif
+
+                          <!-- Formulario para eliminar el artículo -->
+                          <form action="{{ route('cart.removeItem') }}" method="POST" class="mt-2">
+                              @csrf
+                              <!-- Clave identificadora del artículo -->
+                              <input type="hidden" name="key" value="{{ $id }}">
+                              <!-- Botón de eliminación -->
+                              <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                  <i class="fas fa-trash-alt"></i> <!-- Asegúrate de tener Font Awesome -->
+                              </button>
+                          </form>
+                      </div>
                     </div>
+
                 @endforeach
             @else
                 <p>Tu carrito está vacío.</p>
@@ -193,7 +219,11 @@ Swal.fire({
           </div>
       @endif
       <button type="button" class="btn btn-label-secondary d-grid offcanvas-cart-button" data-bs-dismiss="offcanvas">Continuar comprando</button>
-      <a href="{{ route('checkout.index') }}"><button type="button" class="btn btn-primary mb-2 d-grid offcanvas-cart-button">Finalizar compra</button></a>
+      @if(session('cart') && count(session('cart')) > 0)
+        <a href="{{ route('checkout.index') }}"><button type="button" class="btn btn-primary mb-2 d-grid offcanvas-cart-button">Finalizar compra</button></a>
+      @else
+        <button type="button" class="btn btn-primary mb-2 d-grid offcanvas-cart-button" disabled>Finalizar compra</button>
+      @endif
       @if(session()->has('store'))
         <h6 class="text-center mt-3">Tienda seleccionada: <b>{{ session('store')['name'] }}</b></h6>
       @endif
@@ -207,22 +237,23 @@ Swal.fire({
 </div>
 </div>
 
-<!-- Add to cart modal -->
+<!-- Modal add to cart genérico -->
 <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <form action="" method="POST" id="addToCartForm">
         @csrf
+        <input type="hidden" name="productId" id="modalProductId">
         <div class="modal-header">
-          <h5 class="modal-title" id="modalCenterTitle">Product Name</h5>
+          <h5 class="modal-title" id="modalCenterTitle">Nombre del Producto</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="add-to-cart-img-container justify-content-center text-center mb-5">
-            <img src="" alt="Product" class="add-to-cart-img">
+            <img src="" alt="Product" class="add-to-cart-img" id="modalProductImage">
           </div>
           <div id="flavorSelectors">
-            <!-- Los selectores de sabor se generan aquí -->
+            <!-- Los selectores de sabor se generarán aquí -->
           </div>
         </div>
         <div class="modal-footer">
@@ -235,6 +266,35 @@ Swal.fire({
     </div>
   </div>
 </div>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      var modal = document.getElementById('modalCenter');
+      modal.addEventListener('show.bs.modal', function(event) {
+          // El botón que activó el modal
+          var button = event.relatedTarget;
+
+          // Extraer información del botón que abre el modal
+          var productId = button.getAttribute('data-id');
+          var productName = button.getAttribute('data-name');
+          var productImage = button.getAttribute('data-img');
+
+          // Actualizar el contenido del modal con los datos del producto
+          var modalForm = document.getElementById('addToCartForm');
+          var modalProductId = document.getElementById('modalProductId');
+          var modalTitle = document.getElementById('modalCenterTitle');
+          var modalImg = document.getElementById('modalProductImage');
+
+          modalForm.action = `../cart/add/${productId}`;
+          modalProductId.value = productId;
+          modalTitle.textContent = productName;
+          modalImg.src = `../${productImage}`;
+
+          // Opcional: Generar selectores de sabores si es necesario
+      });
+  });
+  </script>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {

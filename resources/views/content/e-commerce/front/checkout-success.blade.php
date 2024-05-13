@@ -97,7 +97,7 @@ $configData = Helper::appClasses();
                 <dd class="col-6 text-end">${{$order->subtotal}}</dd>
 
                 <dt class="col-sm-6 fw-normal">Envío</dt>
-                <dd class="col-sm-6 text-end"><s class="text-muted">$90</s> <span class="badge bg-label-success ms-1">${{$order->shipping}}</span></dd>
+                <dd class="col-sm-6 text-end">${{$order->shipping}}</dd>
               </dl>
               <hr class="mx-n4">
               <dl class="row mb-0">

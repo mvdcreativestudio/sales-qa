@@ -13,7 +13,7 @@ class RawMaterialRepository
     /**
      * Devuelve todas las Materias Primas.
      *
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     * @return Collection
      */
     public function getAll(): Collection
     {

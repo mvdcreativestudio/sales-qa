@@ -69,5 +69,8 @@ class Kernel extends HttpKernel
     'check_permission' => \App\Http\Middleware\CheckPermission::class,
     'user_has_store' => \App\Http\Middleware\EnsureUserHasStore::class,
     'store_has_number' => \App\Http\Middleware\EnsureStoreHasNumber::class,
+    'ensure_store_selected' => \App\Http\Middleware\EnsureStoreSelected::class,
+    'ensure_store_matches' => \App\Http\Middleware\EnsureStoreMatches::class,
+    'ensure_cart_not_empty' => \App\Http\Middleware\EnsureCartNotEmpty::class,
   ];
 }
