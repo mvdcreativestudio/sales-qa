@@ -4,52 +4,52 @@
       "name": "Inicio",
       "icon": "menu-icon tf-icons bx bx-home-circle",
       "slug": "dashboard",
-      "url": "/"
+      "url": "/admin"
     },
     {
       "name": "Materias Primas",
       "icon": "menu-icon tf-icons bx bx-box",
       "slug": "raw-materials",
-      "url": "/raw-materials"
+      "url": "/admin/raw-materials"
     },
     {
       "name": "Proveedores",
       "icon": "menu-icon tf-icons bx bx-user",
       "slug": "suppliers",
-      "url": "/suppliers"
+      "url": "/admin/suppliers"
     },
     {
       "name": "Ordenes de Compra",
       "icon": "menu-icon tf-icons bx bx-shopping-bag",
       "slug": "supplier-orders",
-      "url": "/supplier-orders"
+      "url": "/admin/supplier-orders"
     },
     {
       "name": "Stock",
       "icon": "menu-icon tf-icons bx bx-package",
       "slug": "stock",
-      "url": "/stock"
+      "url": "/admin/stock"
     },
     {
       "name": "Contabilidad",
       "icon": "menu-icon tf-icons bx bx-dollar",
       "slug": "accounting",
-      "url": "/accounting",
+      "url": "/admin/accounting",
       "submenu": [
         {
           "name": "Facturas",
           "slug": "invoices",
-          "url": "/invoices"
+          "url": "/admin/invoices"
         },
         {
           "name": "Recibos",
           "slug": "receipts",
-          "url": "/receipts"
+          "url": "/admin/receipts"
         },
         {
           "name": "Asientos",
           "slug": "entries",
-          "url": "/entries"
+          "url": "/admin/entries"
         }
       ]
     },
@@ -57,44 +57,44 @@
       "name": "Clientes",
       "icon": "menu-icon tf-icons bx bx-user",
       "slug": "clients",
-      "url": "/clients"
+      "url": "/admin/clients"
     },
     {
       "name": "E-Commerce",
       "icon": "menu-icon tf-icons bx bx-world",
       "slug": "ecommerce",
-      "url": "/ecommerce",
+      "url": "/admin/ecommerce",
       "slug": "ecommerce",
       "submenu": [
         {
           "name": "Pedidos",
           "slug": "orders",
-          "url": "orders"
+          "url": "/admin/orders"
         },
         {
           "name": "Productos",
           "slug": "products",
-          "url": "products"
+          "url": "/admin/products"
         },
         {
           "url": "product-flavors",
           "name": "Sabores",
-          "slug": "product-flavors"
+          "slug": "/admin/product-flavors"
         },
         {
           "name": "Categorías",
           "slug": "product-categories",
-          "url": "product-categories"
+          "url": "/admin/product-categories"
         },
         {
           "name": "Marketing",
           "slug": "marketing",
-          "url": "marketing"
+          "url": "/admin/marketing"
         },
         {
           "name": "Configuración",
           "slug": "settings",
-          "url": "/ecommerce/settings"
+          "url": "/admin/ecommerce/settings"
         }
       ]
     },
@@ -104,7 +104,7 @@
       "slug": "accounting",
       "submenu": [
         {
-          "url": "/marketing/coupons",
+          "url": "/admin/marketing/coupons",
           "name": "Cupones",
           "slug": "coupons"
         }
@@ -114,17 +114,17 @@
       "name": "Omnicanalidad",
       "icon": "menu-icon tf-icons bx bx-network-chart",
       "slug": "omnichannel",
-      "url": "/omnichannel",
+      "url": "/admin/omnichannel",
       "submenu": [
         {
           "name": "Chats",
           "slug": "chats",
-          "url": "/omnichannel"
+          "url": "/admin/omnichannel"
         },
         {
           "name": "Configuración",
           "slug": "settings",
-          "url": "/omnichannel/settings"
+          "url": "/admin/omnichannel/settings"
         }
       ]
     },
@@ -132,31 +132,31 @@
       "name": "Datacenter",
       "icon": "menu-icon tf-icons bx bx-line-chart",
       "slug": "datacenter",
-      "url": "/datacenter-sales"
+      "url": "/admin/datacenter-sales"
     },
     {
       "name": "CRM",
       "icon": "menu-icon tf-icons bx bx-group",
       "slug": "crm",
-      "url": "/crm"
+      "url": "/admin/crm"
     },
     {
       "name": "Tiendas",
       "icon": "menu-icon tf-icons bx bx-store-alt",
       "slug": "stores",
-      "url": "/stores"
+      "url": "/admin/stores"
     },
     {
       "name": "Roles",
       "icon": "menu-icon tf-icons bx bx-user",
       "slug": "roles",
-      "url": "/roles"
+      "url": "/admin/roles"
     },
     {
       "name": "Configuración",
       "icon": "menu-icon tf-icons bx bx-cog",
       "slug": "company_settings",
-      "url": "/company-settings"
+      "url": "/admin/company-settings"
     }
   ]
 }

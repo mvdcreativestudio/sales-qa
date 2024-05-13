@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class RawMaterial extends Model
 {
@@ -14,9 +16,9 @@ class RawMaterial extends Model
     /**
      * Obtiene la tienda a la que pertenece la materia prima.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
     */
-    public function store()
+    public function store(): BelongsTo
     {
       return $this->belongsTo(Store::class);
     }
@@ -24,9 +26,9 @@ class RawMaterial extends Model
     /**
      * Obtiene las ordenes de compra asociadas a la materia prima.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
     */
-    public function supplierOrders()
+    public function supplierOrders(): BelongsToMany
     {
       return $this->belongsToMany(SupplierOrder::class, 'supplier_order_raw_material')
           ->withPivot('quantity')

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends Model
 {
@@ -29,27 +31,44 @@ class Product extends Model
       ];
 
 
-    // Relación con Store
-    public function store()
+    /**
+     * Obtiene la tienda a la que pertenece el producto.
+     *
+     * @return BelongsTo
+    */
+    public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
     }
 
-    // Relación con ProductCategory
-    public function categories()
+    /**
+      * Obtiene las categorías asociadas al producto.
+      *
+      * @return BelongsToMany
+    */
+    public function categories(): BelongsToMany
     {
         return $this->belongsToMany(ProductCategory::class, 'category_product', 'product_id', 'category_id');
     }
 
-    // Relación con Orders
-    public function orders()
+    /**
+      * Obtiene las ordenes de compra asociadas al producto.
+      *
+      * @return BelongsToMany
+    */
+    public function orders(): BelongsToMany
     {
     return $this->belongsToMany(Order::class, 'order_products')
                 ->withPivot('quantity', 'price')
                 ->withTimestamps();
     }
 
-    public function flavors()
+    /**
+      * Obtiene los sabores asociados al producto.
+      *
+      * @return BelongsToMany
+    */
+    public function flavors(): BelongsToMany
     {
         return $this->belongsToMany(Flavor::class, 'product_flavor')->withTimestamps();
     }

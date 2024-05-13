@@ -12,11 +12,6 @@ class Store extends Model
 {
     use HasSlug;
 
-    /**
-     * Los atributos que pueden asignarse en masa.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'phone',
@@ -31,15 +26,19 @@ class Store extends Model
     /**
      * Obtiene los usuarios asociados a la tienda.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }
 
-    // Definir la relación con Order
-    public function orders()
+    /**
+     * Obtiene los productos asociados a la tienda.
+     *
+     * @return HasMany
+    */
+    public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'store_id');  // Asegúrate de que 'store_id' sea la clave foránea correcta en la tabla de órdenes
     }
@@ -47,26 +46,41 @@ class Store extends Model
     /**
      * Obtiene los numeros de telefono asociados a la tienda.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
     */
     public function phoneNumber(): HasOne
     {
         return $this->hasOne(PhoneNumber::class);
     }
 
-    public function mercadoPagoAccount()
+    /**
+     * Obtiene la cuenta de Mercado Pago asociada a la tienda.
+     *
+     * @return HasOne
+    */
+    public function mercadoPagoAccount(): HasOne
     {
         return $this->hasOne(MercadoPagoAccount::class);
     }
 
-    public function getSlugOptions() : SlugOptions
+    /**
+     * Obtiene las horas de apertura y cierre de la tienda.
+     *
+     * @return SlugOptions
+    */
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug');
     }
 
-    public function storeHours()
+    /**
+     * Obtiene las horas de apertura y cierre de la tienda.
+     *
+     * @return HasMany
+     */
+    public function storeHours(): HasMany
     {
         return $this->hasMany(StoreHours::class);
     }

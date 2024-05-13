@@ -22,7 +22,7 @@ class RawMaterialController extends Controller
     /**
      * Inyecta el repositorio en el controlador.
      *
-     * @param  RawMaterialRepository  $rawMaterialRepository
+     * @param RawMaterialRepository $rawMaterialRepository
      */
     public function __construct(RawMaterialRepository $rawMaterialRepository)
     {

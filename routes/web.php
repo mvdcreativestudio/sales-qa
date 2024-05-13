@@ -27,13 +27,12 @@ use App\Http\Controllers\{
     MercadoPagoController,
 };
 
-
-// Autenticación y Verificación de Email
+// Middleware de autenticación y verificación de email
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
-])->group(function () {
+])->prefix('admin')->group(function () {
 
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -59,7 +58,9 @@ Route::middleware([
         'product-categories' => ProductCategoryController::class,
         'orders' => OrderController::class,
         'invoices' => InvoiceController::class,
-        '/marketing/coupons' => CouponController::class,
+        'marketing/coupons' => CouponController::class,
+        'company-settings' => CompanySettingsController::class,
+        'clients' => ClientController::class,
     ]);
 
     // Datacenter
@@ -68,11 +69,11 @@ Route::middleware([
     Route::get('/api/sales-by-store', [DatacenterController::class, 'salesByStore']);
     Route::get('/sales-by-store', [DatacenterController::class, 'showSalesByStore'])->name('sales.by.store');
 
-    // Product management
+    // Gestión de Productos
     Route::get('products/{id}/duplicate', [ProductController::class, 'duplicate'])->name('products.duplicate');
     Route::post('products/{id}/switchStatus', [ProductController::class, 'switchStatus'])->name('products.switchStatus');
 
-    // Store management
+    // Gestión de Tiendas
     Route::prefix('stores/{store}')->name('stores.')->group(function () {
         Route::get('manage-users', [StoreController::class, 'manageUsers'])->name('manageUsers');
         Route::get('manage-hours', [StoreController::class, 'manageHours'])->name('manageHours');
@@ -80,17 +81,9 @@ Route::middleware([
         Route::post('disassociate-user', [StoreController::class, 'disassociateUser'])->name('disassociateUser');
         Route::post('save-hours', [StoreController::class, 'saveHours'])->name('saveHours');
         Route::post('toggle-store-status', [StoreController::class, 'toggleStoreStatus'])->name('toggle-status');
-      });
-
-    // Tiendas / Franquicias
-    Route::resource('stores', StoreController::class);
-    Route::group(['prefix' => 'stores'], function () {
-      Route::get('/{store}/manage-users', [StoreController::class, 'manageUsers'])->name('stores.manageUsers');
-      Route::post('/{store}/associate-user', [StoreController::class, 'associateUser'])->name('stores.associateUser');
-      Route::post('/{store}/disassociate-user', [StoreController::class, 'disassociateUser'])->name('stores.disassociateUser');
     });
 
-    // Role management
+    // Gestión de Roles
     Route::prefix('roles/{role}')->name('roles.')->group(function () {
         Route::get('manage-users', [RoleController::class, 'manageUsers'])->name('manageUsers');
         Route::post('associate-user', [RoleController::class, 'associateUser'])->name('associateUser');
@@ -99,104 +92,78 @@ Route::middleware([
         Route::post('assign-permissions', [RoleController::class, 'assignPermissions'])->name('assignPermissions');
     });
 
-    // Flavor management
+    // Gestión de Sabores de Productos
     Route::get('product-flavors', [ProductController::class, 'flavors'])->name('product-flavors');
     Route::post('product-flavors', [ProductController::class, 'storeFlavors'])->name('product-flavors.store');
     Route::post('/product-flavors/multiple', [ProductController::class, 'storeMultipleFlavors'])->name('product-flavors.store-multiple');
     Route::delete('product-flavors/{id}/delete', [ProductController::class, 'destroyFlavor'])->name('product-flavors.destroy');
     Route::put('flavors/{id}/switch-status', [ProductController::class, 'switchFlavorStatus'])->name('flavors.switch-status');
 
-    // CRM, Accounting
+    // CRM y Contabilidad
     Route::get('crm', [CrmController::class, 'index'])->name('crm');
     Route::get('receipts', [AccountingController::class, 'receipts'])->name('receipts');
     Route::get('entries', [AccountingController::class, 'entries'])->name('entries');
     Route::get('entrie', [AccountingController::class, 'entrie'])->name('entrie');
-    // Roles
-    Route::resource('/roles', RoleController::class);
-    Route::group(['prefix' => 'roles'], function () {
-      Route::get('/{role}/manage-users', [RoleController::class, 'manageUsers'])->name('roles.manageUsers');
-      Route::post('/{role}/associate-user', [RoleController::class, 'associateUser'])->name('roles.associateUser');
-      Route::post('/{role}/disassociate-user', [RoleController::class, 'disassociateUser'])->name('roles.disassociateUser');
-      Route::get('/{role}/manage-permissions', [RoleController::class, 'managePermissions'])->name('roles.managePermissions');
-      Route::post('/{role}/assign-permissions', [RoleController::class, 'assignPermissions'])->name('roles.assignPermissions');
-    });
 
-    // Materias Primas
-    Route::resource('raw-materials', RawMaterialController::class);
-
-    // Proveedores
-    Route::resource('suppliers', SupplierController::class);
-
-    // Company Settings
-    Route::resource('company-settings', CompanySettingsController::class);
-
-    // E-Commerce Settings
+    // Ajustes de Comercio Electrónico
     Route::get('/ecommerce/marketing', [EcommerceController::class, 'marketing'])->name('marketing');
     Route::get('/ecommerce/settings', [EcommerceController::class, 'settings'])->name('settings');
 
-    // Order details
+    // Detalles de Ordenes
     Route::get('/orders/{order}/show', [OrderController::class, 'show'])->name('orders.show');
 
-    // Coupon management
+    // Gestión de Cupones
     Route::post('marketing/coupons/delete-selected', [CouponController::class, 'deleteSelected'])->name('coupons.deleteSelected');
     Route::get('coupons/{id}', [CouponController::class, 'show'])->name('coupons.show');
 
-    // Flavor editing
+    // Edición de Sabores
     Route::get('/flavors/{id}', [ProductController::class, 'editFlavor'])->name('flavors.edit');
     Route::put('/flavors/{id}', [ProductController::class, 'updateFlavor'])->name('flavors.update');
 
-    // Ordenes a Proveedores
-    Route::resource('supplier-orders', SupplierOrderController::class);
+    // Órdenes a Proveedores
     Route::group(['prefix' => 'supplier-orders'], function () {
-      Route::get('/{id}/pdf', [SupplierOrderController::class, 'generatePdf'])->name('supplier-orders.generatePdf');
+        Route::get('/{id}/pdf', [SupplierOrderController::class, 'generatePdf'])->name('supplier-orders.generatePdf');
     });
 
     // Omnicanalidad
     Route::group(['prefix' => 'omnichannel'], function () {
-      // Configuración de WhatsApp
-      Route::post('/update-meta-business-id', [OmnichannelController::class, 'updateMetaBusinessId'])->name('omnichannel.update.meta.business.id');
-      Route::post('/update-admin-token', [OmnichannelController::class, 'updateMetaAdminToken'])->name('omnichannel.update.admin.token');
+        // Configuración de WhatsApp
+        Route::post('/update-meta-business-id', [OmnichannelController::class, 'updateMetaBusinessId'])->name('omnichannel.update.meta.business.id');
+        Route::post('/update-admin-token', [OmnichannelController::class, 'updateMetaAdminToken'])->name('omnichannel.update.admin.token');
 
-      // Asociar / Desasociar números de teléfono
-      Route::post('/associate-phone', [OmnichannelController::class, 'associatePhoneNumberToStore'])->name('omnichannel.associate.phone');
-      Route::post('/disassociate/{phone_id}', [OmnichannelController::class, 'disassociatePhoneNumberFromStore'])->name('omnichannel.disassociate');
+        // Asociar / Desasociar números de teléfono
+        Route::post('/associate-phone', [OmnichannelController::class, 'associatePhoneNumberToStore'])->name('omnichannel.associate.phone');
+        Route::post('/disassociate/{phone_id}', [OmnichannelController::class, 'disassociatePhoneNumberFromStore'])->name('omnichannel.disassociate');
 
-      // Configuración
-      Route::get('/settings', [OmnichannelController::class, 'settings'])->name('omnichannel.settings');
+        // Configuración
+        Route::get('/settings', [OmnichannelController::class, 'settings'])->name('omnichannel.settings');
 
-      // Chat
-      Route::get('/', [OmnichannelController::class, 'chats'])->name('omnichannel.chat');
-      Route::get('/fetch-messages', [WhatsAppController::class, 'fetchMessages'])->name('omnichannel.fetch.messages');
+        // Chat
+        Route::get('/', [OmnichannelController::class, 'chats'])->name('omnichannel.chat');
+        Route::get('/fetch-messages', [WhatsAppController::class, 'fetchMessages'])->name('omnichannel.fetch.messages');
     });
 });
 
-
-// Resources con acceso público
+// Recursos con acceso público
 Route::resources([
-  'clients' => ClientController::class,
-  'checkout' => CheckoutController::class,
+    'checkout' => CheckoutController::class,
 ]);
-
 
 // E-Commerce
 Route::get('shop', [EcommerceController::class, 'index'])->name('shop'); // Seleccionar Tienda
-
 Route::get('store/{storeId}', [EcommerceController::class, 'store'])->name('store'); // Tienda
-
 Route::post('/cart/select-store', [CartController::class, 'selectStore'])->name('cart.selectStore'); // Seleccionar Tienda en el Carrito
 Route::post('/cart/add/{productId}', [CartController::class, 'addToCart'])->name('cart.add'); // Agregar al Carrito
-
+Route::post('/cart/remove-item', [CartController::class, 'removeItem'])->name('cart.removeItem'); // Eliminar del Carrito
 Route::get('/session/clear', [CartController::class, 'clearSession'])->name('session.clear'); // Limpiar Sesión
-
 Route::get('/checkout/{orderId}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment'); // Pago de Orden
 Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success'); // Pago Exitoso
 Route::get('/checkout/pending/{order}', [CheckoutController::class, 'pending'])->name('checkout.pending'); // Pago Pendiente
 Route::get('/checkout/failure/{order}', [CheckoutController::class, 'failure'])->name('checkout.failure'); // Pago Fallido
-
 Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('apply.coupon'); // Aplicar Cupón
-
 
 // MercadoPago WebHooks
 Route::post('/mpagohook', [MercadoPagoController::class, 'webhooks'])->name('mpagohook');
 
+// Cambio de idioma
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);

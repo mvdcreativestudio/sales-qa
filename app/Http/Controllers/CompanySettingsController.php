@@ -2,32 +2,57 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\CompanySettings;
 use App\Http\Requests\UpdateCompanySettingsRequest;
+use App\Repositories\CompanySettingsRepository;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use Illuminate\Support\Facades\Log;
 
 class CompanySettingsController extends Controller
 {
-    public function index()
-    {
-      $companySettings = CompanySettings::firstOrFail();
-      return view('company-settings.index', compact('companySettings'));
-    }
+  /**
+   * El repositorio de configuración de la empresa.
+   *
+   * @var CompanySettingsRepository
+  */
+  protected CompanySettingsRepository $companySettingsRepository;
 
-    public function update(UpdateCompanySettingsRequest $request)
-    {
-        Log::debug('Request reached controller', ['data' => $request->all()]);
+  /**
+   * Constructor para inyectar el repositorio.
+   *
+   * @param CompanySettingsRepository $companySettingsRepository
+  */
+  public function __construct(CompanySettingsRepository $companySettingsRepository)
+  {
+    $this->companySettingsRepository = $companySettingsRepository;
+  }
 
-        $validatedData = $request->validated();
-        Log::debug('Validated data', ['data' => $validatedData]);
+  /**
+   * Muestra la página de configuración de la empresa.
+   *
+   * @return View
+   */
+  public function index(): View
+  {
+    $companySettings = $this->companySettingsRepository->getCompanySettings();
+    return view('company-settings.index', compact('companySettings'));
+  }
 
-        $companySettings = CompanySettings::firstOrFail();
-        $companySettings->update($validatedData);
+  /**
+   * Actualiza la configuración de la empresa.
+   *
+   * @param UpdateCompanySettingsRequest $request
+   * @return RedirectResponse
+  */
+  public function update(UpdateCompanySettingsRequest $request): RedirectResponse
+  {
+    Log::debug('Request reached controller', ['data' => $request->all()]);
 
-        return redirect()->route('company-settings.index')->with('success', 'Configuración actualizada correctamente.');
-    }
+    $validatedData = $request->validated();
+    Log::debug('Validated data', ['data' => $validatedData]);
 
+    $result = $this->companySettingsRepository->updateCompanySettings($validatedData);
 
-
+    return redirect()->route('company-settings.index')->with($result['success'] ? 'success' : 'error', $result['message']);
+  }
 }

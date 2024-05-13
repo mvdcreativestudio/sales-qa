@@ -20,6 +20,14 @@
 
 
 <div class="ecommerce-background vh-100"  id="selectStore">
+  @if(session('error'))
+    <div class="alert alert-danger d-flex text-center" role="alert">
+      <div class="d-flex flex-column ps-1 text-center justify-content-center w-100">
+        <h6 class="alert-heading d-flex align-items-center fw-bold mb-1 text-center m-auto">¡Error!</h6>
+        <span>{{ session('error') }}</span>
+      </div>
+    </div>
+  @endif
   @if(session('store') == null)
   <div class="vendors-container container mt-5">
     <div class="row text-center justify-content-center">
