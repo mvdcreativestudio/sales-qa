@@ -150,16 +150,16 @@ Route::resources([
 ]);
 
 // E-Commerce
-Route::get('shop', [EcommerceController::class, 'index'])->name('shop'); // Seleccionar Tienda
+Route::get('/', [EcommerceController::class, 'index'])->name('shop'); // Seleccionar Tienda
 Route::get('store/{storeId}', [EcommerceController::class, 'store'])->name('store'); // Tienda
 Route::post('/cart/select-store', [CartController::class, 'selectStore'])->name('cart.selectStore'); // Seleccionar Tienda en el Carrito
 Route::post('/cart/add/{productId}', [CartController::class, 'addToCart'])->name('cart.add'); // Agregar al Carrito
 Route::post('/cart/remove-item', [CartController::class, 'removeItem'])->name('cart.removeItem'); // Eliminar del Carrito
 Route::get('/session/clear', [CartController::class, 'clearSession'])->name('session.clear'); // Limpiar Sesión
 Route::get('/checkout/{orderId}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment'); // Pago de Orden
-Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success'); // Pago Exitoso
-Route::get('/checkout/pending/{order}', [CheckoutController::class, 'pending'])->name('checkout.pending'); // Pago Pendiente
-Route::get('/checkout/failure/{order}', [CheckoutController::class, 'failure'])->name('checkout.failure'); // Pago Fallido
+Route::get('/checkout/success/{order:uuid}', [CheckoutController::class, 'success'])->name('checkout.success'); // Pago Exitoso
+Route::get('/checkout/pending/{order:uuid}', [CheckoutController::class, 'pending'])->name('checkout.pending'); // Pago Pendiente
+Route::get('/checkout/failure/{order:uuid}', [CheckoutController::class, 'failure'])->name('checkout.failure'); // Pago Fallido
 Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('apply.coupon'); // Aplicar Cupón
 
 // MercadoPago WebHooks

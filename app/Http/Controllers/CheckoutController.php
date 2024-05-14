@@ -11,6 +11,7 @@ use Illuminate\View\View;
 use App\Http\Requests\CheckoutStoreOrderRequest;
 use App\Http\Requests\ApplyCouponRequest;
 use Illuminate\Http\RedirectResponse;
+use App\Models\Order;
 
 class CheckoutController extends Controller
 {
@@ -65,13 +66,26 @@ class CheckoutController extends Controller
   /**
    * Muestra la página de éxito de la compra.
    *
-   * @param  int  $orderId
+   * @param  Order  $order
    * @return View
   */
-  public function success(int $orderId): View
+  public function success(Order $order): View
   {
-    $order = $this->checkoutRepository->success($orderId);
-    return view('content.e-commerce.front.checkout-success', $order);
+    $orderData = $this->checkoutRepository->success($order->uuid);
+    return view('content.e-commerce.front.checkout-success', $orderData);
+  }
+
+
+  /**
+   * Muestra la página de fallo de la compra.
+   *
+   * @param  Order  $order
+   * @return View
+  */
+  public function failure(Order $order): View
+  {
+    $orderData = $this->checkoutRepository->failure($order->uuid);
+    return view('content.e-commerce.front.checkout-failure', $orderData);
   }
 
   /**
@@ -94,7 +108,7 @@ class CheckoutController extends Controller
   public function applyCoupon(ApplyCouponRequest $request): RedirectResponse
   {
     try {
-        $couponData = $this->checkoutRepository->applyCoupon($request->coupon_code);
+        $couponData = $this->checkoutRepository->applyCouponToSession($request->coupon_code);
         return back()->with('success', 'El cupón "' . $couponData['code'] . '" se ha aplicado correctamente.');
     } catch (\Exception $e) {
         Log::error('Error applying coupon', ['coupon_code' => $request->coupon_code, 'error' => $e->getMessage()]);
