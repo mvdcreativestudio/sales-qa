@@ -11,6 +11,7 @@ use Illuminate\View\View;
 use App\Http\Requests\CheckoutStoreOrderRequest;
 use App\Http\Requests\ApplyCouponRequest;
 use Illuminate\Http\RedirectResponse;
+use App\Models\Order;
 
 class CheckoutController extends Controller
 {
@@ -65,25 +66,26 @@ class CheckoutController extends Controller
   /**
    * Muestra la página de éxito de la compra.
    *
-   * @param  int  $orderId
+   * @param  Order  $order
    * @return View
   */
-  public function success(int $orderId): View
+  public function success(Order $order): View
   {
-    $order = $this->checkoutRepository->success($orderId);
-    return view('content.e-commerce.front.checkout-success', $order);
+    $orderData = $this->checkoutRepository->success($order->uuid);
+    return view('content.e-commerce.front.checkout-success', $orderData);
   }
 
-    /**
+
+  /**
    * Muestra la página de fallo de la compra.
    *
-   * @param  int  $orderId
+   * @param  Order  $order
    * @return View
   */
-  public function failure(int $orderId): View
+  public function failure(Order $order): View
   {
-    $order = $this->checkoutRepository->failure($orderId);
-    return view('content.e-commerce.front.checkout-failure', $order);
+    $orderData = $this->checkoutRepository->failure($order->uuid);
+    return view('content.e-commerce.front.checkout-failure', $orderData);
   }
 
   /**

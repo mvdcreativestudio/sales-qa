@@ -6,12 +6,33 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Ramsey\Uuid\Uuid;
+
 
 class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['date', 'time', 'origin', 'client_id', 'store_id', 'products', 'subtotal', 'tax', 'shipping', 'coupon_id', 'coupon_amount', 'discount', 'total', 'payment_status', 'shipping_status', 'payment_method', 'shipping_method', 'estimate_id', 'shipping_id'];
+    protected $fillable = ['date', 'time', 'origin', 'client_id', 'store_id', 'products', 'subtotal', 'tax', 'shipping', 'coupon_id', 'coupon_amount', 'discount', 'total', 'payment_status', 'shipping_status', 'payment_method', 'shipping_method', 'estimate_id', 'shipping_id', 'uuid'];
+
+    /**
+     * The "booted" method of the model.
+     *
+     * Genera un UUID cuando se crea una nueva orden.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Generar UUID cuando se crea una orden
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = Uuid::uuid4()->toString();
+            }
+        });
+    }
 
     /**
      * Obtiene el cliente al que pertenece el pedido.
@@ -53,6 +74,16 @@ class Order extends Model
     public function coupon(): BelongsTo
     {
         return $this->belongsTo(Coupon::class);
+    }
+
+    /**
+     * Obtiene el nombre de la clave de ruta para el modelo.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
     }
 
 }

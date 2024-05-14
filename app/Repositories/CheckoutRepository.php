@@ -45,24 +45,24 @@ class CheckoutRepository
   /**
    * Obtiene los datos para mostrar en la página de éxito.
    *
-   * @param int $orderId
+   * @param string $uuid
    * @return array
   */
-  public function success(int $orderId): array
+  public function success(string $uuid): array
   {
-    $order = Order::with('client')->find($orderId);
+    $order = Order::with('client')->where('uuid', $uuid)->firstOrFail();
     return compact('order');
   }
 
-    /**
-   * Obtiene los datos para mostrar en la página de fallido.
+  /**
+   * Obtiene los datos para mostrar en la página de fallo.
    *
-   * @param int $orderId
+   * @param string $uuid
    * @return array
   */
-  public function failure(int $orderId): array
+  public function failure(string $uuid): array
   {
-    $order = Order::with('client')->find($orderId);
+    $order = Order::with('client')->where('uuid', $uuid)->firstOrFail();
     return compact('order');
   }
 
@@ -76,35 +76,36 @@ class CheckoutRepository
   public function processOrder(CheckoutStoreOrderRequest $request, MercadoPagoService $mercadoPagoService): RedirectResponse
   {
     try {
-      DB::beginTransaction();
+        DB::beginTransaction();
 
-      $storeId = session('store.id');
-      $clientData = $this->getClientData($request);
-      $orderData = $this->getOrderData($request);
+        $storeId = session('store.id');
+        $clientData = $this->getClientData($request);
+        $orderData = $this->getOrderData($request);
 
-      // Guardar la orden y los datos del cliente
-      $order = $this->createOrder($clientData, $orderData);
+        // Guardar la orden y los datos del cliente
+        $order = $this->createOrder($clientData, $orderData);
 
-      if ($request->payment_method === 'card') {
-        $redirectUrl = $this->processCardPayment($request, $order, $mercadoPagoService, $storeId);
-        DB::commit();
-        session()->forget('cart'); // Limpiar el carrito de compras
-        return Redirect::away($redirectUrl);
-      } else {
-        // Lógica para pago en efectivo
-        DB::commit();
-        session()->forget('cart'); // Limpiar el carrito de compras
+        if ($request->payment_method === 'card') {
+            $redirectUrl = $this->processCardPayment($request, $order, $mercadoPagoService, $storeId);
+            DB::commit();
+            session()->forget('cart'); // Limpiar el carrito de compras
+            return Redirect::away($redirectUrl);
+        } else {
+            // Lógica para pago en efectivo
+            DB::commit();
+            session()->forget('cart'); // Limpiar el carrito de compras
 
-        Log::info('Pedido procesado correctamente.');
-        // Redirigir al usuario a la página de éxito
-        return redirect()->route('checkout.success', $order->id);
-      }
+            Log::info('Pedido procesado correctamente.');
+            // Redirigir al usuario a la página de éxito usando el UUID
+            return redirect()->route('checkout.success', $order->uuid);
+        }
     } catch (\Exception $e) {
-      DB::rollBack();
-      Log::error("Error al procesar el pedido: {$e->getMessage()} en {$e->getFile()}:{$e->getLine()}");
-      return back()->withErrors('Error al procesar el pedido. Por favor, intente nuevamente.')->withInput();
+        DB::rollBack();
+        Log::error("Error al procesar el pedido: {$e->getMessage()} en {$e->getFile()}:{$e->getLine()}");
+        return back()->withErrors('Error al procesar el pedido. Por favor, intente nuevamente.')->withInput();
     }
   }
+
 
   /**
    * Crea una orden y un cliente en la base de datos.
@@ -191,7 +192,7 @@ class CheckoutRepository
   {
     $subtotal = session('subtotal', 0);
 
-    
+
     if ($subtotal <= 0) {
         throw new \Exception('Parece que hay un error con el carrito. Por favor, intentalo nuevamente.');
     }
