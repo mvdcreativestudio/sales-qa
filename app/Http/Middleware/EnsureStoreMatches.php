@@ -17,11 +17,11 @@ class EnsureStoreMatches
      */
     public function handle(Request $request, Closure $next)
     {
-      $storeId = $request->route('storeId');
-      $sessionStoreId = Session::get('store.id');
+      $slug = $request->route('slug');
+      $sessionStoreSlug = Session::get('store.slug');
 
-      if ($sessionStoreId && $sessionStoreId != $storeId) {
-          return redirect()->route('store', ['storeId' => $sessionStoreId])
+      if ($sessionStoreSlug && $sessionStoreSlug != $slug) {
+          return redirect()->route('store', ['slug' => $sessionStoreSlug])
               ->with('error', 'No puedes acceder a una tienda diferente a la seleccionada.');
       }
 

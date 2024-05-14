@@ -32,7 +32,7 @@
   <div class="vendors-container container mt-5">
     <div class="row text-center justify-content-center">
       <h4>Selecciona tu local más cercano</h4>
-      <form action="{{ route('cart.selectStore', ['storeId' => 'STORE_ID_PLACEHOLDER']) }}" method="POST" id="selectStoreForm">
+      <form action="{{ route('cart.selectStore') }}" method="POST" id="selectStoreForm">
       @csrf
       <div class="d-flex justify-content-center">
         <div class="row gy-3 mt-0 col-12 col-md-8 justify-content-center">
@@ -45,7 +45,7 @@
                       <span class="custom-option-title">{{$store->name}}</span>
                       <small>{{$store->address}}</small>
                     </span>
-                    <input name="storeId" class="form-check-input" type="radio" value="{{ $store->id }}" id="store{{ $store->id }}" {{ $loop->first ? 'checked' : '' }} />
+                    <input name="slug" class="form-check-input" type="radio" value="{{ $store->slug }}" id="store{{ $store->id }}" {{ $loop->first ? 'checked' : '' }} />
                   </label>
                 </div>
               </div>

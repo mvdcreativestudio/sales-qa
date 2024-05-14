@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateCartRequest;
 use App\Http\Requests\SelectStoreRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
@@ -47,6 +48,7 @@ class CartController extends Controller
   */
   public function selectStore(SelectStoreRequest $request): RedirectResponse
   {
+    Log::error('Seleccionar tienda: ' . $request->slug);
     return $this->cartRepository->selectStore($request);
   }
 

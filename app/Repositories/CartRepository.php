@@ -8,21 +8,23 @@ use App\Models\Flavor;
 use App\Models\Store;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\SelectStoreRequest;
 
 class CartRepository
 {
   /**
    * Seleccionar una tienda y guardar la información en la sesión.
    *
-   * @param Request $request
+   * @param SelectStoreRequest $request
    * @return RedirectResponse
   */
-  public function selectStore(Request $request): RedirectResponse
+  public function selectStore(SelectStoreRequest $request): RedirectResponse
   {
     $request->session()->flush();
 
-    $storeId = $request->input('storeId');
-    $store = Store::find($storeId);
+    $slug = $request->slug;
+
+    $store = Store::where('slug', $slug)->first();
 
     if (!$store) {
         return redirect()->back()->with('error', 'La tienda no existe.');
@@ -32,9 +34,10 @@ class CartRepository
         'id' => $store->id,
         'name' => $store->name,
         'address' => $store->address,
+        'slug' => $store->slug
     ]);
 
-    return redirect()->route('store', ['storeId' => $store->id]);
+    return redirect()->route('store', ['slug' => $store->slug]);
   }
 
   /**

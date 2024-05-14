@@ -22,12 +22,12 @@ class EcommerceRepository
   /**
    * Obtiene los datos necesarios para la página de una tienda específica.
    *
-   * @param int $storeId
+   * @param string $storeId
    * @return array
   */
-  public function getStoreData(int $storeId): array
+  public function getStoreData(string $slug): array
   {
-    $store = Store::find($storeId);
+    $store = Store::where('slug', $slug)->first();
 
     if (!$store) {
         return [
@@ -36,13 +36,13 @@ class EcommerceRepository
         ];
     }
 
-    $categories = ProductCategory::whereHas('products', function ($query) use ($storeId) {
+    $categories = ProductCategory::whereHas('products', function ($query) use ($store) {
         $query->where('status', '=', 1)
-              ->where('store_id', $storeId)
+              ->where('store_id', $store->id)
               ->where('is_trash', '!=', 1);
-    })->with(['products' => function ($query) use ($storeId) {
+    })->with(['products' => function ($query) use ($store) {
         $query->where('status', '=', 1)
-              ->where('store_id', $storeId)
+              ->where('store_id', $store->id)
               ->where('is_trash', '!=', 1);
     }])->get();
 
