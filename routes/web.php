@@ -167,3 +167,5 @@ Route::post('/mpagohook', [MercadoPagoController::class, 'webhooks'])->name('mpa
 
 // Cambio de idioma
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
+
+Route::get('/test/{orderId}', [DashboardController::class, 'sendNewOrderEmail']);
