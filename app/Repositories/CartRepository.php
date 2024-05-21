@@ -8,21 +8,23 @@ use App\Models\Flavor;
 use App\Models\Store;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\SelectStoreRequest;
 
 class CartRepository
 {
   /**
    * Seleccionar una tienda y guardar la información en la sesión.
    *
-   * @param Request $request
+   * @param SelectStoreRequest $request
    * @return RedirectResponse
   */
-  public function selectStore(Request $request): RedirectResponse
+  public function selectStore(SelectStoreRequest $request): RedirectResponse
   {
     $request->session()->flush();
 
-    $storeId = $request->input('storeId');
-    $store = Store::find($storeId);
+    $slug = $request->slug;
+
+    $store = Store::where('slug', $slug)->first();
 
     if (!$store) {
         return redirect()->back()->with('error', 'La tienda no existe.');
@@ -32,9 +34,10 @@ class CartRepository
         'id' => $store->id,
         'name' => $store->name,
         'address' => $store->address,
+        'slug' => $store->slug
     ]);
 
-    return redirect()->route('store', ['storeId' => $store->id]);
+    return redirect()->route('store', ['slug' => $store->slug]);
   }
 
   /**
@@ -56,8 +59,9 @@ class CartRepository
     $flavors = $this->getFlavors($flavorIds);
 
     $cartItemKey = $this->generateCartItemKey($productId, $flavorIds);
+    $quantity = $request->input('quantity', 1); // Obtén la cantidad del request, por defecto 1
 
-    $this->updateCartItem($cart, $cartItemKey, $product, $flavors);
+    $this->updateCartItem($cart, $cartItemKey, $product, $flavors, $quantity);
     session(['cart' => $cart]);
 
     $this->updateSubtotal();
@@ -104,17 +108,18 @@ class CartRepository
   }
 
   /**
-   * Actualizar el artículo en el carrito.
-   *
-   * @param array &$cart
-   * @param string $cartItemKey
-   * @param Product $product
-   * @param array $flavors
+  * Actualizar el artículo en el carrito.
+  *
+  * @param array &$cart
+  * @param string $cartItemKey
+  * @param Product $product
+  * @param array $flavors
+  * @param int $quantity
   */
-  private function updateCartItem(array &$cart, string $cartItemKey, Product $product, array $flavors): void
+  private function updateCartItem(array &$cart, string $cartItemKey, Product $product, array $flavors, int $quantity): void
   {
     if (isset($cart[$cartItemKey])) {
-        $cart[$cartItemKey]['quantity'] += 1;
+        $cart[$cartItemKey]['quantity'] += $quantity;
         foreach ($flavors as $id => $details) {
             if (isset($cart[$cartItemKey]['flavors'][$id])) {
                 $cart[$cartItemKey]['flavors'][$id]['quantity'] += $details['quantity'];
@@ -129,7 +134,7 @@ class CartRepository
             "sku" => $product->sku,
             "description" => $product->description,
             "type" => $product->type,
-            "quantity" => 1,
+            "quantity" => $quantity,
             "old_price" => $product->old_price ?? 0,
             "price" => $product->price ?? $product->old_price ?? 0,
             "image" => $product->image,

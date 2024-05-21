@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Repositories\StoreRepository;
+use App\Mail\NewOrder;
+use Illuminate\Support\Facades\Mail;
+use App\Models\Order;
+
 
 class DashboardController extends Controller
 {

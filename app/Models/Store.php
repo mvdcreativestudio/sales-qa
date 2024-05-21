@@ -64,7 +64,7 @@ class Store extends Model
     }
 
     /**
-     * Obtiene las horas de apertura y cierre de la tienda.
+     * Genera un slug para la tienda automáticamente.
      *
      * @return SlugOptions
     */

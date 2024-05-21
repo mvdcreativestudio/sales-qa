@@ -1,52 +1,61 @@
 {
   "menu": [
     {
+      "id": "tour-inicio",
       "name": "Inicio",
       "icon": "menu-icon tf-icons bx bx-home-circle",
       "slug": "dashboard",
       "url": "/admin"
     },
     {
+      "id": "tour-materias-primas",
       "name": "Materias Primas",
       "icon": "menu-icon tf-icons bx bx-box",
       "slug": "raw-materials",
       "url": "/admin/raw-materials"
     },
     {
+      "id": "tour-proveedores",
       "name": "Proveedores",
       "icon": "menu-icon tf-icons bx bx-user",
       "slug": "suppliers",
       "url": "/admin/suppliers"
     },
     {
+      "id": "tour-ordenes-de-compra",
       "name": "Ordenes de Compra",
       "icon": "menu-icon tf-icons bx bx-shopping-bag",
       "slug": "supplier-orders",
       "url": "/admin/supplier-orders"
     },
     {
+      "id": "tour-stock",
       "name": "Stock",
       "icon": "menu-icon tf-icons bx bx-package",
       "slug": "stock",
       "url": "/admin/stock"
     },
     {
+      "id": "tour-contabilidad",
       "name": "Contabilidad",
       "icon": "menu-icon tf-icons bx bx-dollar",
       "slug": "accounting",
       "url": "/admin/accounting",
       "submenu": [
         {
+          "id": "tour-facturas",
           "name": "Facturas",
           "slug": "invoices",
           "url": "/admin/invoices"
         },
         {
+          "id": "tour-recibos",
           "name": "Recibos",
           "slug": "receipts",
           "url": "/admin/receipts"
         },
         {
+          "id": "tour-asientos",
           "name": "Asientos",
           "slug": "entries",
           "url": "/admin/entries"
@@ -54,12 +63,14 @@
       ]
     },
     {
+      "id": "tour-clientes",
       "name": "Clientes",
       "icon": "menu-icon tf-icons bx bx-user",
       "slug": "clients",
       "url": "/admin/clients"
     },
     {
+      "id": "tour-ecommerce",
       "name": "E-Commerce",
       "icon": "menu-icon tf-icons bx bx-world",
       "slug": "ecommerce",
@@ -67,31 +78,37 @@
       "slug": "ecommerce",
       "submenu": [
         {
+          "id": "tour-pedidos",
           "name": "Pedidos",
           "slug": "orders",
           "url": "/admin/orders"
         },
         {
+          "id": "tour-productos",
           "name": "Productos",
           "slug": "products",
           "url": "/admin/products"
         },
         {
+          "id": "tour-sabores",
           "url": "product-flavors",
           "name": "Sabores",
           "slug": "/admin/product-flavors"
         },
         {
+          "id": "tour-categorias",
           "name": "Categorías",
           "slug": "product-categories",
           "url": "/admin/product-categories"
         },
         {
+          "id": "tour-marketing-ecommerce",
           "name": "Marketing",
           "slug": "marketing",
           "url": "/admin/marketing"
         },
         {
+          "id": "tour-configuracion-ecommerce",
           "name": "Configuración",
           "slug": "settings",
           "url": "/admin/ecommerce/settings"
@@ -99,11 +116,13 @@
       ]
     },
     {
+      "id": "tour-marketing",
       "name": "Marketing",
       "icon": "menu-icon tf-icons bx bx-coffee",
       "slug": "accounting",
       "submenu": [
         {
+          "id": "tour-cupones",
           "url": "/admin/marketing/coupons",
           "name": "Cupones",
           "slug": "coupons"
@@ -111,17 +130,20 @@
       ]
     },
     {
+      "id": "tour-omnicanalidad",
       "name": "Omnicanalidad",
       "icon": "menu-icon tf-icons bx bx-network-chart",
       "slug": "omnichannel",
       "url": "/admin/omnichannel",
       "submenu": [
         {
+          "id": "tour-chats-omnicanalidad",
           "name": "Chats",
           "slug": "chats",
           "url": "/admin/omnichannel"
         },
         {
+          "id": "tour-configuracion-omnicanalidad",
           "name": "Configuración",
           "slug": "settings",
           "url": "/admin/omnichannel/settings"
@@ -129,30 +151,35 @@
       ]
     },
     {
+      "id": "tour-datacenter",
       "name": "Datacenter",
       "icon": "menu-icon tf-icons bx bx-line-chart",
       "slug": "datacenter",
       "url": "/admin/datacenter-sales"
     },
     {
+      "id": "tour-crm",
       "name": "CRM",
       "icon": "menu-icon tf-icons bx bx-group",
       "slug": "crm",
       "url": "/admin/crm"
     },
     {
+      "id": "tour-tiendas",
       "name": "Tiendas",
       "icon": "menu-icon tf-icons bx bx-store-alt",
       "slug": "stores",
       "url": "/admin/stores"
     },
     {
+      "id": "tour-roles",
       "name": "Roles",
       "icon": "menu-icon tf-icons bx bx-user",
       "slug": "roles",
       "url": "/admin/roles"
     },
     {
+      "id": "tour-configuracion",
       "name": "Configuración",
       "icon": "menu-icon tf-icons bx bx-cog",
       "slug": "company_settings",

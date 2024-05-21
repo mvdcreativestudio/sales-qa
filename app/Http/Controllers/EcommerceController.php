@@ -42,12 +42,12 @@ class EcommerceController extends Controller
   /**
    * Muestra la página de una tienda específica.
    *
-   * @param int $storeId
+   * @param string $slug
    * @return RedirectResponse|View
   */
-  public function store(int $storeId): RedirectResponse|View
+  public function store(string $slug): RedirectResponse|View
   {
-    $result = $this->ecommerceRepository->getStoreData($storeId);
+    $result = $this->ecommerceRepository->getStoreData($slug);
 
     if ($result['status'] === 'error') {
         return redirect()->route('home')->with('error', $result['message']);

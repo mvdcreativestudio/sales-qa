@@ -4,9 +4,9 @@
 
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
-
 @section('vendor-style')
 @vite('resources/assets/vendor/libs/apex-charts/apex-charts.scss')
+@vite('resources/assets/vendor/libs/shepherd/shepherd.scss')
 @endsection
 
 @section('page-style')
@@ -15,18 +15,16 @@
 
 @section('vendor-script')
 @vite('resources/assets/vendor/libs/apex-charts/apexcharts.js',)
+@vite('resources/assets/vendor/libs/shepherd/shepherd.js')
 @endsection
 
 @section('page-script')
 @vite(['resources/assets/js/cards-statistics.js'])
 @vite(['resources/assets/js/ui-cards-analytics.js'])
+@vite('resources/assets/js/extended-ui-tour.js')
 @endsection
 
-
 @section('content')
-
-
-
 @if (session('error'))
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
   {{ session('error') }}
@@ -34,116 +32,66 @@
 @endif
 
 <div class="row">
-{{--
-  <div class="col-12 mb-4 text-end">
-    <div class="text-light small fw-medium">Filtrar período de tiempo</div>
-    <div>
-      <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio1" checked>
-        <label class="btn btn-outline-primary" for="btnradio1">Este año</label>
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio2">
-        <label class="btn btn-outline-primary" for="btnradio2">Este mes</label>
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio3">
-        <label class="btn btn-outline-primary" for="btnradio3">Esta semana</label>
-      </div>
-    </div>
-  </div> --}}
-
-  <!-- Toastr CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-
-<!-- Toastr JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-
-<script>
-  function toggleStoreStatus(storeId, element) {
-    const isOpen = element.checked ? 0 : 1;
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-    fetch(`stores/${storeId}/toggle-store-status`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': csrfToken
-      },
-      body: JSON.stringify({ closed: isOpen })
-    })
-    .then(response => response.json())
-    .then(data => {
-      toastr.success('Estado actualizado');
-      // Recarga la página tras un breve retraso
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000); // retraso de 1 segundo
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      toastr.error('Error actualizando el estado');
-      // Se invierte la selección del checkbox para coincidir con el estado actual (previo a la petición)
-      element.checked = !element.checked;
-    });
-  }
-</script>
-
-
+  <!-- Botón de Modo Ayuda -->
+  <div class="col-2">
+    <button id="help-mode-toggle" class="btn btn-primary">Activar Modo Ayuda</button>
+  </div>
 
   <!-- Abierto / Cerrado Stores -->
-  <div class="row g-4 mt-0 pt-0 mb-4">
+  <div class="row g-4 mt-0 pt-0 mb-4" id="">
     @foreach($stores as $store)
-    <div class="col-sm-6 col-lg-3">
-        @if($store->status == 'Cerrada')
-          <div class="card card-border-shadow-danger">
-        @else
-          <div class="card card-border-shadow-success">
-        @endif
-            <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-center col-10">
-                    <div class="d-flex">
-                        <div class="avatar me-3">
-                          @if( $store->status == 'Cerrada' )
-                            <span class="avatar-initial rounded bg-label-danger"><i class="fa-regular fa-circle-xmark"></i></span>
-                          @else
-                            <span class="avatar-initial rounded bg-label-success"><i class="fa-regular fa-circle-check"></i></span>
-                          @endif
-                        </div>
-                        <div>
-                            <h5 class="mb-0">{{ $store->name }}</h5>
-                            @if($store->status == 'Cerrada')
-                              <small class="text-danger">{{ $store->status }}</small>
-                            @else
-                              <small class="text-success">{{ $store->status }}</small>
-                            @endif
-                        </div>
-                    </div>
-                    <div>
-                      <label class="switch">
-                        <input type="checkbox" class="switch-input" {{ $store->status == 'Cerrada' ? '' : 'checked' }} onchange="toggleStoreStatus({{ $store->id }}, this)">
-                        <span class="switch-toggle-slider">
-                            <span class="switch-on">
-                              <i class="bx bx-check"></i>
-                            </span>
-                            <span class="switch-off">
-                              <i class="bx bx-x"></i>
-                            </span>
-                        </span>
-                      </label>
-                    </div>
-                </div>
+    <div class="col-sm-6 col-lg-3" id="tour-stores">
+      @if($store->status == 'Cerrada')
+      <div class="card card-border-shadow-danger">
+      @else
+      <div class="card card-border-shadow-success">
+      @endif
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center col-10">
+            <div class="d-flex">
+              <div class="avatar me-3">
+                @if( $store->status == 'Cerrada' )
+                <span class="avatar-initial rounded bg-label-danger"><i class="fa-regular fa-circle-xmark"></i></span>
+                @else
+                <span class="avatar-initial rounded bg-label-success"><i class="fa-regular fa-circle-check"></i></span>
+                @endif
+              </div>
+              <div>
+                <h5 class="mb-0">{{ $store->name }}</h5>
+                @if($store->status == 'Cerrada')
+                <small class="text-danger">{{ $store->status }}</small>
+                @else
+                <small class="text-success">{{ $store->status }}</small>
+                @endif
+              </div>
             </div>
+            <div>
+              <label class="switch">
+                <input type="checkbox" class="switch-input" {{ $store->status == 'Cerrada' ? '' : 'checked' }} onchange="toggleStoreStatus({{ $store->id }}, this)">
+                <span class="switch-toggle-slider">
+                  <span class="switch-on">
+                    <i class="bx bx-check"></i>
+                  </span>
+                  <span class="switch-off">
+                    <i class="bx bx-x"></i>
+                  </span>
+                </span>
+              </label>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
     @endforeach
   </div>
 
-
-  <!-- single card  -->
-  <div class="col-12">
+  <!-- Single Card -->
+  <div class="col-12" id="tour-single-card">
     <div class="card mb-4">
       <div class="card-widget-separator-wrapper">
         <div class="card-body card-widget-separator">
           <div class="row gy-4 gy-sm-1">
-            <div class="col-sm-6 col-lg-3">
+            <div class="col-sm-6 col-lg-3" id="tour-locales">
               <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
                 <div>
                   <h3 class="mb-1">7</h3>
@@ -155,7 +103,7 @@
               </div>
               <hr class="d-none d-sm-block d-lg-none me-4">
             </div>
-            <div class="col-sm-6 col-lg-3">
+            <div class="col-sm-6 col-lg-3" id="tour-clientes-registrados">
               <div class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-3 pb-sm-0">
                 <div>
                   <h3 class="mb-1">1492</h3>
@@ -167,7 +115,7 @@
               </div>
               <hr class="d-none d-sm-block d-lg-none">
             </div>
-            <div class="col-sm-6 col-lg-3">
+            <div class="col-sm-6 col-lg-3" id="tour-ingresos-mes">
               <div class="d-flex justify-content-between align-items-start border-end pb-3 pb-sm-0 card-widget-3">
                 <div>
                   <h3 class="mb-1">$24.600</h3>
@@ -178,7 +126,7 @@
                 </span>
               </div>
             </div>
-            <div class="col-sm-6 col-lg-3">
+            <div class="col-sm-6 col-lg-3" id="tour-ingresos-perdidos">
               <div class="d-flex justify-content-between align-items-start">
                 <div>
                   <h3 class="mb-1">$1.498</h3>
@@ -194,10 +142,10 @@
       </div>
     </div>
   </div>
-  <!-- /single card  -->
+  <!-- /Single Card -->
 
   <!-- Card Border Shadow -->
-  <div class="col-sm-6 col-lg-3 mb-4">
+  <div class="col-sm-6 col-lg-3 mb-4" id="tour-pedidos-completados">
     <div class="card card-border-shadow-primary h-100">
       <div class="card-body">
         <div class="d-flex align-items-center mb-2 pb-1">
@@ -213,7 +161,7 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-6 col-lg-3 mb-4">
+  <div class="col-sm-6 col-lg-3 mb-4" id="tour-pedidos-pendientes">
     <div class="card card-border-shadow-warning h-100">
       <div class="card-body">
         <div class="d-flex align-items-center mb-2 pb-1">
@@ -229,7 +177,7 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-6 col-lg-3 mb-4">
+  <div class="col-sm-6 col-lg-3 mb-4" id="tour-pedidos-cancelados">
     <div class="card card-border-shadow-danger h-100">
       <div class="card-body">
         <div class="d-flex align-items-center mb-2 pb-1">
@@ -245,7 +193,7 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-6 col-lg-3 mb-4">
+  <div class="col-sm-6 col-lg-3 mb-4" id="tour-ticket-medio">
     <div class="card card-border-shadow-info h-100">
       <div class="card-body">
         <div class="d-flex align-items-center mb-2 pb-1">
@@ -262,9 +210,8 @@
     </div>
   </div>
 
-
   <!-- Total Income -->
-  <div class="col-12 mb-4">
+  <div class="col-12 mb-4" id="tour-ingresos-totales">
     <div class="card">
       <div class="row row-bordered g-0">
         <div class="col-md-8">
@@ -295,7 +242,7 @@
           </div>
           <div class="card-body">
             <div class="report-list">
-              <div class="report-list-item rounded-2 mb-3">
+              <div class="report-list-item rounded-2 mb-3" id="tour-ingresos-fisico">
                 <div class="d-flex align-items-start">
                   <div class="avatar me-2">
                     <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-store"></i></span>
@@ -309,7 +256,7 @@
                   </div>
                 </div>
               </div>
-              <div class="report-list-item rounded-2 mb-3">
+              <div class="report-list-item rounded-2 mb-3" id="tour-ingresos-ecommerce">
                 <div class="d-flex align-items-start">
                   <div class="avatar me-2">
                     <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-laptop"></i></span>
@@ -323,7 +270,7 @@
                   </div>
                 </div>
               </div>
-              <div class="report-list-item rounded-2">
+              <div class="report-list-item rounded-2" id="tour-ingresos-total">
                 <div class="d-flex align-items-start">
                   <div class="avatar me-2">
                     <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-shape-square"></i></span>
@@ -342,23 +289,22 @@
         </div>
       </div>
     </div>
-    <!--/ Total Income -->
   </div>
-  <!--/ Total Income -->
+  <!-- /Total Income -->
 
-  <!-- pill table -->
-  <div class="col-8 mb-4 order-2 order-xl-0">
+  <!-- Pill Table -->
+  <div class="col-8 mb-4 order-2 order-xl-0" id="tour-pill-table">
     <div class="card h-100 text-center">
       <div class="card-header">
         <ul class="nav nav-pills nav- card-header-pills" role="tablist">
           <li class="nav-item">
-            <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-browser" aria-controls="navs-pills-browser" aria-selected="true">Locales</button>
+            <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-browser" aria-controls="navs-pills-browser" aria-selected="true" id="tour-locales-tab">Locales</button>
           </li>
           <li class="nav-item">
-            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-os" aria-controls="navs-pills-os" aria-selected="false">Productos</button>
+            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-os" aria-controls="navs-pills-os" aria-selected="false" id="tour-productos-tab">Productos</button>
           </li>
           <li class="nav-item">
-            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-country" aria-controls="navs-pills-country" aria-selected="false">Categorías</button>
+            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-country" aria-controls="navs-pills-country" aria-selected="false" id="tour-categorias-tab">Categorías</button>
           </li>
         </ul>
       </div>
@@ -650,8 +596,10 @@
       </div>
     </div>
   </div>
+  <!-- /Pill Table -->
+
   <!-- Reasons for delivery exceptions -->
-  <div class="col-md-6 col-xxl-4 mb-4 order-4">
+  <div class="col-md-6 col-xxl-4 mb-4 order-4" id="tour-ventas-por-local">
     <div class="card h-100">
       <div class="card-header d-flex align-items-center justify-content-between">
         <div class="card-title mb-0">
@@ -672,10 +620,6 @@
       </div>
     </div>
   </div>
-  <!--/ Reasons for delivery exceptions -->
-
-  <!--/ pill table -->
-
-
+  <!-- /Reasons for delivery exceptions -->
 </div>
 @endsection
