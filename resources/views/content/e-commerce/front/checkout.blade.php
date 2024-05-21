@@ -100,8 +100,8 @@ $configData = Helper::appClasses();
               </div>
               <div class="col-md mb-md-0 mb-2">
                 <div class="form-check custom-option custom-option-basic">
-                  <label class="form-check-label custom-option-content form-check-input-payment d-flex gap-3 align-items-center" for="customRadioPaypal">
-                    <input name="payment_method" class="form-check-input" type="radio" value="efectivo" id="customRadioPaypal" />
+                  <label class="form-check-label custom-option-content form-check-input-payment d-flex gap-3 align-items-center" for="customRadioEfectivo">
+                    <input name="payment_method" class="form-check-input" type="radio" value="efectivo" id="customRadioEfectivo" />
                     <span class="custom-option-body">
                       <img src="{{asset('assets/img/icons/payments/cash.png') }}" alt="paypal" width="58">
                       <span class="ms-3">Efectivo</span>
@@ -320,6 +320,21 @@ document.querySelectorAll('input[name="shipping_method"]').forEach((elem) => {
     });
 });
 
+// Si cambio entre efectivo y tarjeta, obligo al usuario a tener que volver a estimar el envío y vuelvo a bloquear el botón de confirmar pedido
+document.querySelectorAll('input[name="payment_method"]').forEach((elem) => {
+    elem.addEventListener('change', function(event) {
+        const orderConfirmButton = document.getElementById('orderConfirm');
+        orderConfirmButton.setAttribute('disabled', 'disabled');
+        // Reseteo el costo de envío a calcular y el total a calcular
+        document.getElementById('orderShippingCost').innerText = 'A calcular';
+        document.getElementById('orderTotal').innerText = 'A calcular';
+        // Actualizo el valor de estimateId a vacío
+        document.getElementById('estimateIdInput').value = '';
+        // Actualizo el valor de shippingCost a 0
+        document.getElementById('shippingCostInput').value = '0';
+    });
+});
+
 document.getElementById('validate-address').addEventListener('click', async function(event) {
   if (document.getElementById('customRadioPedidosYa').checked) {
     event.preventDefault();
@@ -387,6 +402,7 @@ document.getElementById('validate-address').addEventListener('click', async func
       referenceId: referenceId,
       items: items,
       isTest: true,
+      notificationMail: document.getElementById('email').value || null,
       waypoints: [{
         type: "PICK_UP",
         ...storeDetails,
@@ -395,6 +411,8 @@ document.getElementById('validate-address').addEventListener('click', async func
       }, {
         type: "DROP_OFF",
         ...userDetails,
+        // Le paso collectMoney si está seleccionado efectivo como método de pago
+        collectMoney: document.getElementById('customRadioEfectivo').checked ? parseFloat(document.getElementById('orderTotal').innerText.replace('{{ $settings->currency_symbol }}', '')) : null,
         phone: document.getElementById('phone').value,
         name: document.getElementById('name').value + " " + document.getElementById('lastname').value
       }]

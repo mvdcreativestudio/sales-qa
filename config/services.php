@@ -45,4 +45,7 @@ return [
         'api_key' => env('PEDIDOS_YA_API_KEY'),
     ],
 
+    'checkout' => [
+        'return_url' => env('CHECKOUT_RETURN_URL'),
+    ]
 ];

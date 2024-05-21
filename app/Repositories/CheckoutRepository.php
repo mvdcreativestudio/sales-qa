@@ -18,6 +18,23 @@ use Illuminate\Http\RedirectResponse;
 class CheckoutRepository
 {
   /**
+   * El repositorio de PedidosYa para la gestión de envíos.
+   *
+   * @var PedidosYaRepository
+  */
+  protected $pedidosYaRepository;
+
+  /**
+   * Inyecta el repositorio de PedidosYa en el repositorio.
+   *
+   * @param PedidosYaRepository $pedidosYaRepository
+  */
+  public function __construct(PedidosYaRepository $pedidosYaRepository)
+  {
+    $this->pedidosYaRepository = $pedidosYaRepository;
+  }
+
+  /**
    * Obtiene los datos para mostrar en la página de checkout.
    *
    * @return array
@@ -88,16 +105,12 @@ class CheckoutRepository
         if ($request->payment_method === 'card') {
             $redirectUrl = $this->processCardPayment($request, $order, $mercadoPagoService, $storeId);
             DB::commit();
-            session()->forget('cart'); // Limpiar el carrito de compras
+            session()->forget('cart');
             return Redirect::away($redirectUrl);
         } else {
-            // Lógica para pago en efectivo
             DB::commit();
-            session()->forget('cart'); // Limpiar el carrito de compras
-
-            Log::info('Pedido procesado correctamente.');
-            // Redirigir al usuario a la página de éxito usando el UUID
-            return redirect()->route('checkout.success', $order->uuid);
+            session()->forget('cart');
+            return $this->processCashPayment($order);
         }
     } catch (\Exception $e) {
         DB::rollBack();
@@ -130,6 +143,37 @@ class CheckoutRepository
     Log::info('Orden creada:', $order->toArray());
 
     return $order;
+  }
+
+  /**
+   * Procesa el pago con efectivo.
+   *
+   * @param Order $order
+   * @return RedirectResponse
+  */
+  private function processCashPayment(Order $order): RedirectResponse
+  {
+    if ($order->shipping_method === 'peya') {
+      $request = new Request([
+        'estimate_id' => $order->estimate_id,
+      ]);
+
+      $response = $this->pedidosYaRepository->confirmOrderRequest($request);
+
+      Log::info("Respuesta de confirmación de envío de PedidosYa:", $response);
+
+      if (isset($response['shippingId'])) {
+        $order->shipping_id = $response['shippingId'];
+        $order->shipping_status = $response['status'];
+        $order->save();
+
+        Log::info("Envío creado con éxito en PedidosYa para la orden con ID: $order->id");
+      } else {
+        Log::error("Error al crear el envío en PedidosYa para la orden con ID: $order->id", ['response' => $response]);
+      }
+    }
+
+    return redirect()->route('checkout.success', $order->uuid);
   }
 
   /**
@@ -212,10 +256,10 @@ class CheckoutRepository
         'name' => $request->name,
         'lastname' => $request->lastname,
         'type' => 'individual',
-        'state' => 'Montevideo',
-        'city' => 'Montevideo',
+        'state' => 'N/A',
+        'city' => 'N/A',
         'country' => 'Uruguay',
-        'address' => $request->address || 'N/A',
+        'address' => $request->address ? $request->address : 'N/A',
         'phone' => $request->phone,
         'email' => $request->email,
     ];

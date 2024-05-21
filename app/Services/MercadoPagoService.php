@@ -76,9 +76,9 @@ class MercadoPagoService
 
       // Configurar las URLs de retorno
       $preference->back_urls = [
-          "success" => "https://chelato.test/checkout/success/{$order->id}",
-          "failure" => "https://chelato.test/checkout/failure/{$order->id}",
-          "pending" => "https://chelato.test/checkout/pending/{$order->id}"
+          "success" => config('services.checkout.return_url') . "/success/{$order->uuid}",
+          "failure" => config('services.checkout.return_url') . "/failure/{$order->uuid}",
+          "pending" => config('services.checkout.return_url') . "/pending/{$order->uuid}"
       ];
       $preference->auto_return = "all";
 
