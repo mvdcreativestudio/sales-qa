@@ -143,8 +143,14 @@ class DatacenterRepository
         $totalPaidOrders = Order::whereBetween('date', [$startDate, $endDate])->where('payment_status', 'paid')->sum('total');
         $totalPaidOrdersCount = Order::whereBetween('date', [$startDate, $endDate])->where('payment_status', 'paid')->count();
 
-        return number_format($totalPaidOrders / $totalPaidOrdersCount, 0, ',', '.');
+        // Verifica si el totalPaidOrdersCount es mayor a 0 antes de realizar la división
+        if ($totalPaidOrdersCount > 0) {
+            return number_format($totalPaidOrders / $totalPaidOrdersCount, 0, ',', '.');
+        } else {
+            return 'N/A';
+        }
     }
+
 
     // Ventas por mes
     public function getMonthlyIncomeData() {
@@ -155,7 +161,7 @@ class DatacenterRepository
                   ->get();
     }
 
-    
+
     // Ventas por local en porcentaje para gráfica de torta
     public function getSalesByStoreData()
     {

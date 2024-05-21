@@ -303,13 +303,15 @@ document.querySelectorAll('input[name="shipping_method"]').forEach((elem) => {
         const orderConfirmButton = document.getElementById('orderConfirm');
         const orderShippingCost = document.getElementById('orderShippingCost');
         const orderTotal = document.getElementById('orderTotal');
+        const subtotal = parseFloat('{{ $subtotal }}');
+        const discount = parseFloat('{{ $discount }}');
 
         if (this.value === 'pickup') {
             addressContainer.style.display = 'none';
             validateAddressButton.style.display = 'none';
             orderShippingCost.innerText = '$0';
             orderConfirmButton.removeAttribute('disabled');
-            orderTotal.innerText = '{{ $settings->currency_symbol }}' + '{{ $subtotal }}';
+            orderTotal.innerText = '{{ $settings->currency_symbol }}' + ('{{ $subtotal }}' - '{{ $discount }}');
         } else {
             addressContainer.style.display = 'block';
             validateAddressButton.style.display = 'block';
@@ -445,7 +447,7 @@ document.getElementById('validate-address').addEventListener('click', async func
             document.getElementById('orderShippingCost').innerText = '{{ $settings->currency_symbol }}' + data.deliveryOffers[0].pricing.total;
 
             // Actualiza el total
-            document.getElementById('orderTotal').innerText = '{{ $settings->currency_symbol }}' + (parseFloat(data.deliveryOffers[0].pricing.total) + parseFloat('{{ $subtotal }}'));
+            document.getElementById('orderTotal').innerText = '{{ $settings->currency_symbol }}' + (parseFloat(data.deliveryOffers[0].pricing.total) + parseFloat('{{ $subtotal }}' - '{{ $discount }}'));
           }
         }
       })

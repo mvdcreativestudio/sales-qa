@@ -72,6 +72,17 @@ class MercadoPagoService
           $item->unit_price = $itemData['unit_price'];
           $items[] = $item;
       }
+
+      // Aplicar descuento
+      $discount = $preferenceData['discount']['amount'] ?? 0;
+      if ($discount > 0) {
+        $discountItem = new Item();
+        $discountItem->title = $preferenceData['discount']['description'];
+        $discountItem->quantity = 1;
+        $discountItem->unit_price = -$discount;
+        $items[] = $discountItem;
+      }
+
       $preference->items = $items;
 
       // Configurar las URLs de retorno
