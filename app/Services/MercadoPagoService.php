@@ -72,13 +72,24 @@ class MercadoPagoService
           $item->unit_price = $itemData['unit_price'];
           $items[] = $item;
       }
+
+      // Aplicar descuento
+      $discount = $preferenceData['discount']['amount'] ?? 0;
+      if ($discount > 0) {
+        $discountItem = new Item();
+        $discountItem->title = $preferenceData['discount']['description'];
+        $discountItem->quantity = 1;
+        $discountItem->unit_price = -$discount;
+        $items[] = $discountItem;
+      }
+
       $preference->items = $items;
 
       // Configurar las URLs de retorno
       $preference->back_urls = [
-          "success" => "https://chelato.test/checkout/success/{$order->id}",
-          "failure" => "https://chelato.test/checkout/failure/{$order->id}",
-          "pending" => "https://chelato.test/checkout/pending/{$order->id}"
+          "success" => config('services.checkout.return_url') . "/success/{$order->uuid}",
+          "failure" => config('services.checkout.return_url') . "/failure/{$order->uuid}",
+          "pending" => config('services.checkout.return_url') . "/pending/{$order->uuid}"
       ];
       $preference->auto_return = "all";
 

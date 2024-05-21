@@ -5,12 +5,12 @@ $configData = Helper::appClasses();
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
   @if(!isset($navbarFull))
   <div class="app-brand demo">
-    <a href="{{url('/')}}" class="app-brand-link">
+    <a href="{{ url('/') }}" class="app-brand-link">
       <div class="container">
-        <img src="{{asset('assets\img\branding\chelato-black.png')}}" alt="" class="" style="max-width: 150px;">
+        <img src="{{ asset('assets\img\branding\chelato-black.png') }}" alt="" class="" style="max-width: 150px;">
       </div>
     </a>
-    {{-- Colapsa el menú }}
+    {{-- Colapsa el menú --}}
 
     {{-- <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
       <i class="bx bx-chevron-left bx-sm align-middle"></i>
@@ -44,7 +44,7 @@ $configData = Helper::appClasses();
         <span class="menu-header-text">{{ __($menu->menuHeader) }}</span>
       </li>
       @else
-      <li class="menu-item {{$activeClass}}">
+      <li class="menu-item {{$activeClass}}" @isset($menu->id) id="{{ $menu->id }}" @endisset>
         <a href="{{ isset($menu->url) ? url($menu->url) : 'javascript:void(0);' }}" class="{{ isset($menu->submenu) ? 'menu-link menu-toggle' : 'menu-link' }}" @if(isset($menu->target) && !empty($menu->target)) target="_blank" @endif>
           @isset($menu->icon)
           <i class="{{ $menu->icon }}"></i>

@@ -23,7 +23,7 @@ $configData = Helper::appClasses();
           <div class="col-12">
             <ul class="list-group list-group-horizontal-md">
               <li class="list-group-item flex-fill p-4 text-heading">
-                <h6 class="d-flex align-items-center gap-1"><i class="bx bx-map"></i> Envío</h6>
+                <h6 class="d-flex align-items-center gap-1"><i class="bx bx-map"></i> Información del cliente</h6>
                 <address class="mb-0">
                   {{$order->client->name}} {{$order->client->lastname}} <br />
                   {{$order->client->address}},<br />
@@ -39,6 +39,12 @@ $configData = Helper::appClasses();
                 <p>Retiro en el local</p>
                 @elseif($order->shipping_method == 'peya')
                 <p>Pedidos Ya</p>
+                @endif
+                <h6 class="d-flex align-items-center gap-1"><i class="bx bxs-credit-card"></i> Método de pago</h6>
+                @if($order->payment_method == 'efectivo')
+                <p>Efectivo</p>
+                @elseif($order->payment_method == 'card')
+                <p>MercadoPago</p>
                 @endif
               </li>
             </ul>
@@ -98,6 +104,12 @@ $configData = Helper::appClasses();
 
                 <dt class="col-sm-6 fw-normal">Envío</dt>
                 <dd class="col-sm-6 text-end">${{$order->shipping}}</dd>
+
+                @if($order->discount != 0)
+                <dt class="col-sm-6 fw-normal">Cupón de descuento</dt>
+                <dd class="col-sm-6 text-end">${{$order->discount}}</dd>
+                @endif
+
               </dl>
               <hr class="mx-n4">
               <dl class="row mb-0">
