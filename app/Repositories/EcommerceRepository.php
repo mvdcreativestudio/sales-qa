@@ -6,6 +6,7 @@ use App\Models\ProductCategory;
 use App\Models\Store;
 use App\Models\Flavor;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\RedirectResponse;
 
 class EcommerceRepository
 {
@@ -54,5 +55,21 @@ class EcommerceRepository
         'flavors' => $flavors,
         'store' => $store
     ];
+  }
+
+  /**
+   * Muestra la pagina principal ('/') en base a la tienda o si no tiene ninguna seleccionada
+   *
+   * @return string
+  */
+  public function home(): string
+  {
+    $store = session('store');
+
+    if ($store) {
+        return route('store', ['slug' => $store['slug']]);
+    }
+
+    return route('shop');
   }
 }

@@ -79,4 +79,15 @@ class EcommerceController extends Controller
   {
       return view('content.e-commerce.backoffice.settings');
   }
+
+  /**
+   * Muestra la pagina principal ('/') en base a la tienda o si no tiene ninguna seleccionada
+   *
+   * @return RedirectResponse
+  */
+  public function home(): RedirectResponse
+  {
+    $returnUrl = $this->ecommerceRepository->home();
+    return redirect($returnUrl);
+  }
 }

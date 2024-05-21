@@ -60,7 +60,7 @@
   <div class="vendors-container container mt-5">
     <div class="row text-center justify-content-center">
       <h4>Finaliza tu pedido</h4>
-      <a href="{{ route('store', ['storeId' => session('store')['id']]) }}" class="btn btn-primary col-md-3 col-6 mt-2 mb-4">Ir a la tienda</a>
+      <a href="{{ route('store', ['slug' => session('store')['slug']]) }}" class="btn btn-primary col-md-3 col-6 mt-2 mb-4">Ir a la tienda</a>
 
     </div>
   </div>

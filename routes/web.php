@@ -150,7 +150,8 @@ Route::resources([
 ]);
 
 // E-Commerce
-Route::get('/', [EcommerceController::class, 'index'])->name('shop'); // Seleccionar Tienda
+Route::get('/', [EcommerceController::class, 'home'])->name('home');
+Route::get('shop', [EcommerceController::class, 'index'])->name('shop'); // Seleccionar Tienda
 Route::get('store/{slug}', [EcommerceController::class, 'store'])->name('store'); // Tienda
 Route::post('/cart/select-store', [CartController::class, 'selectStore'])->name('cart.selectStore'); // Seleccionar Tienda en el Carrito
 Route::post('/cart/add/{productId}', [CartController::class, 'addToCart'])->name('cart.add'); // Agregar al Carrito
