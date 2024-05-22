@@ -113,6 +113,10 @@ class CreatePermissions extends Command
                 [
                     'slug' => 'company_settings',
                     'view_all' => false,
+                ],
+                [
+                    'slug' => 'email_templates',
+                    'view_all' => false,
                 ]
             ]
         ];

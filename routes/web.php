@@ -25,6 +25,7 @@ use App\Http\Controllers\{
     CompanySettingsController,
     DatacenterController,
     MercadoPagoController,
+    EmailTemplateController,
 };
 
 // Middleware de autenticación y verificación de email
@@ -109,6 +110,13 @@ Route::middleware([
     Route::get('/ecommerce/marketing', [EcommerceController::class, 'marketing'])->name('marketing');
     Route::get('/ecommerce/settings', [EcommerceController::class, 'settings'])->name('settings');
 
+    // Plantillas de Correos
+    Route::get('/email-templates/edit/{templateId?}', [EmailTemplateController::class, 'edit'])->name('email-templates.edit');
+    Route::post('/email-templates/update/{templateId?}', [EmailTemplateController::class, 'update'])->name('email-templates.update');
+    Route::post('/upload-image', [EmailTemplateController::class, 'uploadImage'])->name('upload-image');
+
+
+
     // Detalles de Ordenes
     Route::get('/orders/{order}/show', [OrderController::class, 'show'])->name('orders.show');
 
@@ -168,5 +176,3 @@ Route::post('/mpagohook', [MercadoPagoController::class, 'webhooks'])->name('mpa
 
 // Cambio de idioma
 Route::get('lang/{locale}', [LanguageController::class, 'swap']);
-
-Route::get('/test/{orderId}', [DashboardController::class, 'sendNewOrderEmail']);

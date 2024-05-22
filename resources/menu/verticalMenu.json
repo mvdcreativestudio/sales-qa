@@ -112,6 +112,12 @@
           "name": "Configuración",
           "slug": "settings",
           "url": "/admin/ecommerce/settings"
+        },
+        {
+          "id": "tour-email-templates",
+          "name": "Plantillas de Email",
+          "slug": "email_templates",
+          "url": "/admin/ecommerce/email-templates"
         }
       ]
     },
