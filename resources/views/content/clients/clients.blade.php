@@ -61,8 +61,6 @@
         <tr>
           <th class="text-nowrap col-1">Id</th>
           <th class="col-2">Cliente</th>
-          <th class="col-1">T/C</th>
-          <th class="col-1">RUT / CI</th>
           <th class="col-2">Dirección</th>
           <th class="col-1">Ciudad</th>
           <th class="text-nowrap col-1">Departamento</th>

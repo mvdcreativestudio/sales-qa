@@ -112,6 +112,9 @@
             text-align: center;
             margin-bottom: 20px;
         }
+        .mt-2 {
+            margin-top: 20px!important;
+        }
 
     </style>
 </head>
@@ -121,7 +124,10 @@
             <img src="https://657041b07b.imgdist.com/pub/bfra/j2m7xe6w/nvl/6a4/y4a/Chelato-Black-Logo.png" alt="Logo">
         </div>
         <div class="subheader">
-          <h4 style="margin-bottom: 8px;">¡Has recibido un nuevo pedido!</h4><br><h6 style="margin-top: 0px;">Local: <strong>{{ $variables['store_name'] }}</strong></h6>
+          <h4 style="margin-bottom: 8px;">¡Hola, {{ $variables['client_name'] }}!</h4>
+          <h4>Hemos recibido tu pedido en {{ $companySettings->name }}</h4>
+          <h6 style="margin-top: 0px;">Local: <strong>{{ $variables['store_name'] }}</strong></h6>
+
         </div>
         <div class="order-details">
             <h2>Detalles del pedido</h2>
@@ -129,6 +135,9 @@
             <p><strong>Fecha de Pedido:</strong> {{ $variables['order_date'] }}</p>
             <p><strong>Método de Pago:</strong> {{ $variables['order_payment_method'] }}</p>
             <p><strong>Método de Envío:</strong> {{ $variables['order_shipping_method'] }}</p>
+            @if($variables['order_shipping_method'] == 'pickup')
+              <p class="mt-2">Puedes retirar tu pedido en el correr de las próximas 2 horas.</p>
+            @endif
         </div>
         <div class="client-details">
           <h2>Detalles del cliente</h2>
@@ -136,9 +145,6 @@
           <p>{{ $variables['client_email'] }}</p>
           <p>{{ $variables['client_phone'] }}</p>
           <p>{{ $variables['client_address'] }}, {{ $variables['client_city'] }}, {{ $variables['client_state'] }}</p>
-        </div>
-        <div class="buttons">
-            <a href="" class="btn">Ver Pedido</a>
         </div>
         <table class="product-table">
             <thead>
@@ -150,7 +156,7 @@
                 </tr>
             </thead>
             <tbody>
-                {!! $variables['order_items'] !!}
+              {!! $variables['order_items'] !!}
             </tbody>
         </table>
         <div class="totals">

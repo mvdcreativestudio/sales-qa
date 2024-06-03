@@ -1,7 +1,3 @@
-/**
- * App eCommerce customer all
- */
-
 'use strict';
 
 // Datatable (jquery)
@@ -38,50 +34,50 @@ $(document).ready(function() {
       serverSide: true,
       ajax: 'clients/datatable',
       columns: [
-        { data: 'id' },
-        { data: 'name' },
-        { data: 'type' },
-        { defaultContent: "" },
-        { data: 'address' },
-        { data: 'city' },
-        { data: 'state' },
-
-
+        { data: 'id', className: 'col-1' },
+        { data: 'name', className: 'col-3' },
+        { data: 'address', className: 'col-5' },
+        { data: 'city', className: 'col-1' },
+        { data: 'state', className: 'col-1' }
       ],
 
       columnDefs: [
-          {
-              // Apunta a la última columna para el renderizado condicional
-              targets: 3,
-              render: function(data, type, row) {
-                  // "row" contiene toda la información de la fila actual
-                  // Decide qué mostrar basado en el valor de "type"
-                  if (row.type === 'company') {
-                      return row.rut; // Asume que "rut" es una propiedad del objeto de la fila
-                  } else if (row.type === 'individual') {
-                      return row.ci; // Asume que "ci" es una propiedad del objeto de la fila
-                  } else {
-                      return ''; // En caso de que "type" no sea ni "company" ni "individual"
-                  }
-              }
+        {
+          // Modificación para mostrar nombre completo
+          targets: 1,
+          render: function(data, type, row) {
+            return `${row.name} ${row.lastname}`;
           }
+        }
       ],
 
       order: [[2, 'desc']],
       dom:
-          '<"card-header d-flex flex-wrap py-3"' +
-          '<"me-5 ms-n2"f>' +
-          '<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-md-end gap-3 gap-sm-2 flex-wrap flex-sm-nowrap"lB>' +
-          '>t' +
-          '<"row mx-2"' +
-          '<"col-sm-12 col-md-6"i>' +
-          '<"col-sm-12 col-md-6"p>' +
-          '>',
+        '<"card-header d-flex flex-wrap py-3"' +
+        '<"me-5 ms-n2"f>' +
+        '<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-md-end gap-3 gap-sm-2 flex-wrap flex-sm-nowrap"lB>' +
+        '>t' +
+        '<"row mx-2"' +
+        '<"col-sm-12 col-md-6"i>' +
+        '<"col-sm-12 col-md-6"p>' +
+        '>',
 
       language: {
-          sLengthMenu: '_MENU_',
-          search: '',
-          searchPlaceholder: 'Buscar'
+        search: '',
+        searchPlaceholder: 'Buscar...',
+        sLengthMenu: '_MENU_',
+        info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+        infoFiltered: "filtrados de _MAX_ productos",
+        paginate: {
+          first: '<<',
+          last: '>>',
+          next: '>',
+          previous: '<'
+        },
+        emptyTable: 'No hay registros disponibles',
+        pagingType: "full_numbers",
+        dom: 'Bfrtip',
+        renderer: "bootstrap"
       },
       // Buttons with Dropdown
       buttons: [
@@ -93,8 +89,7 @@ $(document).ready(function() {
             'data-bs-target': '#offcanvasEcommerceCustomerAdd'
           }
         }
-      ],
-
+      ]
     });
     $('.dataTables_length').addClass('mt-0 mt-md-3 me-2');
     $('.dt-action-buttons').addClass('pt-0');
@@ -171,7 +166,6 @@ $(document).ready(function() {
     }
   });
 })();
-
 
 // Campo CI o RUT dependiendo si es CF o Empresa
 $(document).ready(function() {

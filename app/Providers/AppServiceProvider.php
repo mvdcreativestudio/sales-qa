@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\EmailNotificationsRepository;
 use Illuminate\Support\Facades\Vite;
 
 class AppServiceProvider extends ServiceProvider
@@ -10,9 +11,11 @@ class AppServiceProvider extends ServiceProvider
   /**
    * Register any application services.
    */
-  public function register(): void
+  public function register()
   {
-    //
+      $this->app->singleton(EmailNotificationsRepository::class, function ($app) {
+          return new EmailNotificationsRepository();
+      });
   }
 
   /**

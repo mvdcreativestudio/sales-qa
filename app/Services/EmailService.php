@@ -6,30 +6,33 @@ use App\Models\EmailTemplate;
 use App\Models\EcommerceSetting;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
 
 class EmailService
 {
-    /**
-     * Envía un correo electrónico basado en una plantilla.
-     *
-     * @param string $templateName
-     * @param array $variables
-     * @param string $recipient
-     */
+    protected $baseUrl;
+
+    public function __construct()
+    {
+        $this->baseUrl = config('app.url');
+    }
+
     private function sendTemplateEmail(string $templateName, array $variables, string $recipient)
     {
         try {
-            $template = EmailTemplate::where('name', $templateName)->firstOrFail();
+            $subject = $variables['subject'] ?? 'Correo de Notificación';
+            $replyTo = $variables['reply_to'] ?? 'default_reply_to@example.com';
 
-            $subject = $this->replaceVariables($template->subject, $variables);
-            $body = $this->replaceVariables($template->body, $variables);
+            $variables['order_items'] = $this->generateOrderItemsHtml(json_decode($variables['order_items'], true));
+            $variables['year'] = date('Y');
 
-            Log::info('Cuerpo del correo después de reemplazar las variables:', ['body' => $body]);
+            $body = View::make('emails.' . str_replace('_', '.', $templateName), $variables)->render();
 
-            Mail::send([], [], function ($message) use ($recipient, $subject, $body) {
+            Mail::send([], [], function ($message) use ($recipient, $subject, $body, $replyTo) {
                 $message->to($recipient)
                     ->subject($subject)
-                    ->html($body); // Usar método html aquí
+                    ->replyTo($replyTo)
+                    ->html($body);
             });
 
             Log::info('Correo enviado a ' . $recipient . ' con el asunto ' . $subject);
@@ -38,70 +41,50 @@ class EmailService
         }
     }
 
-    /**
-     * Reemplaza las variables en la plantilla.
-     *
-     * @param string $content
-     * @param array $variables
-     * @return string
-     */
-    private function replaceVariables(string $content, array $variables): string
+    private function generateOrderItemsHtml(array $items): string
     {
-        Log::info('Contenido original:', ['content' => $content]);
-
-        foreach ($variables as $key => $value) {
-            $content = str_replace('{{ ' . $key . ' }}', $value, $content);
+        $html = '';
+        foreach ($items as $item) {
+            $html .= '
+                <tr>
+                    <td>' . $item['name'] . '</td>
+                    <td>' . $item['quantity'] . '</td>
+                    <td>$' . $item['price'] . '</td>
+                    <td>$' . ($item['quantity'] * $item['price']) . '</td>
+                </tr>';
         }
-
-        Log::info('Contenido después del reemplazo:', ['content' => $content]);
-
-        return $content;
+        return $html;
     }
 
-    /**
-     * Envía un correo de nueva orden al administrador de la tienda.
-     *
-     * @param array $variables
-     */
     public function sendNewOrderEmail(array $variables)
     {
         try {
             $ecommerceSettings = EcommerceSetting::firstOrFail();
             $recipient = $ecommerceSettings->notifications_email;
-            $this->sendTemplateEmail('new-order', $variables, $recipient);
+            $this->sendTemplateEmail('ecommerce.admin.new-order', $variables, $recipient);
         } catch (\Exception $e) {
             Log::error('Error obteniendo configuraciones de ecommerce: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Envía un correo de nueva orden al cliente.
-     *
-     * @param array $variables
-     */
     public function sendNewOrderClientEmail(array $variables)
     {
         if (isset($variables['client_email'])) {
             $recipient = $variables['client_email'];
-            $this->sendTemplateEmail('new-order-client', $variables, $recipient);
+            $this->sendTemplateEmail('ecommerce.customer.new-order-client', $variables, $recipient);
         } else {
             Log::error('El email del cliente no está definido en las variables.');
         }
     }
 
-    /**
-     * Envía un correo de actualización de producto al administrador de la tienda.
-     *
-     * @param array $variables
-     */
-    public function sendProductUpdateEmail(array $variables)
+    public function sendPaymentStatusUpdateClientEmail(array $variables)
     {
-        try {
-            $ecommerceSettings = EcommerceSetting::firstOrFail();
-            $recipient = $ecommerceSettings->notifications_email;
-            $this->sendTemplateEmail('product-update', $variables, $recipient);
-        } catch (\Exception $e) {
-            Log::error('Error obteniendo configuraciones de ecommerce: ' . $e->getMessage());
+        if (isset($variables['client_email'])) {
+            $recipient = $variables['client_email'];
+            $this->sendTemplateEmail('ecommerce.customer.payment-status-update-client', $variables, $recipient);
+        } else {
+            Log::error('El email del cliente no está definido en las variables.');
         }
     }
 }
+

@@ -136,6 +136,7 @@ $(function () {
           previous: '<'
         },
         pagingType: "full_numbers",
+        emptyTable: 'No hay registros disponibles',
         dom: 'Bfrtip',
         renderer: "bootstrap"
       },

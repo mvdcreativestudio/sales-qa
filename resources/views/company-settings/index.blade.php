@@ -2,14 +2,12 @@
 
 @section('title', 'Configuración Empresa')
 
-
 @section('content')
 <h4 class="py-3 mb-4">
   <span class="text-muted fw-light">Configuración /</span> Empresa
 </h4>
 
 @include('components.alerts')
-
 
 <div class="col-xl">
   <div class="card mb-4">
@@ -58,11 +56,41 @@
             <input type="text" id="website" name="website" class="form-control" placeholder="www.suempresa.com" value="{{$companySettings->website}}"/>
           </div>
           <div class="mb-3 col-md-6 col-12">
-            <label class="form-label" for="website">RUT</label>
+            <label class="form-label" for="rut">RUT</label>
             <input type="text" id="rut" name="rut" class="form-control" placeholder="215645876452139" value="{{$companySettings->rut}}"/>
           </div>
         </div>
-        <div class="d-flex gap-2 mb-3 col-12">
+
+        <!-- Redes Sociales -->
+        <h5 class="mb-3 mt-5">Redes Sociales</h5>
+        <div class="row col-12">
+          <div class="mb-3 col-md-6 col-12">
+            <label class="form-label" for="facebook">Facebook</label>
+            <input type="text" id="facebook" name="facebook" class="form-control" placeholder="URL de Facebook" value="{{$companySettings->facebook}}"/>
+          </div>
+          <div class="mb-3 col-md-6 col-12">
+            <label class="form-label" for="instagram">Instagram</label>
+            <input type="text" id="instagram" name="instagram" class="form-control" placeholder="URL de Instagram" value="{{$companySettings->instagram}}"/>
+          </div>
+        </div>
+        <div class="row col-12">
+          <div class="mb-3 col-md-6 col-12">
+            <label class="form-label" for="twitter">Twitter</label>
+            <input type="text" id="twitter" name="twitter" class="form-control" placeholder="URL de Twitter" value="{{$companySettings->twitter}}"/>
+          </div>
+          <div class="mb-3 col-md-6 col-12">
+            <label class="form-label" for="linkedin">LinkedIn</label>
+            <input type="text" id="linkedin" name="linkedin" class="form-control" placeholder="URL de LinkedIn" value="{{$companySettings->linkedin}}"/>
+          </div>
+        </div>
+        <div class="row col-12">
+          <div class="mb-3 col-md-6 col-12">
+            <label class="form-label" for="youtube">YouTube</label>
+            <input type="text" id="youtube" name="youtube" class="form-control" placeholder="URL de YouTube" value="{{$companySettings->youtube}}"/>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 mb-3 col-12 mt-3">
           <input type="hidden" name="allow_registration" value="0"/>
           <input class="form-check-input" type="checkbox" value="1" id="allow_registration" name="allow_registration" {{ $companySettings->allow_registration ? 'checked' : '' }}>
           <label class="form-check-label" for="allow_registration">Permitir registro en página de Login</label>
@@ -78,7 +106,6 @@
   document.getElementById('myForm').onsubmit = function() {
       console.log('Form submitted');
   };
-  </script>
-
+</script>
 
 @endsection

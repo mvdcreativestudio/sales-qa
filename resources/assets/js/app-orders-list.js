@@ -119,23 +119,22 @@ $(function () {
         '>',
         lengthMenu: [10, 25, 50, 100],
         language: {
-        search: "",
-        searchPlaceholder: 'Buscar...',
-        sLengthMenu: '_MENU_',
-        info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
-        infoFiltered: "filtrados de _MAX_ pedidos",
-        paginate: {
-          first: '<<',
-          last: '>>',
-          next: '>',
-          previous: '<'
+          search: '',
+          searchPlaceholder: 'Buscar...',
+          sLengthMenu: '_MENU_',
+          info: 'Mostrando _START_ a _END_ de _TOTAL_ pedidos',
+          infoFiltered: "filtrados de _MAX_ pedidos",
+          paginate: {
+            first: '<<',
+            last: '>>',
+            next: '>',
+            previous: '<'
+          },
+          pagingType: "full_numbers",
+          emptyTable: 'No hay pedidos disponibles',
+          dom: 'Bfrtip',
+          renderer: "bootstrap"
         },
-        pagingType: "full_numbers",  // Use full numbers for pagination
-        dom: 'Bfrtip',
-        renderer: "bootstrap"
-
-
-      }
     });
 
 

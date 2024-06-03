@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use App\Services\MercadoPagoService;
-use App\Services\EmailService;
+use App\Repositories\EmailNotificationsRepository;
 use Illuminate\Http\Request;
 use App\Http\Requests\CheckoutStoreOrderRequest;
 use Illuminate\Http\RedirectResponse;
@@ -19,18 +19,20 @@ use Illuminate\Http\RedirectResponse;
 class CheckoutRepository
 {
     /**
-    * Servicio de correo.
-    *
-    * @var EmailService
-    */
-    protected $emailService;
+     * Repositorio de notificaciones de correo electrónico.
+     *
+     * @var EmailNotificationsRepository
+     */
+    protected $emailNotificationsRepository;
 
     /**
-    * Inicializa el servicio de correo.
-    */
-    public function __construct(EmailService $emailService)
+     * Inicializa el repositorio de notificaciones de correo electrónico.
+     *
+     * @param EmailNotificationsRepository $emailNotificationsRepository
+     */
+    public function __construct(EmailNotificationsRepository $emailNotificationsRepository)
     {
-        $this->emailService = $emailService;
+        $this->emailNotificationsRepository = $emailNotificationsRepository;
     }
 
     /**
@@ -125,13 +127,20 @@ class CheckoutRepository
                     'client_city' => $order->client->city,
                     'client_state' => $order->client->state,
                     'client_country' => $order->client->country,
+                    'order_subtotal' => $order->subtotal,
+                    'order_shipping' => $order->shipping,
+                    'coupon_amount' => $order->coupon_amount,
                     'order_total' => $order->total,
                     'order_date' => $order->date,
                     'order_items' => $order->products,
+                    'order_shipping_method' => $order->shipping_method,
+                    'order_payment_method' => $order->payment_method,
+                    'order_payment_status' => $order->payment_status,
+                    'store_name' => $order->store->name,
                 ];
 
-                $this->emailService->sendNewOrderEmail($variables);
-                $this->emailService->sendNewOrderClientEmail($variables);
+                $this->emailNotificationsRepository->sendNewOrderEmail($variables);
+                $this->emailNotificationsRepository->sendNewOrderClientEmail($variables);
 
                 // Redirigir al usuario a la página de éxito usando el UUID
                 return redirect()->route('checkout.success', $order->uuid);
@@ -150,7 +159,7 @@ class CheckoutRepository
      * @param array $orderData
      * @return Order
      */
-    public function createOrder(array $clientData, array $orderData): Order
+    private function createOrder(array $clientData, array $orderData): Order
     {
         // Crear y guardar el cliente
         $client = Client::updateOrCreate(
