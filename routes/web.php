@@ -94,11 +94,13 @@ Route::middleware([
     });
 
     // Gestión de Sabores de Productos
-    Route::get('product-flavors', [ProductController::class, 'flavors'])->name('product-flavors');
-    Route::post('product-flavors', [ProductController::class, 'storeFlavors'])->name('product-flavors.store');
+    Route::get('/product-flavors', [ProductController::class, 'flavors'])->name('product-flavors');
+    Route::post('/product-flavors', [ProductController::class, 'storeFlavor'])->name('product-flavors.store-modal');
     Route::post('/product-flavors/multiple', [ProductController::class, 'storeMultipleFlavors'])->name('product-flavors.store-multiple');
-    Route::delete('product-flavors/{id}/delete', [ProductController::class, 'destroyFlavor'])->name('product-flavors.destroy');
-    Route::put('flavors/{id}/switch-status', [ProductController::class, 'switchFlavorStatus'])->name('flavors.switch-status');
+    Route::delete('/product-flavors/{id}/delete', [ProductController::class, 'destroyFlavor'])->name('product-flavors.destroy');
+    Route::put('/product-flavors/{id}/switch-status', [ProductController::class, 'switchFlavorStatus'])->name('flavors.switch-status');
+    Route::get('/product-flavors/{id}', [ProductController::class, 'editFlavor'])->name('flavors.edit');
+    Route::put('/product-flavors/{id}', [ProductController::class, 'updateFlavor'])->name('flavors.update');
 
     // CRM y Contabilidad
     Route::get('crm', [CrmController::class, 'index'])->name('crm');
@@ -115,18 +117,12 @@ Route::middleware([
     Route::post('/email-templates/update/{templateId?}', [EmailTemplateController::class, 'update'])->name('email-templates.update');
     Route::post('/upload-image', [EmailTemplateController::class, 'uploadImage'])->name('upload-image');
 
-
-
     // Detalles de Ordenes
     Route::get('/orders/{order}/show', [OrderController::class, 'show'])->name('orders.show');
 
     // Gestión de Cupones
     Route::post('marketing/coupons/delete-selected', [CouponController::class, 'deleteSelected'])->name('coupons.deleteSelected');
     Route::get('coupons/{id}', [CouponController::class, 'show'])->name('coupons.show');
-
-    // Edición de Sabores
-    Route::get('/flavors/{id}', [ProductController::class, 'editFlavor'])->name('flavors.edit');
-    Route::put('/flavors/{id}', [ProductController::class, 'updateFlavor'])->name('flavors.update');
 
     // Órdenes a Proveedores
     Route::group(['prefix' => 'supplier-orders'], function () {

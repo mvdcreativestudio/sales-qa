@@ -73,7 +73,8 @@ class CreatePermissions extends Command
                         'orders',
                         'products',
                         'product-categories',
-                        'settings'
+                        'settings',
+                        'product-flavors'
                     ],
                     'view_all' => false,
                 ],
@@ -116,7 +117,7 @@ class CreatePermissions extends Command
                 [
                     'slug' => 'email_templates',
                     'view_all' => false,
-                ]
+                ],
             ]
         ];
 

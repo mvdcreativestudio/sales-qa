@@ -7,8 +7,10 @@ use App\Http\Requests\StoreProductRequest;
 use Yajra\DataTables\DataTables;
 use App\Models\ProductCategory;
 use App\Models\Store;
+use App\Models\RawMaterial;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Flavor;
+use App\Models\Recipe;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Requests\StoreFlavorRequest;
 use App\Http\Requests\StoreMultipleFlavorsRequest;
@@ -29,8 +31,9 @@ class ProductRepository
     $categories = ProductCategory::all();
     $stores = Store::all();
     $flavors = Flavor::all();
+    $rawMaterials = RawMaterial::all();
 
-    return compact('stores', 'categories', 'flavors');
+    return compact('stores', 'categories', 'flavors', 'rawMaterials');
   }
 
   /**
@@ -41,29 +44,52 @@ class ProductRepository
   */
   public function createProduct(StoreProductRequest $request): Product
   {
-    $product = new Product(); // Se crea una nueva instancia del modelo Product.
+    // Se crea una nueva instancia del modelo Product.
+    $product = new Product();
+    // Se rellenan los campos del producto con los datos del formulario.
     $product->fill($request->only([
-        'name', 'sku', 'description', 'type', 'max_flavors', 'old_price',
-        'price', 'discount', 'store_id', 'status', 'stock'
-    ])); // Se rellenan los campos del producto con los datos del formulario.
+      'name', 'sku', 'description', 'type', 'max_flavors', 'old_price',
+      'price', 'discount', 'store_id', 'status'
+    ]));
 
-    if ($request->hasFile('image')) { // Si se ha subido un archivo de imagen.
-        $file = $request->file('image');
-        $filename = time() . '.' . $file->getClientOriginalExtension();
-        $path = $file->move(public_path('assets/img/ecommerce-images'), $filename);
-        $product->image = 'assets/img/ecommerce-images/' . $filename;
+    // Manejo de la imagen si se ha subido un archivo
+    if ($request->hasFile('image')) {
+      $file = $request->file('image');
+      $filename = time() . '.' . $file->getClientOriginalExtension();
+      $path = $file->move(public_path('assets/img/ecommerce-images'), $filename);
+      $product->image = 'assets/img/ecommerce-images/' . $filename;
     }
 
-    $product->draft = $request->action === 'save_draft' ? 1 : 0; // Se establece el estado de borrador del producto.
-    $product->save(); // Se guarda el producto en la base de datos.
+    // Se establece el estado de borrador del producto.
+    $product->draft = $request->action === 'save_draft' ? 1 : 0;
+    // Se guarda el producto en la base de datos.
+    $product->save();
 
-    $product->categories()->sync($request->input('categories', [])); // Se sincronizan las categorías del producto.
-    if ($request->filled('flavors')) { // Si se han seleccionado sabores.
-        $product->flavors()->sync($request->flavors); // Se sincronizan los sabores del producto.
+    // Se sincronizan las categorías del producto.
+    $product->categories()->sync($request->input('categories', []));
+
+    // Se sincronizan los sabores del producto si se han seleccionado sabores.
+    if ($request->filled('flavors')) {
+      $product->flavors()->sync($request->flavors);
+    }
+
+    // Manejar recetas para productos simples
+    if ($request->input('type') === 'simple') {
+      $recipes = $request->input('recipes', []);
+      foreach ($recipes as $recipe) {
+        if (isset($recipe['raw_material_id']) && isset($recipe['quantity'])) {
+          Recipe::create([
+            'product_id' => $product->id,
+            'raw_material_id' => $recipe['raw_material_id'],
+            'quantity' => $recipe['quantity'],
+          ]);
+        }
+      }
     }
 
     return $product;
   }
+
 
   /**
    * Obtiene los datos de los productos para DataTables.
@@ -73,7 +99,7 @@ class ProductRepository
   public function getProductsForDataTable(): mixed
   {
     $query = Product::with(['categories:id,name', 'store:id,name'])
-        ->select(['id', 'name', 'sku', 'description', 'type', 'old_price', 'price', 'discount', 'image', 'store_id', 'status', 'stock', 'draft'])
+        ->select(['id', 'name', 'sku', 'description', 'type', 'old_price', 'price', 'discount', 'image', 'store_id', 'status', 'draft'])
         ->where('is_trash', '!=', 1);
 
     // Filtrar por rol del usuario
@@ -101,12 +127,13 @@ class ProductRepository
   */
   public function edit(int $id): array
   {
-    $product = Product::with('categories', 'flavors')->findOrFail($id);
+    $product = Product::with('categories', 'flavors', 'recipes.rawMaterial')->findOrFail($id);
     $categories = ProductCategory::all();
     $stores = Store::all();
     $flavors = Flavor::all();
+    $rawMaterials = RawMaterial::all();
 
-    return compact('product', 'stores', 'categories', 'flavors');
+    return compact('product', 'stores', 'categories', 'flavors', 'rawMaterials');
   }
 
   /**
@@ -118,30 +145,72 @@ class ProductRepository
   */
   public function update(int $id, UpdateProductRequest $request): Product
   {
-    $product = Product::findOrFail($id); // Se obtiene el producto a actualizar.
-    $product->update($request->only([
-        'name', 'sku', 'description', 'type', 'max_flavors', 'old_price',
-        'price', 'discount', 'store_id', 'status', 'stock'
-    ])); // Se actualizan los campos del producto con los datos del formulario.
+    $product = Product::findOrFail($id);
 
-    if ($request->hasFile('image')) { // Si se ha subido un archivo de imagen.
+    $originalType = $product->type;
+
+    $product->update($request->only([
+      'name', 'sku', 'description', 'type', 'max_flavors', 'old_price',
+      'price', 'discount', 'store_id', 'status', 'stock'
+    ]));
+
+    if ($request->hasFile('image')) {
       $file = $request->file('image');
       $filename = time() . '.' . $file->getClientOriginalExtension();
       $path = $file->move(public_path('assets/img/ecommerce-images'), $filename);
       if ($path) {
-          $product->image = 'assets/img/ecommerce-images/' . $filename;
-          $product->save();
+        $product->image = 'assets/img/ecommerce-images/' . $filename;
+        $product->save();
       }
     }
 
-    $product->categories()->sync($request->input('categories', [])); // Se sincronizan las categorías del producto.
-    if ($request->filled('flavors')) { // Si se han seleccionado sabores.
-        $product->flavors()->sync($request->flavors); // Se sincronizan los sabores del producto.
+    $product->categories()->sync($request->input('categories', []));
+    if ($request->filled('flavors')) {
+      $product->flavors()->sync($request->flavors);
+    }
+
+    // Eliminar recetas existentes si cambia de configurable a simple
+    if ($originalType === 'simple' && $request->input('type') === 'configurable') {
+      $product->recipes()->delete();
+    }
+
+    // Eliminar variaciones existentes si cambia de configurable a simple
+    if ($originalType === 'configurable' && $request->input('type') === 'simple') {
+      $product->flavors()->detach();
+    }
+
+    if ($request->input('type') === 'simple') {
+      $newRecipes = collect($request->input('recipes', []));
+
+      // Obtener los IDs de las materias primas nuevas
+      $newRawMaterialIds = $newRecipes->pluck('raw_material_id')->filter();
+
+      // Eliminar recetas que no están en las nuevas recetas
+      $product->recipes()->whereNotIn('raw_material_id', $newRawMaterialIds)->delete();
+
+      // Actualizar o crear nuevas recetas
+      foreach ($newRecipes as $recipe) {
+        if (isset($recipe['raw_material_id']) && isset($recipe['quantity'])) {
+          $existingRecipe = Recipe::where('product_id', $product->id)
+            ->where('raw_material_id', $recipe['raw_material_id'])
+            ->first();
+
+          if ($existingRecipe) {
+            $existingRecipe->quantity = $recipe['quantity'];
+            $existingRecipe->save();
+          } else {
+            Recipe::create([
+                'product_id' => $product->id,
+                'raw_material_id' => $recipe['raw_material_id'],
+                'quantity' => $recipe['quantity'],
+            ]);
+          }
+        }
+      }
     }
 
     return $product;
   }
-
   /**
    * Cambia el estado de un producto.
    *
@@ -175,11 +244,14 @@ class ProductRepository
   /**
    * Obtiene los sabores de los productos.
    *
-   * @return Collection
+   * @return array
   */
-  public function flavors(): Collection
+  public function flavors(): array
   {
-    return Flavor::all();
+    $flavor = Flavor::all();
+    $rawMaterials = RawMaterial::all();
+
+    return compact('rawMaterials', 'flavor');
   }
 
   /**
@@ -205,16 +277,22 @@ class ProductRepository
    * @param  StoreFlavorRequest  $request
    * @return Flavor
   */
-  public function storeFlavor(StoreFlavorRequest $request): Flavor
+  public function storeFlavor(StoreFlavorRequest $request)
   {
-    $flavor = new Flavor();
-    $flavor->name = $request->name;
-    $flavor->status = $request->status ?? 'active';
+      $flavor = Flavor::create($request->only('name', 'status'));
 
-    $flavor->save();
+      if ($request->has('recipes')) {
+          foreach ($request->recipes as $recipeData) {
+              $flavor->recipes()->create([
+                  'raw_material_id' => $recipeData['raw_material_id'],
+                  'quantity' => $recipeData['quantity']
+              ]);
+          }
+      }
 
-    return $flavor;
+      return redirect()->route('product-flavors')->with('success', 'Sabor creado con éxito');
   }
+
 
   /**
    * Almacena múltiples sabores
@@ -240,11 +318,25 @@ class ProductRepository
    * Muestra el formulario para editar un sabor.
    *
    * @param  int  $id
-   * @return Flavor
+   * @return JsonResponse
   */
-  public function editFlavor(int $id): Flavor
+  public function editFlavor(int $id)
   {
-    return Flavor::findOrFail($id);
+    $flavor = Flavor::with('recipes.rawMaterial')->findOrFail($id);
+
+    $recipes = $flavor->recipes->map(function($recipe) {
+      return [
+        'id' => $recipe->id,
+        'raw_material_id' => $recipe->raw_material_id,
+        'quantity' => $recipe->quantity,
+        'unit_of_measure' => $recipe->rawMaterial->unit_of_measure
+      ];
+    });
+
+    return [
+      'name' => $flavor->name,
+      'recipes' => $recipes
+    ];
   }
 
   /**
@@ -254,13 +346,23 @@ class ProductRepository
    * @param  int  $id
    * @return array
   */
-  public function updateFlavor(UpdateFlavorRequest $request, int $id): array
+  public function updateFlavor(UpdateFlavorRequest $request, int $id): Flavor
   {
     $flavor = Flavor::findOrFail($id);
-    $flavor->name = $request->name;
-    $flavor->save();
+    $flavor->update($request->only('name', 'status'));
 
-    return compact('flavor');
+    $flavor->recipes()->delete();
+
+    if ($request->has('recipes')) {
+      foreach ($request->recipes as $recipeData) {
+        $flavor->recipes()->create([
+          'raw_material_id' => $recipeData['raw_material_id'],
+          'quantity' => $recipeData['quantity']
+        ]);
+      }
+    }
+
+    return $flavor;
   }
 
   /**
