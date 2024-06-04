@@ -13,6 +13,8 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Http\Requests\StoreFlavorRequest;
 use App\Http\Requests\StoreMultipleFlavorsRequest;
 use App\Http\Requests\UpdateFlavorRequest;
+use Illuminate\Support\Facades\Auth;
+
 
 
 class ProductRepository
@@ -74,7 +76,12 @@ class ProductRepository
         ->select(['id', 'name', 'sku', 'description', 'type', 'old_price', 'price', 'discount', 'image', 'store_id', 'status', 'stock', 'draft'])
         ->where('is_trash', '!=', 1);
 
-    return DataTables::of($query)
+    // Filtrar por rol del usuario
+    if (!Auth::user()->hasRole('Administrador')) {
+        $query->where('store_id', Auth::user()->store_id);
+    }
+
+    $dataTable = DataTables::of($query)
       ->addColumn('category', function ($product) {
         return $product->categories->implode('name', ', ');
       })
@@ -82,6 +89,8 @@ class ProductRepository
         return $product->store->name;
       })
       ->make(true);
+
+    return $dataTable;
   }
 
   /**

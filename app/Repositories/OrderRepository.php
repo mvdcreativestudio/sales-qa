@@ -8,6 +8,11 @@ use App\Models\Client;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
+use App\Mail\AdminNewOrder;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 
 class OrderRepository
 {
@@ -161,8 +166,14 @@ class OrderRepository
             ->join('clients', 'orders.client_id', '=', 'clients.id')
             ->join('stores', 'orders.store_id', '=', 'stores.id');
 
+    // Filtrar por rol del usuario
+    if (!Auth::user()->hasRole('Administrador')) {
+        $query->where('orders.store_id', Auth::user()->store_id);
+    }
 
-    return DataTables::of($query)->make(true);
+    $dataTable = DataTables::of($query)->make(true);
+
+    return $dataTable;
   }
 
   /**

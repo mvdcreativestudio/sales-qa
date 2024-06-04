@@ -90,4 +90,5 @@ class EcommerceController extends Controller
     $returnUrl = $this->ecommerceRepository->home();
     return redirect($returnUrl);
   }
+
 }

@@ -6,6 +6,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Services\MercadoPagoService;
+use App\Repositories\EmailNotificationsRepository;
 use App\Repositories\PedidosYaRepository;
 
 class MercadoPagoRepository
@@ -18,14 +19,24 @@ class MercadoPagoRepository
   protected $pedidosYaRepository;
 
   /**
-   * Inyecta el repositorio de PedidosYa en el repositorio.
+   * El repositorio de Email para envío de correos
+   *
+   * @var EmailNotificationsRepository
+   */
+  protected $emailNotificationsRepository;
+
+  /**
+   * Inyecta los repositorios necesarios.
    *
    * @param PedidosYaRepository $pedidosYaRepository
+   * @param EmailNotificationsRepository $emailNotificationsRepository
   */
-  public function __construct(PedidosYaRepository $pedidosYaRepository)
+  public function __construct(PedidosYaRepository $pedidosYaRepository, EmailNotificationsRepository $emailNotificationsRepository)
   {
     $this->pedidosYaRepository = $pedidosYaRepository;
+    $this->emailNotificationsRepository = $emailNotificationsRepository;
   }
+
 
   /**
    * Maneja las notificaciones webhook de MercadoPago.
@@ -108,23 +119,62 @@ class MercadoPagoRepository
   */
   public function updatePaymentStatus(int $orderId, string $status): bool
   {
-    $order = Order::find($orderId);
+      $order = Order::find($orderId);
 
-    if ($order) {
-        $order->payment_status = $status;
-        $order->save();
+      if ($order) {
+          $order->payment_status = $status;
+          $order->save();
 
-        Log::info("Estado de la orden actualizado a '$status' para la orden con ID: $orderId");
+          Log::info("Estado de la orden actualizado a '$status' para la orden con ID: $orderId");
 
-        if ($status === 'paid' && $order->shipping_method === 'peya') {
-            $this->createPeYaShipping($order);
-        }
+          if ($status === 'paid') {
+              $this->sendOrderEmails($order);
+          }
 
-        return true;
-    } else {
-        Log::error("No se encontró la orden con ID: $orderId");
-        return false;
-    }
+          if ($status === 'paid' && $order->shipping_method === 'peya') {
+              $this->createPeYaShipping($order);
+          }
+
+          return true;
+      } else {
+          Log::error("No se encontró la orden con ID: $orderId");
+          return false;
+      }
+  }
+
+  /**
+   * Envía correos electrónicos de notificación de orden.
+   *
+   * @param Order $order
+   * @return void
+   */
+  private function sendOrderEmails(Order $order)
+  {
+      $variables = [
+          'order_id' => $order->id,
+          'client_name' => $order->client->name,
+          'client_lastname' => $order->client->lastname,
+          'client_email' => $order->client->email,
+          'client_phone' => $order->client->phone,
+          'client_address' => $order->client->address,
+          'client_city' => $order->client->city,
+          'client_state' => $order->client->state,
+          'client_country' => $order->client->country,
+          'order_subtotal' => $order->subtotal,
+          'order_shipping' => $order->shipping,
+          'coupon_amount' => $order->coupon_amount,
+          'order_total' => $order->total,
+          'order_date' => $order->date,
+          'order_items' => $order->products,
+          'order_shipping_method' => $order->shipping_method,
+          'order_payment_method' => $order->payment_method,
+          'order_payment_status' => $order->payment_status,
+          'store_name' => $order->store->name,
+      ];
+      // Enviar correo al administrador
+      $this->emailNotificationsRepository->sendNewOrderEmail($variables);
+      // Enviar correo al cliente
+      $this->emailNotificationsRepository->sendNewOrderClientEmail($variables);
   }
 
   /**

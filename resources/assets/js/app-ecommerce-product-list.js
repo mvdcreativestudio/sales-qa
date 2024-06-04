@@ -1,14 +1,11 @@
-/**
- * app-ecommerce-product-list
- */
+// Define la URL base de tu aplicación
 
 'use strict';
 
-// Datatable (jquery)
 $(function () {
   let borderColor, bodyBg, headingColor;
-  let currencySymbol = $('.datatables-products').data('symbol'); // Obtener el símbolo de moneda correctamente
 
+  let currencySymbol = $('.datatables-products').data('symbol');
 
   if (isDarkStyle) {
     borderColor = config.colors_dark.borderColor;
@@ -22,15 +19,12 @@ $(function () {
 
   // Variable declaration for table
   var dt_product_table = $('.datatables-products'),
-    productAdd = baseUrl + 'products/create'
-
-  // E-commerce Products datatable
+    productAdd = baseUrl + 'admin/products/create'
 
   if (dt_product_table.length) {
     var dt_products = dt_product_table.DataTable({
-      ajax: 'products/datatable',
+      ajax: baseUrl + 'admin/products/datatable',  // Asegúrate de que la ruta aquí sea correcta
       columns: [
-        // columns according to JSON
         { data: 'image' },
         { data: 'name' },
         { data: 'sku' },
@@ -52,77 +46,75 @@ $(function () {
       ],
       columnDefs: [
           {
-            // Actions
             targets: -1,
             title: 'Acciones',
             searchable: false,
             orderable: false,
             render: function (data, type, full, meta) {
               return (
-                  '<div class="d-inline-block text-nowrap">' +
-                  '<a href="' + baseUrl + 'products/' + full['id'] + '/edit" class="btn btn-sm btn-icon edit-button"><i class="bx bx-edit"></i></a>' +
-                  '<button class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded me-2"></i></button>' +
-                  '<div class="dropdown-menu dropdown-menu-end m-0">' +
-                  '<a href="' + baseUrl + 'products/' + full['id'] + '/show" class="dropdown-item">Ver producto</a>' +
-                  '<a href="javascript:void(0);" class="dropdown-item switch-status" data-id="' + full['id'] + '">' + (full['status'] === 1 ? 'Desactivar' : 'Activar') + '</a>' +
-                  '<a href="javascript:void(0);" class="dropdown-item text-danger delete-button" data-id="' + full['id'] + '">Eliminar</a>' +
-                  '</div>' +
-                  '</div>'
+                '<div class="d-inline-block text-nowrap">' +
+                '<a href="' + baseUrl + 'admin/products/' + full['id'] + '/edit" class="btn btn-sm btn-icon edit-button"><i class="bx bx-edit"></i></a>' +
+                '<button class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded me-2"></i></button>' +
+                '<div class="dropdown-menu dropdown-menu-end m-0">' +
+                '<a href="' + baseUrl + 'admin/products/' + full['id'] + '/show" class="dropdown-item">Ver producto</a>' +
+                '<a href="javascript:void(0);" class="dropdown-item switch-status" data-id="' + full['id'] + '">' + (full['status'] === 1 ? 'Desactivar' : 'Activar') + '</a>' +
+                '<a href="javascript:void(0);" class="dropdown-item text-danger delete-button" data-id="' + full['id'] + '">Eliminar</a>' +
+                '</div>' +
+                '</div>'
               );
           }
         },
 
         {
-          // Estado
           targets: -2,
           searchable: true,
           orderable: true,
           render: function (data, type, full, meta) {
-            if (data === 1) {  // Asumiendo que '1' representa 'Activo'
+            if (data === 1) {
               return '<span class="badge pill bg-success">Activo</span>';
-            } else {  // Asumiendo que cualquier otro caso es 'Inactivo'
+            } else {
               return '<span class="badge pill bg-danger">Inactivo</span>';
             }
           }
         },
 
         {
-            targets: 0, // Assuming the 'image' column is the first one
-            title: 'Imagen',
-            render: function(data, type, full, meta) {
-                return '<img src="' + data + '" alt="Imagen del producto" style="max-width: 100px; max-height: 100px;">';
-            }
+          targets: 0,
+          title: 'Imagen',
+          render: function(data, type, full, meta) {
+            // Ajusta la ruta de la imagen aquí
+            return '<img src="' + baseUrl + data + '" alt="Imagen del producto" style="max-width: 100px; max-height: 100px;">';
+          }
         },
         {
           targets: 5,
           render: function(data, type, full, meta) {
-              return currencySymbol + parseFloat(data).toFixed(0);
+            return currencySymbol + parseFloat(data).toFixed(0);
           }
         },
         {
           targets: 6,
           render: function(data, type, full, meta) {
-              if (data !== null) {
-                  return currencySymbol + parseFloat(data).toFixed(0);
-              } else {
-                  return '-';
-              }
+            if (data !== null) {
+              return currencySymbol + parseFloat(data).toFixed(0);
+            } else {
+              return '-';
+            }
           }
         },
         {
-          targets: 4, // Assuming 'type' is the 5th column (0-based index)
+          targets: 4,
           render: function(data, type, full, meta) {
-              if (data.toLowerCase() === 'configurable') {
-                  return 'Variable';
-              } else {
-                  return data.charAt(0).toUpperCase() + data.slice(1);
-              }
+            if (data.toLowerCase() === 'configurable') {
+              return 'Variable';
+            } else {
+              return data.charAt(0).toUpperCase() + data.slice(1);
+            }
           }
         }
-
       ],
 
-      order: [2, 'asc'], //set any columns order asc/desc
+      order: [2, 'asc'],
       dom:
         '<"card-header d-flex flex-column flex-md-row align-items-start align-items-md-center pt-0"<"ms-n2"f><"d-flex align-items-md-center justify-content-md-end mt-2 mt-md-0"l<"dt-action-buttons"B>>' +
         '>t' +
@@ -143,14 +135,12 @@ $(function () {
           next: '>',
           previous: '<'
         },
-        pagingType: "full_numbers",  // Use full numbers for pagination
+        pagingType: "full_numbers",
+        emptyTable: 'No hay registros disponibles',
         dom: 'Bfrtip',
         renderer: "bootstrap"
-
-
       },
 
-      // Buttons with Dropdown
       buttons: [
         {
           text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Añadir producto</span>',
@@ -162,10 +152,9 @@ $(function () {
       ],
 
       initComplete: function () {
-        // Adding type filter once table initialized
         this.api()
 
-          .columns(4) // Assuming 'tipo' column is at index 4
+          .columns(4)
           .every(function () {
             var column = this;
             var select = $(
@@ -185,84 +174,79 @@ $(function () {
                 select.append('<option value="' + d + '">' + d + '</option>');
               });
           });
-        // Adding category filter once table initialized
+
         this.api()
           .columns(7)
           .every(function () {
-              var column = this;
-              var select = $('<select class="form-select"><option value="">Todas las categorías</option></select>')
-                  .appendTo('.product_category')
-                  .on('change', function () {
-                      var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                      column.search(val ? '^' + val + '$' : '', true, false).draw();
-                  });
-
-              column
-                  .data()
-                  .unique()
-                  .sort()
-                  .each(function (d, j) {
-                      select.append('<option value="' + d + '">' + d + '</option>');
-                  });
-          });
-          // Adding store filter once table initialized
-          this.api()
-          .columns(8)
-          .every(function () {
-              var column = this;
-              var select = $(
-                  '<select id="ProductStore" class="form-select"><option value="">Todos los locales</option></select>'
-              )
-              .appendTo('.product_store')
+            var column = this;
+            var select = $('<select class="form-select"><option value="">Todas las categorías</option></select>')
+              .appendTo('.product_category')
               .on('change', function () {
-                  var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                  column.search(val ? '^' + val + '$' : '', true, false).draw();
+                var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                column.search(val ? '^' + val + '$' : '', true, false).draw();
               });
 
-              column
+            column
               .data()
               .unique()
               .sort()
               .each(function (d, j) {
-                  select.append('<option value="' + d + '">' + d + '</option>');
+                select.append('<option value="' + d + '">' + d + '</option>');
               });
           });
-    }
 
+        this.api()
+          .columns(8)
+          .every(function () {
+            var column = this;
+            var select = $(
+              '<select id="ProductStore" class="form-select"><option value="">Todos los locales</option></select>'
+            )
+              .appendTo('.product_store')
+              .on('change', function () {
+                var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                column.search(val ? '^' + val + '$' : '', true, false).draw();
+              });
 
+            column
+              .data()
+              .unique()
+              .sort()
+              .each(function (d, j) {
+                select.append('<option value="' + d + '">' + d + '</option>');
+              });
+          });
+      }
     });
+
     $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
-    // To remove default btn-secondary in export buttons
     $('.dt-buttons > .btn-group > button').removeClass('btn-secondary');
     $('.dt-buttons').addClass('d-flex flex-wrap');
     $('.dataTables_length label select').addClass('form-select form-select-sm');
     $('.dataTables_filter label input').addClass('form-control');
   }
 
-  // Delete Record
   $('.datatables-products tbody').on('click', '.delete-record', function () {
     dt_products.row($(this).parents('tr')).remove().draw();
   });
 
-  // Toggle column visibility based on switches
   $('.toggle-column').on('change', function() {
     var column = dt_products.column($(this).data('column'));
     column.visible(!column.visible());
   });
 
-  // Handling click on the switch status button
   dt_product_table.on('click', '.switch-status', function () {
     var button = $(this);
     var productId = button.data('id');
-    var newStatus = button.text().trim() === 'Activar' ? 1 : 2;  // Determine new status based on button text
+    var newStatus = button.text().trim() === 'Activar' ? 1 : 2;
 
     $.ajax({
-      url: baseUrl + 'products/' + productId + '/switchStatus',
+      url: baseUrl + 'admin/products/' + productId + '/switchStatus',
       type: 'POST',
       data: {
         id: productId,
         status: newStatus,
-        _token: $('meta[name="csrf-token"]').attr('content')  // CSRF token required by Laravel
+        _token: $('meta[name="csrf-token"]').attr('content')
       },
       success: function (response) {
         Swal.fire({
@@ -271,7 +255,7 @@ $(function () {
           icon: 'success',
           confirmButtonText: 'OK'
         });
-        dt_products.ajax.reload(null, false);  // Reload table data without resetting pagination
+        dt_products.ajax.reload(null, false);
       },
       error: function (xhr, status, error) {
         Swal.fire({
@@ -284,13 +268,10 @@ $(function () {
     });
   });
 
+  $(document).on('click', '.delete-button', function () {
+    var productId = $(this).data('id');
 
-// Eliminar producto
-$(document).on('click', '.delete-button', function () {
-  var productId = $(this).data('id');
-
-  // Mostrar ventana de confirmación SweetAlert
-  Swal.fire({
+    Swal.fire({
       title: '¿Estás seguro?',
       text: 'Una vez eliminado, no podrás recuperar este producto.',
       icon: 'warning',
@@ -299,46 +280,37 @@ $(document).on('click', '.delete-button', function () {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
-  }).then((result) => {
+    }).then((result) => {
       if (result.isConfirmed) {
-          // Obtener el token CSRF
-          var csrfToken = $('meta[name="csrf-token"]').attr('content');
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-          // Realizar una solicitud AJAX para eliminar el producto
-          $.ajax({
-              type: "DELETE",
-              url: baseUrl + "products/" + productId,
-              data: {
-                  // Enviar el token CSRF en la solicitud
-                  _token: csrfToken
-              },
-              success: function (response) {
-                  // Mostrar mensaje de éxito con SweetAlert
-                  Swal.fire({
-                      title: '¡Eliminado!',
-                      text: 'El producto ha sido eliminado correctamente.',
-                      icon: 'success',
-                      showConfirmButton: false,
-                      timer: 1500
-                  });
-
-                  // Recargar la tabla después de eliminar el producto
-                  dt_products.ajax.reload(null, false);
-              },
-              error: function (xhr, status, error) {
-                  console.error(xhr.responseText);
-                  // Mostrar mensaje de error con SweetAlert
-                  Swal.fire({
-                      title: 'Error',
-                      text: 'Hubo un error al intentar eliminar el producto.',
-                      icon: 'error',
-                      confirmButtonText: 'OK'
-                  });
-              }
-          });
+        $.ajax({
+          type: "DELETE",
+          url: baseUrl + "admin/products/" + productId,
+          data: {
+            _token: csrfToken
+          },
+          success: function (response) {
+            Swal.fire({
+              title: '¡Eliminado!',
+              text: 'El producto ha sido eliminado correctamente.',
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 1500
+            });
+            dt_products.ajax.reload(null, false);
+          },
+          error: function (xhr, status, error) {
+            console.error(xhr.responseText);
+            Swal.fire({
+              title: 'Error',
+              text: 'Hubo un error al intentar eliminar el producto.',
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
+          }
+        });
       }
+    });
   });
-});
-
-
 });
