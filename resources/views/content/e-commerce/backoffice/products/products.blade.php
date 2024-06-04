@@ -56,7 +56,7 @@
           <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
             <div>
               <h6 class="mb-2">Ventas en tienda</h6>
-              <h4 class="mb-2">Simbolo {{$settings->currency_symbol}}</h4>
+              <h4 class="mb-2">{{$settings->currency_symbol}} 18.158</h4>
               <p class="mb-0"><span class="text-muted me-2">134 ventas</span><span class="badge bg-label-success">+5.7%</span></p>
             </div>
             <div class="avatar me-sm-4">
@@ -100,7 +100,7 @@
           <div class="d-flex justify-content-between align-items-start">
             <div>
               <h6 class="mb-2">Total ventas</h6>
-              <h4 class="mb-2">$99.797</h4>
+              <h4 class="mb-2">$50.470</h4>
               <p class="mb-0"><span class="text-muted me-2">208 ventas</span><span class="badge bg-label-danger">-3.5%</span></p>
             </div>
             <div class="avatar">
