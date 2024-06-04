@@ -91,9 +91,9 @@
         },
         {
           "id": "tour-sabores",
-          "url": "product-flavors",
-          "name": "Sabores",
-          "slug": "/admin/product-flavors"
+          "name": "Gustos de Productos",
+          "slug": "product-flavors",
+          "url": "/admin/product-flavors"
         },
         {
           "id": "tour-categorias",

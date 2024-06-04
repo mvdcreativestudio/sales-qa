@@ -74,7 +74,8 @@ class CreatePermissions extends Command
                         'orders',
                         'products',
                         'product-categories',
-                        'settings'
+                        'settings',
+                        'product-flavors'
                     ],
                     'view_all' => false,
                 ],
@@ -117,12 +118,12 @@ class CreatePermissions extends Command
                 [
                     'slug' => 'email_templates',
                     'view_all' => false,
-                ]
+                ],
             ]
         ];
 
-         // Asegurar que el rol de administrador existe
-         $adminRole = Role::firstOrCreate(['name' => 'Administrador']);
+        // Asegurar que el rol de administrador existe
+        $adminRole = Role::firstOrCreate(['name' => 'Administrador']);
 
         foreach ($modulesJson['menu'] as $module) {
             $this->createPermission($module['slug'], $module['view_all']);

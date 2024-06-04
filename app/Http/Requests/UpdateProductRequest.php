@@ -29,7 +29,10 @@ class UpdateProductRequest extends FormRequest
             'categories.*' => 'exists:product_categories,id',
             'flavors' => 'nullable|array',
             'flavors.*' => 'exists:flavors,id',
-            'image' => 'required|image|max:2048'
+            'image' => 'nullable|image|max:2048',
+            'recipes' => 'nullable|array',
+            'recipes.*.raw_material_id' => 'required_with:recipes|exists:raw_materials,id',
+            'recipes.*.quantity' => 'required_with:recipes|numeric|min:0.01',
         ];
     }
 }
