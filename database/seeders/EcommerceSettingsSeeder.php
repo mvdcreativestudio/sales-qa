@@ -16,6 +16,7 @@ class EcommerceSettingsSeeder extends Seeder
     {
       DB::table('ecommerce_settings')->insert([
           'enable_coupons'      => true,
+          'notifications_email' => 'admin@mvdstudio.com.uy',
           'currency'            => 'UYU',
           'currency_symbol'     => '$',
           'decimal_separator'   => ',',

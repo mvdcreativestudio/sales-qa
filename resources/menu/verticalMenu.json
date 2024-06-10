@@ -102,12 +102,6 @@
           "url": "/admin/product-categories"
         },
         {
-          "id": "tour-marketing-ecommerce",
-          "name": "Marketing",
-          "slug": "marketing",
-          "url": "/admin/marketing"
-        },
-        {
           "id": "tour-configuracion-ecommerce",
           "name": "Configuración",
           "slug": "settings",

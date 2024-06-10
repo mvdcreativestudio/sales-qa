@@ -95,7 +95,7 @@ Route::middleware([
 
     // Gestión de Sabores de Productos
     Route::get('product-flavors', [ProductController::class, 'flavors'])->name('product-flavors');
-    Route::post('product-flavors', [ProductController::class, 'storeFlavors'])->name('product-flavors.store');
+    Route::post('product-flavors', [ProductController::class, 'storeFlavor'])->name('product-flavors.store');
     Route::post('/product-flavors/multiple', [ProductController::class, 'storeMultipleFlavors'])->name('product-flavors.store-multiple');
     Route::delete('product-flavors/{id}/delete', [ProductController::class, 'destroyFlavor'])->name('product-flavors.destroy');
     Route::put('flavors/{id}/switch-status', [ProductController::class, 'switchFlavorStatus'])->name('flavors.switch-status');

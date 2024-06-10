@@ -20,7 +20,7 @@ class StoreProductRequest extends FormRequest
             'type' => 'required|in:simple,configurable',
             'max_flavors' => 'nullable|integer|min:1',
             'old_price' => 'required|numeric',
-            'price' => 'nullable|numeric',
+            'price' => 'required|numeric|lt:old_price',  
             'discount' => 'nullable|numeric',
             'store_id' => 'required|exists:stores,id',
             'status' => 'required|boolean',
@@ -29,7 +29,14 @@ class StoreProductRequest extends FormRequest
             'categories.*' => 'exists:product_categories,id',
             'flavors' => 'nullable|array',
             'flavors.*' => 'exists:flavors,id',
-            'image' => 'required|image|max:2048'
-        ];
-    }
+            'image' => 'required|image|max:2048',
+    ];
+}
+
+public function messages()
+{
+    return [
+        'price.lt' => 'El precio rebajado no puede ser mayor o igual al precio normal.',
+    ];
+}
 }

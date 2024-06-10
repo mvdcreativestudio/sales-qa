@@ -293,7 +293,7 @@
           <!-- Category -->
           <div class="mb-3 col ecommerce-select2-dropdown">
             <label class="form-label mb-1 d-flex justify-content-between align-items-center" for="category-org">
-              <span>Categoría</span><a href="javascript:void(0);" class="fw-medium">Crear categoría</a>
+              <span>Categoría</span><a href="{{ route('product-categories.index') }}" class="fw-medium">Crear categoría</a>
             </label>
             <select id="category-org" class="select2 form-select" data-placeholder="Seleccione la categoría" name="categories[]" multiple>
               @foreach ($categories as $category)

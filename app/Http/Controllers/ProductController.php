@@ -80,7 +80,10 @@ class ProductController extends Controller
   */
   public function store(StoreProductRequest $request): RedirectResponse
   {
+    $validated = $request->validated();
+
     $this->productRepo->createProduct($request);
+  
     return redirect()->route('products.index')->with('success', 'Producto creado correctamente.');
   }
 

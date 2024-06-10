@@ -44,6 +44,25 @@ class StoreRepository
   }
 
   /**
+   * Cambia el estado de la tienda.
+   *
+   * @param Store $store
+   * @return RedirectResponse
+  */
+  public function toggleStoreStatus(Store $store): ?bool
+  {
+    try {
+
+        $store->status = !$store->status; 
+        $store->save();
+        return true;
+
+    } catch (\Exception $e) {
+        return false;
+    }
+  }
+
+  /**
    * Elimina una tienda de la base de datos.
    *
    * @param Store $store
@@ -104,23 +123,34 @@ class StoreRepository
    * @return Store
   */
   public function saveStoreHours(Store $store, array $hoursData): Store
-  {
-      foreach ($hoursData as $day => $data) {
-          $open = $this->formatTime($data['open']);
-          $close = $this->formatTime($data['close']);
+{
+    foreach ($hoursData as $day => $data) {
+        if (isset($data['open_all_day']) && $data['open_all_day']) {
+            $open = '00:00';
+            $close = '23:59';
+        } else {
+            $open = isset($data['open']) ? $this->formatTime($data['open']) : null;
+            $close = isset($data['close']) ? $this->formatTime($data['close']) : null;
 
-          $store->storeHours()->updateOrCreate(
-              ['day' => $day, 'store_id' => $store->id],
-              [
-                  'open' => $open,
-                  'close' => $close,
-                  'open_all_day' => $data['open_all_day'] ?? false
-              ]
-          );
-      }
+            if ($open === null && $close === null) {
+                continue;
+            }
+        }
 
-      return $store;
-  }
+        $store->storeHours()->updateOrCreate(
+            ['day' => $day, 'store_id' => $store->id],
+            [
+                'open' => $open,
+                'close' => $close,
+                'open_all_day' => isset($data['open_all_day']) && $data['open_all_day']
+            ]
+        );
+    }
+
+    return $store;
+}
+
+
 
   /**
    * Formatea el tiempo para asegurar que el formato sea HH:MM:SS.
