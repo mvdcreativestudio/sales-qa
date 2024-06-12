@@ -124,6 +124,11 @@ Route::middleware([
     Route::post('marketing/coupons/delete-selected', [CouponController::class, 'deleteSelected'])->name('coupons.deleteSelected');
     Route::get('coupons/{id}', [CouponController::class, 'show'])->name('coupons.show');
 
+    // Gestión de categorías
+    Route::delete('product-categories/{id}/delete-selected', [ProductCategoryController::class,'deleteSelected'])-> name('categories.deleteSelected');
+    Route::post('product-categories/{id}/update-selected',[ProductCategoryController::class,'updateSelected'])-> name('categories.updateSelected');
+    Route::get('product-categories/{id}/get-selected',[ProductCategoryController::class,'getSelected'])-> name('categories.getSelected');
+
     // Edición de Sabores
     Route::get('/flavors/{id}', [ProductController::class, 'editFlavor'])->name('flavors.edit');
     Route::put('/flavors/{id}', [ProductController::class, 'updateFlavor'])->name('flavors.update');
