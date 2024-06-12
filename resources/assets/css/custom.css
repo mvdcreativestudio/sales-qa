@@ -516,3 +516,70 @@ tr.odd {
   margin: 0px!important;
 }
 
+
+/* Notificaciones */
+.notification-item {
+  padding: 15px;
+  border-bottom: 1px solid #e3e3e3;
+  background: #fff;
+}
+.notification-time {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 5px;
+}
+
+.notification-content h6 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+.notification-content p {
+  margin: 0;
+  font-size: 13px;
+  color: #555;
+}
+.notification-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+.notification-status {
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 0px;
+  border-radius: 3px;
+}
+.notification-status.en_espera {
+  background-color: #ffcc00;
+  color: #fff;
+}
+.notification-status.pendiente_de_pago {
+  background-color: #ff6600;
+  color: #fff;
+}
+.notification-status.procesando {
+  background-color: #00cc66;
+  color: #fff;
+}
+.notification-amount {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+.notification-action {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+}
+
+/** Datacenter */
+
+#averageOrdersByHourChart {
+  max-height: 50vh;
+  width: 100%;
+}

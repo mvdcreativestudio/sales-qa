@@ -31,59 +31,83 @@
 </div>
 @endif
 
+
 <div class="row">
-  <!-- Botón de Modo Ayuda -->
+  {{-- <!-- Botón de Modo Ayuda -->
   <div class="col-2">
     <button id="help-mode-toggle" class="btn btn-primary">Activar Modo Ayuda</button>
-  </div>
+  </div> --}}
 
-  <!-- Abierto / Cerrado Stores -->
-  <div class="row g-4 mt-0 pt-0 mb-4" id="">
-    @foreach($stores as $store)
-    <div class="col-sm-6 col-lg-3" id="tour-stores">
-      @if($store->status == 'Cerrada')
-      <div class="card card-border-shadow-danger">
-      @else
-      <div class="card card-border-shadow-success">
-      @endif
-        <div class="card-body p-4">
-          <div class="d-flex justify-content-between align-items-center col-10">
-            <div class="d-flex">
-              <div class="avatar me-3">
-                @if( $store->status == 'Cerrada' )
-                <span class="avatar-initial rounded bg-label-danger"><i class="fa-regular fa-circle-xmark"></i></span>
-                @else
-                <span class="avatar-initial rounded bg-label-success"><i class="fa-regular fa-circle-check"></i></span>
-                @endif
-              </div>
-              <div>
-                <h5 class="mb-0">{{ $store->name }}</h5>
-                @if($store->status == 'Cerrada')
-                <small class="text-danger">{{ $store->status }}</small>
-                @else
-                <small class="text-success">{{ $store->status }}</small>
-                @endif
-              </div>
+  <div class="row g-4 mt-0 pt-0 mb-4">
+    <div class="col-lg-6 col-12 align-self-end mb-4">
+      <div class="card">
+        <div class="d-flex align-items-center row">
+          <div class="col-sm-5 text-center text-sm-left">
+            <div class="card-body pb-0">
+              <img src="" height="140" alt="Target User" data-app-dark-img="illustrations/sitting-girl-with-laptop-dark.png" data-app-light-img="illustrations/sitting-girl-with-laptop-light.png">
             </div>
-            <div>
-              <label class="switch">
-                <input type="checkbox" class="switch-input" {{ $store->status == 'Cerrada' ? '' : 'checked' }} onchange="toggleStoreStatus({{ $store->id }}, this)">
-                <span class="switch-toggle-slider">
-                  <span class="switch-on">
-                    <i class="bx bx-check"></i>
-                  </span>
-                  <span class="switch-off">
-                    <i class="bx bx-x"></i>
-                  </span>
-                </span>
-              </label>
+          </div>
+          <div class="col-sm-7">
+            <div class="card-body">
+              <h5 class="card-title">¡Bienvenido nuevamente, {{ Auth::user()->name }}!</h5>
             </div>
           </div>
         </div>
       </div>
     </div>
-    @endforeach
+
+    @if(Auth::user()->hasRole('Administrador'))
+    <div class="col-lg-6 col-12 mb-4">
+      <div class="row g-4">
+        @foreach($stores as $store)
+        <div class="col-sm-6">
+          @if($store->status == 'Cerrada')
+          <div class="card card-border-shadow-danger">
+          @else
+          <div class="card card-border-shadow-success">
+          @endif
+            <div class="card-body p-4">
+              <div class="d-flex justify-content-between align-items-center col-10">
+                <div class="d-flex">
+                  <div class="avatar me-3">
+                    @if( $store->status == 'Cerrada' )
+                    <span class="avatar-initial rounded bg-label-danger"><i class="fa-regular fa-circle-xmark"></i></span>
+                    @else
+                    <span class="avatar-initial rounded bg-label-success"><i class="fa-regular fa-circle-check"></i></span>
+                    @endif
+                  </div>
+                  <div>
+                    <h5 class="mb-0">{{ $store->name }}</h5>
+                    @if($store->status == 'Cerrada')
+                    <small class="text-danger">{{ $store->status }}</small>
+                    @else
+                    <small class="text-success">{{ $store->status }}</small>
+                    @endif
+                  </div>
+                </div>
+                <div>
+                  <label class="switch">
+                    <input type="checkbox" class="switch-input" {{ $store->status == 'Cerrada' ? '' : 'checked' }} onchange="toggleStoreStatus({{ $store->id }}, this)">
+                    <span class="switch-toggle-slider">
+                      <span class="switch-on">
+                        <i class="bx bx-check"></i>
+                      </span>
+                      <span class="switch-off">
+                        <i class="bx bx-x"></i>
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        @endforeach
+      </div>
+    </div>
+    @endif
   </div>
+
 
   <!-- Single Card -->
   <div class="col-12" id="tour-single-card">

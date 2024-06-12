@@ -7,6 +7,8 @@ use App\Models\Order;
 use App\Models\Coupon;
 use App\Models\MercadoPagoAccount;
 use App\Models\EcommerceSetting;
+use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
@@ -15,6 +17,8 @@ use App\Repositories\EmailNotificationsRepository;
 use Illuminate\Http\Request;
 use App\Http\Requests\CheckoutStoreOrderRequest;
 use Illuminate\Http\RedirectResponse;
+use App\Events\OrderCreatedEvent;
+
 
 class CheckoutRepository
 {
@@ -174,8 +178,12 @@ class CheckoutRepository
 
         Log::info('Orden creada:', $order->toArray());
 
+        // Despachar evento
+        event(new OrderCreatedEvent($order));
+
         return $order;
     }
+
 
     /**
      * Procesa el pago con tarjeta utilizando MercadoPago.
@@ -292,12 +300,25 @@ class CheckoutRepository
                 }
             }
 
+            // Obtener el category_id de la tabla category_product
+            $category = DB::table('category_product')
+                ->where('product_id', $item['id'])
+                ->first();
+
+            // Agregar log para depurar
+            Log::info('Category data for product:', [
+                'product_id' => $item['id'],
+                'category' => $category
+            ]);
+
             $products[] = [
+                'id' => $item['id'],
                 'name' => $item['name'],
                 'price' => $price,
                 'quantity' => $item['quantity'],
                 'flavors' => implode(', ', $flavors),
                 'image' => $item['image'],
+                'category_id' => $category ? $category->category_id : null, // Añadir el category_id al JSON
             ];
         }
 
@@ -329,6 +350,7 @@ class CheckoutRepository
 
         return $orderData;
     }
+
 
     /**
      * Aplica un cupón a la sesión.

@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'eCommerce Customer All - Apps')
+@section('title', 'Clientes')
 
 @section('vendor-style')
 @vite([
@@ -92,7 +92,11 @@
         </div>
           <div class="mb-3">
             <label class="form-label" for="ecommerce-customer-add-name">Nombre*</label>
-            <input type="text" class="form-control" id="ecommerce-customer-add-name" placeholder="Ingrese el nombre del cliente" name="name" aria-label="John Doe" />
+            <input type="text" class="form-control" id="ecommerce-customer-add-name" placeholder="Ingrese el nombre del cliente" name="name" aria-label="John" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="ecommerce-customer-add-lastname">Apellido*</label>
+            <input type="text" class="form-control" id="ecommerce-customer-add-lastname" placeholder="Ingrese el apellido del cliente" name="lastname" aria-label="Doe" />
           </div>
           <!-- Campo CI -->
           <div class="mb-3" id="ciField">
