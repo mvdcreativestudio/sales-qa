@@ -155,14 +155,18 @@ class StoreController extends Controller
    * @param $id
    * @return RedirectResponse
   */
-  public function toggleStoreStatusClosed($store)
+  public function toggleStoreStatusClosed($storeId)
   {
-      $store = Store::findOrFail($store);
-      $store->closed = !$store->closed;
-      $store->save();
+      $success = $this->storeRepository->toggleStoreStatusClosed($storeId);
 
-      return response()->json(['status' => 'success', 'closed' => $store->closed]);
+      if ($success) {
+          $store = Store::findOrFail($storeId);
+          return response()->json(['status' => 'success', 'closed' => $store->closed]);
+      } else {
+          return response()->json(['status' => 'error', 'message' => 'No se pudo cambiar el estado de la tienda.'], 500);
+      }
   }
+
 
 
   /**

@@ -53,7 +53,7 @@ class StoreRepository
   {
     try {
 
-        $store->status = !$store->status; 
+        $store->status = !$store->status;
         $store->save();
         return true;
 
@@ -71,16 +71,16 @@ class StoreRepository
   */
   public function toggleStoreStatusClosed($id): ?bool
   {
-    try {
-        $store = Store::findOrFail($id);
-        $store->closed = !$store->closed; 
-        $store->save();
-        return true;
-
-    } catch (\Exception $e) {
-        return false;
-    }
+      try {
+          $store = Store::findOrFail($id);
+          $store->closed = !$store->closed;
+          $store->save();
+          return true;
+      } catch (\Exception $e) {
+          return false;
+      }
   }
+
 
   /**
    * Elimina una tienda de la base de datos.
