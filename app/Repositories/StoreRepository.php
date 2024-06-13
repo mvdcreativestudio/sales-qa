@@ -62,6 +62,26 @@ class StoreRepository
     }
   }
 
+
+  /**
+   * Cambia el abierto/cerrado de la tienda.
+   *
+   * @param $id
+   * @return bool
+  */
+  public function toggleStoreStatusClosed($id): ?bool
+  {
+    try {
+        $store = Store::findOrFail($id);
+        $store->closed = !$store->closed; 
+        $store->save();
+        return true;
+
+    } catch (\Exception $e) {
+        return false;
+    }
+  }
+
   /**
    * Elimina una tienda de la base de datos.
    *

@@ -4,6 +4,10 @@
 
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
+@section('page-script')
+@vite(['resources/assets/js/cards-statistics.js', 'resources/assets/js/ui-cards-analytics.js', 'resources/assets/js/extended-ui-tour.js','/resources/assets/js/toggle-store-status.js'])
+@endsection
+
 @section('vendor-style')
 @vite('resources/assets/vendor/libs/apex-charts/apex-charts.scss')
 @vite('resources/assets/vendor/libs/shepherd/shepherd.scss')
@@ -18,18 +22,19 @@
 @vite('resources/assets/vendor/libs/shepherd/shepherd.js')
 @endsection
 
-@section('page-script')
-@vite(['resources/assets/js/cards-statistics.js'])
-@vite(['resources/assets/js/ui-cards-analytics.js'])
-@vite('resources/assets/js/extended-ui-tour.js')
-@endsection
-
 @section('content')
 @if (session('error'))
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
   {{ session('error') }}
 </div>
 @endif
+
+<script>document.addEventListener("DOMContentLoaded", (event) => {
+  console.log("DOM fully loaded and parsed");
+
+  var dt_stores_table = $('.datatables-stores');
+  
+});</script>
 
 <div class="row">
   <!-- Botón de Modo Ayuda -->
@@ -67,7 +72,7 @@
             </div>
             <div>
               <label class="switch">
-                <input type="checkbox" class="switch-input" {{ $store->status == 'Cerrada' ? '' : 'checked' }} onchange="toggleStoreStatus({{ $store->id }}, this)">
+                <input type="checkbox" class="switch-input" onchange="toggleStoreStatusClosed({{ $store->id }})">
                 <span class="switch-toggle-slider">
                   <span class="switch-on">
                     <i class="bx bx-check"></i>

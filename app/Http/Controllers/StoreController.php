@@ -150,6 +150,19 @@ class StoreController extends Controller
 
 
   /**
+   * Cambia el abierto/cerrado de la tienda.
+   *
+   * @param $id
+   * @return RedirectResponse
+  */
+  public function toggleStoreStatusClosed($id): RedirectResponse
+  {
+    $this->storeRepository->toggleStoreStatusClosed($id);
+    return redirect()->route('stores.index')->with('success', 'Estado de la tienda cambiado con éxito.');
+  }
+
+
+  /**
    * Muestra la página para administrar usuarios asociados a una tienda.
    *
    * @param Store $store

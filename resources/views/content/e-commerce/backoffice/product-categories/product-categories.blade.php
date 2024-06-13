@@ -96,27 +96,27 @@
             <option value="Automotive">Automotive</option>
           </select>
         </div>
-        <!-- Description -->
-        <div class="mb-3">
+       <!-- Description -->
+      <div class="mb-3">
           <label class="form-label">Descripción</label>
+          <!-- Campo oculto para la descripción -->
+          <input type="hidden" name="description" id="hidden-description">
           <div class="form-control p-0 pt-1">
-            <div class="comment-editor border-0" id="ecommerce-category-description">
-            </div>
-            <div class="comment-toolbar border-0 rounded">
-              <div class="d-flex justify-content-end">
-                <span class="ql-formats me-0">
-                  <button class="ql-bold"></button>
-                  <button class="ql-italic"></button>
-                  <button class="ql-underline"></button>
-                  <button class="ql-list" value="ordered"></button>
-                  <button class="ql-list" value="bullet"></button>
-                  <button class="ql-link"></button>
-                  <button class="ql-image"></button>
-                </span>
+              <div class="comment-editor border-0" id="ecommerce-category-description" contenteditable="true"></div>
+              <div class="comment-toolbar border-0 rounded">
+                  <div class="d-flex justify-content-end">
+                      <span class="ql-formats me-0">
+                          <button class="ql-bold"></button>
+                          <button class="ql-italic"></button>
+                          <button class="ql-underline"></button>
+                          <button class="ql-list" value="ordered"></button>
+                          <button class="ql-list" value="bullet"></button>
+                          <button class="ql-link"></button>
+                          <button class="ql-image"></button>
+                      </span>
+                  </div>
               </div>
-            </div>
           </div>
-
         </div>
         <!-- Campo oculto para estado desactivado -->
         <input type="hidden" name="status" value="2">

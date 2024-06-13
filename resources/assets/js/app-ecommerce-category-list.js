@@ -125,6 +125,29 @@ $(function () {
     $('.dataTables_filter label input').addClass('form-control');
   }
 
+const commentEditor = new Quill('.comment-editor', {
+    modules: {
+        toolbar: '.comment-toolbar'
+    },
+    placeholder: 'Ingrese la descripción de la categoría',
+    theme: 'snow'
+});
+
+$('#eCommerceCategoryListForm').submit(function(event) {
+    event.preventDefault();
+  
+    var plainTextContent = commentEditor.getText();
+
+    $('#hidden-description').val(plainTextContent);
+
+    var statusValue = $('#statusSwitch').is(':checked') ? '1' : '0';
+    $('input[name="status"]').val(statusValue);
+
+    this.submit();
+});
+
+
+
   // Borrar categoría
   $('.datatables-category-list tbody').on('click', '.delete-button', function () { 
     var recordId = $(this).data('id');
@@ -234,10 +257,9 @@ $(function () {
 document.addEventListener('DOMContentLoaded', function () {
   var statusSwitch = document.getElementById('statusSwitch');
 
-  // Asegura que el valor inicial sea "1" cuando el switch está activado por defecto
-  statusSwitch.value = statusSwitch.checked ? '1' : '2';
+  statusSwitch.value = statusSwitch.checked ? '1' : '0';
 
-  statusSwitch.addEventListener('change', function() {
-    this.value = this.checked ? '1' : '2';
-  });
+    statusSwitch.addEventListener('change', function() {
+        this.value = this.checked ? '1' : '0';
+    });
 });
