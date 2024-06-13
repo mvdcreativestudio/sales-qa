@@ -81,9 +81,8 @@ Route::middleware([
         Route::post('associate-user', [StoreController::class, 'associateUser'])->name('associateUser');
         Route::post('disassociate-user', [StoreController::class, 'disassociateUser'])->name('disassociateUser');
         Route::post('save-hours', [StoreController::class, 'saveHours'])->name('saveHours');
-        Route::post('toggle-store-status', [StoreController::class, 'toggleStoreStatus'])->name('toggle-status');
-        Route::post('toggle-store-status-closed', [StoreController::class, 'toggleStoreStatusClosed'])->name('toggleStoreStatusClosed');
-    });
+        Route::post('toggle-status', [StoreController::class, 'toggleStoreStatusClosed'])->name('toggleStatusClosed');
+      });
 
     // Gestión de Roles
     Route::prefix('roles/{role}')->name('roles.')->group(function () {

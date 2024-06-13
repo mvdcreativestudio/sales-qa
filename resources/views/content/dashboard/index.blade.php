@@ -5,7 +5,10 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 @section('page-script')
-@vite(['resources/assets/js/cards-statistics.js', 'resources/assets/js/ui-cards-analytics.js', 'resources/assets/js/extended-ui-tour.js','/resources/assets/js/toggle-store-status.js'])
+@vite(['resources/assets/js/cards-statistics.js', 'resources/assets/js/ui-cards-analytics.js', 'resources/assets/js/extended-ui-tour.js', 'resources/assets/js/toggle-store-status.js'])
+<script>
+    window.baseUrl = "{{ url('/') }}";
+</script>
 @endsection
 
 @section('vendor-style')
@@ -29,13 +32,6 @@
 </div>
 @endif
 
-<script>document.addEventListener("DOMContentLoaded", (event) => {
-  console.log("DOM fully loaded and parsed");
-
-  var dt_stores_table = $('.datatables-stores');
-  
-});</script>
-
 <div class="row">
   <!-- Botón de Modo Ayuda -->
   <div class="col-2">
@@ -46,7 +42,7 @@
   <div class="row g-4 mt-0 pt-0 mb-4" id="">
     @foreach($stores as $store)
     <div class="col-sm-6 col-lg-3" id="tour-stores">
-      @if($store->status == 'Cerrada')
+      @if($store->closed)
       <div class="card card-border-shadow-danger">
       @else
       <div class="card card-border-shadow-success">
@@ -55,7 +51,7 @@
           <div class="d-flex justify-content-between align-items-center col-10">
             <div class="d-flex">
               <div class="avatar me-3">
-                @if( $store->status == 'Cerrada' )
+                @if($store->closed)
                 <span class="avatar-initial rounded bg-label-danger"><i class="fa-regular fa-circle-xmark"></i></span>
                 @else
                 <span class="avatar-initial rounded bg-label-success"><i class="fa-regular fa-circle-check"></i></span>
@@ -63,16 +59,16 @@
               </div>
               <div>
                 <h5 class="mb-0">{{ $store->name }}</h5>
-                @if($store->status == 'Cerrada')
-                <small class="text-danger">{{ $store->status }}</small>
+                @if($store->closed)
+                <small class="text-danger">Cerrada</small>
                 @else
-                <small class="text-success">{{ $store->status }}</small>
+                <small class="text-success">Abierta</small>
                 @endif
               </div>
             </div>
             <div>
               <label class="switch">
-                <input type="checkbox" class="switch-input" onchange="toggleStoreStatusClosed({{ $store->id }})">
+                <input type="checkbox" class="switch-input" {{ $store->closed ? '' : 'checked' }} onchange="toggleStoreStatusClosed({{ $store->id }})">
                 <span class="switch-toggle-slider">
                   <span class="switch-on">
                     <i class="bx bx-check"></i>
