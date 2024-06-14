@@ -26,10 +26,12 @@ function initQuillEditor() {
 
     const form = commentEditorElement.closest('form');
     form.addEventListener('submit', function () {
+      // Aquí copia el valor del editor al campo oculto
       hiddenDesc.value = quill.root.innerHTML;
     });
   }
 }
+
 
 const existingImage = document.querySelector('#existingImage img');
 
