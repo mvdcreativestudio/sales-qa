@@ -39,52 +39,54 @@
   </div>
 
   <!-- Abierto / Cerrado Stores -->
-  <div class="row g-4 mt-0 pt-0 mb-4" id="">
-    @foreach($stores as $store)
-    <div class="col-sm-6 col-lg-3" id="tour-stores">
-      @if($store->closed)
-      <div class="card card-border-shadow-danger">
-      @else
-      <div class="card card-border-shadow-success">
-      @endif
-        <div class="card-body p-4">
-          <div class="d-flex justify-content-between align-items-center col-10">
-            <div class="d-flex">
-              <div class="avatar me-3">
-                @if($store->closed)
-                <span class="avatar-initial rounded bg-label-danger"><i class="fa-regular fa-circle-xmark"></i></span>
-                @else
-                <span class="avatar-initial rounded bg-label-success"><i class="fa-regular fa-circle-check"></i></span>
-                @endif
+  @if(Auth::user()->hasPermissionTo('access_open_close_stores'))
+    <div class="row g-4 mt-0 pt-0 mb-4" id="">
+      @foreach($stores as $store)
+      <div class="col-sm-6 col-lg-3" id="tour-stores">
+        @if($store->closed)
+        <div class="card card-border-shadow-danger">
+        @else
+        <div class="card card-border-shadow-success">
+        @endif
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center col-10">
+              <div class="d-flex">
+                <div class="avatar me-3">
+                  @if($store->closed)
+                  <span class="avatar-initial rounded bg-label-danger"><i class="fa-regular fa-circle-xmark"></i></span>
+                  @else
+                  <span class="avatar-initial rounded bg-label-success"><i class="fa-regular fa-circle-check"></i></span>
+                  @endif
+                </div>
+                <div>
+                  <h5 class="mb-0">{{ $store->name }}</h5>
+                  @if($store->closed)
+                  <small class="text-danger">Cerrada</small>
+                  @else
+                  <small class="text-success">Abierta</small>
+                  @endif
+                </div>
               </div>
               <div>
-                <h5 class="mb-0">{{ $store->name }}</h5>
-                @if($store->closed)
-                <small class="text-danger">Cerrada</small>
-                @else
-                <small class="text-success">Abierta</small>
-                @endif
+                <label class="switch">
+                  <input type="checkbox" class="switch-input" {{ $store->closed ? '' : 'checked' }} onchange="toggleStoreStatusClosed({{ $store->id }})">
+                  <span class="switch-toggle-slider">
+                    <span class="switch-on">
+                      <i class="bx bx-check"></i>
+                    </span>
+                    <span class="switch-off">
+                      <i class="bx bx-x"></i>
+                    </span>
+                  </span>
+                </label>
               </div>
-            </div>
-            <div>
-              <label class="switch">
-                <input type="checkbox" class="switch-input" {{ $store->closed ? '' : 'checked' }} onchange="toggleStoreStatusClosed({{ $store->id }})">
-                <span class="switch-toggle-slider">
-                  <span class="switch-on">
-                    <i class="bx bx-check"></i>
-                  </span>
-                  <span class="switch-off">
-                    <i class="bx bx-x"></i>
-                  </span>
-                </span>
-              </label>
             </div>
           </div>
         </div>
       </div>
+      @endforeach
     </div>
-    @endforeach
-  </div>
+  @endif
 
   <!-- Single Card -->
   <div class="col-12" id="tour-single-card">
