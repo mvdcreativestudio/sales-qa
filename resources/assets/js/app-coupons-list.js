@@ -207,8 +207,9 @@ $(function () {
 
   $('.datatables-coupons tbody').on('click', '.edit-record', function () {
     var recordId = $(this).data('id'); // Obtenemos el ID del cupón
-    $('#updateCouponBtn').attr('data-id', recordId); // Asignamos el ID del cupón al botón de "Actualizar Cupón"
-    // Aquí puedes realizar cualquier acción necesaria antes de abrir el modal de edición, como cargar los datos del cupón en el formulario de edición
+     $('#updateCouponBtn').attr('data-id', recordId); // Asignamos el ID del cupón al botón de "Actualizar Cupón"
+     var $couponExpiryInput = $('#editCouponModal #couponExpiry'); 
+     // Aquí puedes realizar cualquier acción necesaria antes de abrir el modal de edición, como cargar los datos del cupón en el formulario de edición
     $.ajax({
         url: 'coupons/' + recordId, // Reemplaza 'coupons/' por la ruta correcta para obtener los detalles del cupón
         type: 'GET',
@@ -217,7 +218,9 @@ $(function () {
             $('#editCouponModal #couponCode').val(response.code);
             $('#editCouponModal #couponType').val(response.type);
             $('#editCouponModal #couponAmount').val(response.amount);
-            $('#editCouponModal #couponExpiry').val(response.due_date);
+            if ($couponExpiryInput.val().trim() === '') {
+                $couponExpiryInput.val(response.due_date);
+            }
             // Otros campos pueden ser llenados de manera similar
             // Luego, abrimos el modal de edición
             $('#editCouponModal').modal('show');
@@ -408,6 +411,9 @@ $(function () {
             });
         },
         error: function (xhr) {
+            
+            $('#addCouponModal').modal('hide'); 
+
             var errorMessage = xhr.responseJSON && xhr.responseJSON.errors
                 ? Object.values(xhr.responseJSON.errors).flat().join('\n')
                 : 'Error desconocido al guardar.';

@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var storeAdd = window.storeAdd;
   var storeEdit = window.storeEditTemplate;
-  var storeDelete = window.storeDeleteTemplate;
   var storeManageUsers = window.storeManageUsersTemplate;
+  var storeChangeStatus = window.toggleStoreStatus;
 
   if (dt_stores_table.length) {
     dt_stores_table.DataTable({
@@ -63,9 +63,8 @@ document.addEventListener('DOMContentLoaded', function () {
                   <a class="dropdown-item" href="${storeManageHours.replace(':id', row.id)}">
                     <i class="bx bx-time"></i> Modificar Horarios
                   </a>
-                  <form class="delete-form-${row.id}" action="${storeDelete.replace(':id', row.id)}" method="POST">
+                  <form class="delete-form-${row.id}" action="${storeChangeStatus.replace(':id', row.id)}" method="POST">
                     <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
-                    <input type="hidden" name="_method" value="DELETE">
                     ${actionButton}
                   </form>
                 </div>

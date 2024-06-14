@@ -87,8 +87,8 @@ Route::middleware([
         Route::post('associate-user', [StoreController::class, 'associateUser'])->name('associateUser');
         Route::post('disassociate-user', [StoreController::class, 'disassociateUser'])->name('disassociateUser');
         Route::post('save-hours', [StoreController::class, 'saveHours'])->name('saveHours');
-        Route::post('toggle-store-status', [StoreController::class, 'toggleStoreStatus'])->name('toggle-status');
-    });
+        Route::post('toggle-status', [StoreController::class, 'toggleStoreStatusClosed'])->name('toggleStatusClosed');
+      });
 
     // Gestión de Roles
     Route::prefix('roles/{role}')->name('roles.')->group(function () {
@@ -100,6 +100,7 @@ Route::middleware([
     });
 
     // Gestión de Sabores de Productos
+
     Route::get('/product-flavors', [ProductController::class, 'flavors'])->name('product-flavors');
     Route::post('/product-flavors', [ProductController::class, 'storeFlavor'])->name('product-flavors.store-modal');
     Route::post('/product-flavors/multiple', [ProductController::class, 'storeMultipleFlavors'])->name('product-flavors.store-multiple');
@@ -130,6 +131,15 @@ Route::middleware([
     // Gestión de Cupones
     Route::post('marketing/coupons/delete-selected', [CouponController::class, 'deleteSelected'])->name('coupons.deleteSelected');
     Route::get('coupons/{id}', [CouponController::class, 'show'])->name('coupons.show');
+
+    // Gestión de categorías
+    Route::delete('product-categories/{id}/delete-selected', [ProductCategoryController::class,'deleteSelected'])-> name('categories.deleteSelected');
+    Route::post('product-categories/{id}/update-selected',[ProductCategoryController::class,'updateSelected'])-> name('categories.updateSelected');
+    Route::get('product-categories/{id}/get-selected',[ProductCategoryController::class,'getSelected'])-> name('categories.getSelected');
+
+    // Edición de Sabores
+    Route::get('/flavors/{id}', [ProductController::class, 'editFlavor'])->name('flavors.edit');
+    Route::put('/flavors/{id}', [ProductController::class, 'updateFlavor'])->name('flavors.update');
 
     // Órdenes a Proveedores
     Route::group(['prefix' => 'supplier-orders'], function () {

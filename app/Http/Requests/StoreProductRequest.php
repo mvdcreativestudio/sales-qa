@@ -20,7 +20,7 @@ class StoreProductRequest extends FormRequest
             'type' => 'required|in:simple,configurable',
             'max_flavors' => 'nullable|integer|min:1',
             'old_price' => 'required|numeric',
-            'price' => 'nullable|numeric',
+            'price' => 'required|numeric|lt:old_price',  
             'discount' => 'nullable|numeric',
             'store_id' => 'required|exists:stores,id',
             'status' => 'required|boolean',
@@ -30,9 +30,17 @@ class StoreProductRequest extends FormRequest
             'flavors' => 'nullable|array',
             'flavors.*' => 'exists:flavors,id',
             'image' => 'required|image|max:2048',
-            'recipes' => 'nullable|array',
-            'recipes.*.raw_material_id' => 'required_with:recipes|exists:raw_materials,id',
-            'recipes.*.quantity' => 'required_with:recipes|numeric|min:0.01',
-        ];
+      ];
     }
+
+  public function messages()
+  {
+      return [
+               'price.lt' => 'El precio rebajado no puede ser mayor o igual al precio normal.',
+              'recipes' => 'nullable|array',
+              'recipes.*.raw_material_id' => 'required_with:recipes|exists:raw_materials,id',
+              'recipes.*.quantity' => 'required_with:recipes|numeric|min:0.01',
+              ];
+  }
+
 }

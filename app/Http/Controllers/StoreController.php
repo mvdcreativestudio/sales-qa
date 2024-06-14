@@ -125,7 +125,7 @@ class StoreController extends Controller
   }
 
   /**
-   * Cambia el estado de la tienda.
+   * Elimina la tienda.
    *
    * @param Store $store
    * @return RedirectResponse
@@ -135,6 +135,39 @@ class StoreController extends Controller
     $this->storeRepository->delete($store);
     return redirect()->route('stores.index')->with('success', 'Tienda eliminada con éxito.');
   }
+
+  /**
+   * Cambia el estado de la tienda.
+   *
+   * @param Store $store
+   * @return RedirectResponse
+  */
+  public function toggleStoreStatus(Store $store): RedirectResponse
+  {
+    $this->storeRepository->toggleStoreStatus($store);
+    return redirect()->route('stores.index')->with('success', 'Estado de la tienda cambiado con éxito.');
+  }
+
+
+  /**
+   * Cambia el abierto/cerrado de la tienda.
+   *
+   * @param $id
+   * @return RedirectResponse
+  */
+  public function toggleStoreStatusClosed($storeId)
+  {
+      $success = $this->storeRepository->toggleStoreStatusClosed($storeId);
+
+      if ($success) {
+          $store = Store::findOrFail($storeId);
+          return response()->json(['status' => 'success', 'closed' => $store->closed]);
+      } else {
+          return response()->json(['status' => 'error', 'message' => 'No se pudo cambiar el estado de la tienda.'], 500);
+      }
+  }
+
+
 
   /**
    * Muestra la página para administrar usuarios asociados a una tienda.
@@ -197,7 +230,7 @@ class StoreController extends Controller
   public function saveHours(Store $store, Request $request): RedirectResponse
   {
     $this->storeRepository->saveStoreHours($store, $request->get('hours', []));
-    return redirect()->route('stores.manageHours', ['store' => $store->id])->with('success', 'Horarios actualizados con éxito.');
+    return redirect()->route('stores.index', ['store' => $store->id])->with('success', 'Horarios actualizados con éxito.');
   }
 
   /**
@@ -207,7 +240,7 @@ class StoreController extends Controller
    * @param int $storeId
    * @return JsonResponse
   */
-  public function toggleStoreStatus(Request $request, int $storeId)
+  public function closeStoreStatus(Request $request, int $storeId)
   {
     $store = Store::findOrFail($storeId);
     $store->closed = $request->input('closed');

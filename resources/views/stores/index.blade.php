@@ -25,7 +25,9 @@
     window.storeDeleteTemplate = "{{ route('stores.destroy', ':id') }}";
     window.storeManageUsersTemplate = "{{ route('stores.manageUsers', ':id') }}";
     window.storeManageHours = "{{ route('stores.manageHours', ':id') }}";
+    window.toggleStoreStatus= "{{ route('stores.toggle-status', ':id') }}";
     window.csrfToken = "{{ csrf_token() }}";
+    window.toggleStoreStatusClosed= "{{route('stores.toggleStoreStatusClosed')}}"
     var stores = @json($stores);
 </script>
 @vite(['resources/assets/js/app-stores-list.js'])

@@ -62,6 +62,36 @@ class ProductCategoryRepository
     return $category;
   }
 
+
+  /**
+   * Actualiza una categoría de producto en la base de datos dado un id.
+   *
+   * @param  Request  $request
+   * @param  int  $id
+   * @return ProductCategory
+  */
+  public function updateSelected(Request $request,$id): ProductCategory
+  {
+    $category = ProductCategory::find($id);
+
+    $category->name = $request->name;
+    $category->slug = $request->slug;
+    $category->description = $request->description;
+    $category->parent_id = $request->parent_id;
+    $category->status = $request->status;
+
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+        $filename = time() . '.' . $file->getClientOriginalExtension();
+        $path = $file->move(public_path('assets/img/ecommerce-images'), $filename);
+        $category->image_url = 'assets/img/ecommerce-images/' . $filename;
+    }
+
+    $category->save();
+
+    return $category;
+  }
+
   /**
    * Elimina una categoría de producto de la base de datos.
    *
@@ -72,6 +102,45 @@ class ProductCategoryRepository
   {
     $category->delete();
   }
+
+  /**
+   * Elimina una categoría dado un ID.
+   *
+   * @param  int  $id
+   * @return void
+  */
+  public function deleteSelected(int $id): bool
+  {
+    $category = ProductCategory::find($id);
+    
+    if ($category) {
+        $category->delete();
+        return true;
+    } else {
+        throw new \Exception("La categoría con el ID $id no existe.");
+        return false;
+    }
+  }
+
+
+  /**
+     * Encuentra una categoría dada un ID.
+     *
+     * @param int $id
+     * @return ProductCategory
+    */
+    public function getSelected($id): ProductCategory
+    {
+        $category = ProductCategory::find($id);
+        
+        if ($category) {
+          return $category;
+        } else {
+          throw new \Exception("La categoría con el ID $id no existe.");
+        }
+    }
+
+
 
   /**
    * Obtiene los datos de las categorías de productos para DataTables.

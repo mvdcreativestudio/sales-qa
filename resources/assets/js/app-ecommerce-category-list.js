@@ -71,15 +71,18 @@ $(function () {
           orderable: false,
           render: function (data, type, full, meta) {
             return (
-              '<div class="d-flex align-items-sm-center justify-content-sm-center">' +
-              '<button class="btn btn-sm btn-icon delete-record me-2"><i class="bx bx-trash"></i></button>' +
-              '<button class="btn btn-sm btn-icon"><i class="bx bx-edit"></i></button>' +
+              '<div class="d-inline-block text-nowrap">' +
+              '<button class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded me-2"></i></button>' +
+              '<div class="dropdown-menu dropdown-menu-end m-0">' +
+              '<a href="javascript:void(0);" class="dropdown-item edit-record" data-id="' + full['id'] +'">Editar</a>'+
+              '<a href="javascript:void(0);" class="dropdown-item text-danger delete-button" data-id="' + full['id'] + '">Eliminar</a>' +
+              '</div>' +
               '</div>'
             );
           }
         }
       ],
-      order: [2, 'desc'], //set any columns order asc/desc
+      order: [1, 'asc'], // Cambiado de [2, 'desc'] a [1, 'asc'] para ordenar por nombre de categoría
       dom:
         '<"card-header d-flex flex-wrap py-0"' +
         '<"me-5 ms-n2 pe-5"f>' +
@@ -122,9 +125,124 @@ $(function () {
     $('.dataTables_filter label input').addClass('form-control');
   }
 
-  // Delete Record
-  $('.datatables-category-list tbody').on('click', '.delete-record', function () {
-    dt_category.row($(this).parents('tr')).remove().draw();
+const commentEditor = new Quill('.comment-editor', {
+    modules: {
+        toolbar: '.comment-toolbar'
+    },
+    placeholder: 'Ingrese la descripción de la categoría',
+    theme: 'snow'
+});
+
+$('#eCommerceCategoryListForm').submit(function(event) {
+    event.preventDefault();
+  
+    var plainTextContent = commentEditor.getText();
+
+    $('#hidden-description').val(plainTextContent);
+
+    var statusValue = $('#statusSwitch').is(':checked') ? '1' : '0';
+    $('input[name="status"]').val(statusValue);
+
+    this.submit();
+});
+
+
+
+  // Borrar categoría
+  $('.datatables-category-list tbody').on('click', '.delete-button', function () { 
+    var recordId = $(this).data('id');
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Esta acción no se puede deshacer",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar!',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: baseUrl+'admin/product-categories/' + recordId + '/delete-selected',
+          type: 'DELETE',
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
+          success: function (result) {
+            if (result.success) {
+              Swal.fire(
+                'Eliminado!',
+                'La categoría ha sido eliminada.',
+                'success'
+              );
+              setTimeout(() => {
+                location.reload()
+              }, 3000);                        
+            } else {
+              Swal.fire(
+                'Error!',
+                'No se pudo eliminar la categoría. Intente de nuevo.',
+                'error'
+              );
+            }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+            Swal.fire(
+              'Error!',
+              'No se pudo eliminar la categoría: ' + xhr.responseJSON.message,
+              'error'
+            );
+          }
+        });
+      }
+    });
+  });
+  
+
+  // Editar categoría
+  $(document).ready(function () {
+    console.log('Edit button clicked');  // Añadir mensaje de consola
+
+    $(document).on('click', '.edit-record', function () {
+      var recordId = $(this).data('id');
+      console.log('Record ID:', recordId);  // Añadir mensaje de consola
+
+
+      // Realizar una solicitud AJAX para obtener los datos de la categoría
+      $.ajax({
+        url: 'product-categories/' + recordId + '/get-selected',
+        type: 'GET',
+        success: function (data) {
+          console.log('Data received:', data);
+
+          // Llenar el formulario con los datos de la categoría
+          $('#ecommerce-category-title').val(data.name);
+          $('#ecommerce-category-slug').val(data.slug);
+          $('#ecommerce-category-description').val(data.description);
+          $('#ecommerce-category-parent-category').val(data.parent_id).trigger('change');
+          $('#statusSwitch').prop('checked', data.status == 1);
+
+          // Establecer la acción del formulario dinámicamente
+          $('#eCommerceCategoryListForm').attr('action', baseUrl + 'admin/product-categories/' + recordId + '/update-selected');
+
+          // Mostrar el modal
+          $('#editCategoryModal').modal('show');
+        },
+        error: function (xhr) {
+          console.log('Error occurred:', xhr); 
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al cargar la categoría',
+            text: 'No se pudo cargar la categoría. Intente nuevamente.'
+          });
+        }
+      });
+    });
+
+    $('#updateCategoryBtn').click(function () {
+      $('#eCommerceCategoryListForm').submit();
+    });
   });
 
   // Filter form control to default size
@@ -139,11 +257,9 @@ $(function () {
 document.addEventListener('DOMContentLoaded', function () {
   var statusSwitch = document.getElementById('statusSwitch');
 
-  // Asegura que el valor inicial sea "1" cuando el switch está activado por defecto
-  statusSwitch.value = statusSwitch.checked ? '1' : '2';
+  statusSwitch.value = statusSwitch.checked ? '1' : '0';
 
-  statusSwitch.addEventListener('change', function() {
-    this.value = this.checked ? '1' : '2';
-  });
+    statusSwitch.addEventListener('change', function() {
+        this.value = this.checked ? '1' : '0';
+    });
 });
-

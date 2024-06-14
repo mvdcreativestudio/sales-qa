@@ -95,6 +95,39 @@ class ProductCategoryController extends Controller
       return redirect()->route('product-categories.index')->with('success', 'Categoría actualizada correctamente.');
     }
 
+
+    /**
+     * Actualiza una categoría de producto en la base de datos dado un ID.
+     *
+     * @param UpdateProductCategoryRequest $request
+     * @param int $id
+     * @return RedirectResponse
+    */
+    public function updateSelected(UpdateProductCategoryRequest $request, $id): RedirectResponse
+    {
+      $this->productCategoryRepo->updateSelected($request, $id);
+      return redirect()->route('product-categories.index')->with('success', 'Categoría actualizada correctamente.');
+    }
+    
+
+
+    /**
+     * Encuentra una categoría dada un ID.
+     *
+     * @param int $id
+    */
+    public function getSelected($id)
+    {
+      $category = $this->productCategoryRepo->getSelected($id);
+
+      if($category)
+      {
+        return response()->json($category);
+      } else {
+        return response()->json(['error' => 'Categoría no encontrada'], 404);
+      }
+    }
+
     /**
      * Elimina una categoría de producto de la base de datos.
      *
@@ -105,6 +138,20 @@ class ProductCategoryController extends Controller
     {
       $this->productCategoryRepo->destroy($category);
       return redirect()->route('product-categories.index')->with('success', 'Categoría eliminada correctamente.');
+    }
+
+    /**
+     * Elimina una categoría dado un ID.
+     *
+     * @param ProductCategory $category
+     * @return RedirectResponse
+    */
+    public function deleteSelected($id): RedirectResponse
+    {
+      if($this->productCategoryRepo->deleteSelected($id)){
+        return redirect()->route('product-categories.index')->with('success', 'Categoría eliminada correctamente.');
+      }
+      return redirect()->route('product-categories.index')->with('error', 'No se ha podido eliminar la categoría.');
     }
 
     /**
