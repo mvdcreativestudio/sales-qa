@@ -28,5 +28,6 @@ return [
   'access_chats' => 'Acceder a chats',
   'access_coupons' => 'Acceder a cupones',
   'access_company_settings' => 'Acceder a configuración de empresa',
-  'access_email_templates' => 'Acceder a plantillas de correo electrónico'
+  'access_email_templates' => 'Acceder a plantillas de correo electrónico',
+  'access_product-flavors' => 'Acceder a sabores de productos'
 ];

@@ -23,6 +23,10 @@ class UpdateFlavorRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
+            'status' => 'sometimes|in:active,inactive',
+            'recipes' => 'sometimes|array',
+            'recipes.*.raw_material_id' => 'required_with:recipes|exists:raw_materials,id',
+            'recipes.*.quantity' => 'required_with:recipes|numeric|min:1',
         ];
     }
 }

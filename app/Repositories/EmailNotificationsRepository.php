@@ -26,32 +26,45 @@ class EmailNotificationsRepository
      * @param string $recipient
      */
     private function sendTemplateEmail(string $templateName, array $variables, string $recipient)
-    {
-        try {
-            $template = EmailTemplate::where('name', $templateName)->firstOrFail();
+{
+    try {
+        Log::info('Iniciando envío de correo', ['templateName' => $templateName, 'variables' => $variables, 'recipient' => $recipient]);
 
+        $template = EmailTemplate::where('name', $templateName)->firstOrFail();
+        Log::info('Plantilla encontrada', ['template' => $template]);
+
+        if (isset($variables['order_items'])) {
             $variables['order_items'] = $this->generateOrderItemsHtml(json_decode($variables['order_items'], true));
-            $variables['year'] = date('Y');
-
-            $subject = $this->replaceVariables($template->subject, $variables);
-            $replyTo = $template->reply_to ?? 'default_reply_to@example.com';
-
-            $viewName = $this->getViewNameByTemplateName($templateName);
-
-            $body = view($viewName, $variables)->render();
-
-            Mail::send([], [], function ($message) use ($recipient, $subject, $body, $replyTo) {
-                $message->to($recipient)
-                    ->subject($subject)
-                    ->replyTo($replyTo)
-                    ->html($body);
-            });
-
-            Log::info('Correo enviado a ' . $recipient . ' con el asunto ' . $subject);
-        } catch (\Exception $e) {
-            Log::error('Error enviando correo: ' . $e->getMessage());
+        } else {
+            Log::error('La clave order_items no está presente en las variables');
         }
+
+        $variables['year'] = date('Y');
+
+        $subject = $this->replaceVariables($template->subject, $variables);
+        Log::info('Asunto del correo generado', ['subject' => $subject]);
+
+        $replyTo = $template->reply_to ?? 'default_reply_to@example.com';
+        $viewName = $this->getViewNameByTemplateName($templateName);
+        Log::info('Nombre de la vista obtenido', ['viewName' => $viewName]);
+
+        $body = view($viewName, $variables)->render();
+        Log::info('Cuerpo del correo renderizado');
+
+        Mail::send([], [], function ($message) use ($recipient, $subject, $body, $replyTo) {
+            $message->to($recipient)
+                ->subject($subject)
+                ->replyTo($replyTo)
+                ->html($body);
+        });
+
+        Log::info('Correo enviado a ' . $recipient . ' con el asunto ' . $subject);
+    } catch (\Exception $e) {
+        Log::error('Error enviando correo: ' . $e->getMessage());
     }
+}
+
+
 
     /**
      * Reemplaza las variables en el contenido de la plantilla.
@@ -63,15 +76,16 @@ class EmailNotificationsRepository
     private function replaceVariables(string $content, array $variables): string
     {
         Log::info('Contenido original:', ['content' => $content]);
+        Log::info('Variables para reemplazo:', ['variables' => $variables]);
 
         foreach ($variables as $key => $value) {
             $content = str_replace('{{ ' . $key . ' }}', $value, $content);
         }
 
         Log::info('Contenido después del reemplazo:', ['content' => $content]);
-
         return $content;
     }
+
 
     /**
      * Genera el HTML para los productos en la orden.
@@ -81,17 +95,22 @@ class EmailNotificationsRepository
      */
     private function generateOrderItemsHtml(array $items): string
     {
+        Log::info('Generando HTML para los ítems del pedido', ['items' => $items]);
         $html = '';
         foreach ($items as $item) {
-            $html .= '
-                <tr>
-                    <td>
-                        <img src="' . $this->baseUrl . $item['image'] . '" alt="' . $item['name'] . '" style="max-width: 70px; max-height: 70px;">
-                    </td>
-                    <td style="font-size: 1em;">' . $item['name'] . '</td>
-                    <td>' . $item['quantity'] . '</td>
-                    <td>$' . $item['price'] . '</td>
-                </tr>';
+            if (is_array($item)) {
+                $html .= '
+                    <tr>
+                        <td>
+                            <img src="' . $this->baseUrl . $item['image'] . '" alt="' . $item['name'] . '" style="max-width: 70px; max-height: 70px;">
+                        </td>
+                        <td style="font-size: 1em;">' . $item['name'] . '</td>
+                        <td>' . $item['quantity'] . '</td>
+                        <td>$' . $item['price'] . '</td>
+                    </tr>';
+            } else {
+                Log::error('Ítem no es un arreglo', ['item' => $item]);
+            }
         }
         return $html;
     }
@@ -120,7 +139,6 @@ class EmailNotificationsRepository
             Log::error('Error enviando correo: ' . $e->getMessage());
         }
     }
-
 
     /**
      * Envía un correo de nueva orden al cliente.

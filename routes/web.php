@@ -26,7 +26,9 @@ use App\Http\Controllers\{
     DatacenterController,
     MercadoPagoController,
     EmailTemplateController,
-};
+    NotificationController,
+    OrderPdfController
+  };
 
 // Middleware de autenticación y verificación de email
 Route::middleware([
@@ -47,6 +49,7 @@ Route::middleware([
     Route::get('/marketing/coupons/datatable', [CouponController::class, 'datatable'])->name('coupons.datatable');
     Route::get('/products/flavors/datatable', [ProductController::class, 'flavorsDatatable'])->name('products.flavors.datatable');
 
+
     // Recursos con acceso autenticado
     Route::resources([
         'stores' => StoreController::class,
@@ -64,11 +67,14 @@ Route::middleware([
         'clients' => ClientController::class,
     ]);
 
+
     // Datacenter
     Route::get('/datacenter-sales', [DatacenterController::class, 'sales'])->name('datacenter.sales');
     Route::get('/api/monthly-income', [DatacenterController::class, 'monthlyIncome']);
     Route::get('/api/sales-by-store', [DatacenterController::class, 'salesByStore']);
     Route::get('/sales-by-store', [DatacenterController::class, 'showSalesByStore'])->name('sales.by.store');
+    Route::get('/datacenter/payment-methods', [DatacenterController::class, 'paymentMethodsData'])->name('datacenter.paymentMethodsData');
+
 
     // Gestión de Productos
     Route::get('products/{id}/duplicate', [ProductController::class, 'duplicate'])->name('products.duplicate');
@@ -94,11 +100,14 @@ Route::middleware([
     });
 
     // Gestión de Sabores de Productos
-    Route::get('product-flavors', [ProductController::class, 'flavors'])->name('product-flavors');
-    Route::post('product-flavors', [ProductController::class, 'storeFlavor'])->name('product-flavors.store');
+
+    Route::get('/product-flavors', [ProductController::class, 'flavors'])->name('product-flavors');
+    Route::post('/product-flavors', [ProductController::class, 'storeFlavor'])->name('product-flavors.store-modal');
     Route::post('/product-flavors/multiple', [ProductController::class, 'storeMultipleFlavors'])->name('product-flavors.store-multiple');
-    Route::delete('product-flavors/{id}/delete', [ProductController::class, 'destroyFlavor'])->name('product-flavors.destroy');
-    Route::put('flavors/{id}/switch-status', [ProductController::class, 'switchFlavorStatus'])->name('flavors.switch-status');
+    Route::delete('/product-flavors/{id}/delete', [ProductController::class, 'destroyFlavor'])->name('product-flavors.destroy');
+    Route::put('/product-flavors/{id}/switch-status', [ProductController::class, 'switchFlavorStatus'])->name('flavors.switch-status');
+    Route::get('/product-flavors/{id}', [ProductController::class, 'editFlavor'])->name('flavors.edit');
+    Route::put('/product-flavors/{id}', [ProductController::class, 'updateFlavor'])->name('flavors.update');
 
     // CRM y Contabilidad
     Route::get('crm', [CrmController::class, 'index'])->name('crm');
@@ -115,10 +124,9 @@ Route::middleware([
     Route::post('/email-templates/update/{templateId?}', [EmailTemplateController::class, 'update'])->name('email-templates.update');
     Route::post('/upload-image', [EmailTemplateController::class, 'uploadImage'])->name('upload-image');
 
-
-
     // Detalles de Ordenes
     Route::get('/orders/{order}/show', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}/pdf', [OrderPdfController::class, 'generatePdf'])->name('orders.pdf');
 
     // Gestión de Cupones
     Route::post('marketing/coupons/delete-selected', [CouponController::class, 'deleteSelected'])->name('coupons.deleteSelected');
@@ -184,3 +192,6 @@ Route::get('lang/{locale}', [LanguageController::class, 'swap']);
 
 // Test email
 Route::get('/test-email', [EmailTemplateController::class, 'testEmail']);
+
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::post('/notifications/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');

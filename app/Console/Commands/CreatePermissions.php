@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-
 class CreatePermissions extends Command
 {
     /**
@@ -74,7 +73,8 @@ class CreatePermissions extends Command
                         'orders',
                         'products',
                         'product-categories',
-                        'settings'
+                        'settings',
+                        'product-flavors'
                     ],
                     'view_all' => false,
                 ],
@@ -117,44 +117,38 @@ class CreatePermissions extends Command
                 [
                     'slug' => 'email_templates',
                     'view_all' => false,
-                ]
+                ],
             ]
         ];
 
-         // Asegurar que el rol de administrador existe
-         $adminRole = Role::firstOrCreate(['name' => 'Administrador']);
+        // Asegurar que el rol de administrador existe
+        $adminRole = Role::firstOrCreate(['name' => 'Administrador']);
 
         foreach ($modulesJson['menu'] as $module) {
-            $this->createPermission($module['slug'], $module['view_all']);
+            $this->createPermission($module['slug'], $module['view_all'], $adminRole);
 
             if (array_key_exists('submenus', $module)) {
                 foreach ($module['submenus'] as $submenuSlug) {
-                    $this->createPermission($submenuSlug, false);
+                    $this->createPermission($submenuSlug, false, $adminRole);
                 }
             }
         }
 
-        $this->info('Todos los permisos han sido creados.');
+        $this->info('Todos los permisos han sido creados y asignados al rol Administrador.');
     }
 
-    private function createPermission($slug, $viewAll)
+    private function createPermission($slug, $viewAll, $adminRole)
     {
         $permissionName = 'access_' . $slug;
-        if (!Permission::where('name', $permissionName)->exists()) {
-            Permission::create(['name' => $permissionName]);
-            $this->info('Permiso creado: ' . $permissionName);
-        } else {
-            $this->info('El permiso ya existe: ' . $permissionName);
-        }
+        $permission = Permission::firstOrCreate(['name' => $permissionName]);
+        $adminRole->givePermissionTo($permission);
+        $this->info('Permiso creado y asignado al rol Administrador: ' . $permissionName);
 
         if ($viewAll) {
             $viewAllPermissionName = 'view_all_' . $slug;
-            if (!Permission::where('name', $viewAllPermissionName)->exists()) {
-                Permission::create(['name' => $viewAllPermissionName]);
-                $this->info('Permiso de vista total creado: ' . $viewAllPermissionName);
-            } else {
-                $this->info('El permiso de vista total ya existe: ' . $viewAllPermissionName);
-            }
+            $viewAllPermission = Permission::firstOrCreate(['name' => $viewAllPermissionName]);
+            $adminRole->givePermissionTo($viewAllPermission);
+            $this->info('Permiso de vista total creado y asignado al rol Administrador: ' . $viewAllPermissionName);
         }
     }
 }

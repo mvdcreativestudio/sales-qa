@@ -8,7 +8,7 @@ class StoreProductRequest extends FormRequest
 {
     public function authorize()
     {
-        return true;  // Considera las validaciones de permisos adecuadas
+        return true;
     }
 
     public function rules()
@@ -30,13 +30,17 @@ class StoreProductRequest extends FormRequest
             'flavors' => 'nullable|array',
             'flavors.*' => 'exists:flavors,id',
             'image' => 'required|image|max:2048',
-    ];
-}
+      ];
+    }
 
-public function messages()
-{
-    return [
-        'price.lt' => 'El precio rebajado no puede ser mayor o igual al precio normal.',
-    ];
-}
+  public function messages()
+  {
+      return [
+               'price.lt' => 'El precio rebajado no puede ser mayor o igual al precio normal.',
+              'recipes' => 'nullable|array',
+              'recipes.*.raw_material_id' => 'required_with:recipes|exists:raw_materials,id',
+              'recipes.*.quantity' => 'required_with:recipes|numeric|min:0.01',
+              ];
+  }
+
 }

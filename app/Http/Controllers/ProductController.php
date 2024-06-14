@@ -154,7 +154,7 @@ class ProductController extends Controller
   public function flavors(): View
   {
     $flavor = $this->productRepo->flavors();
-    return view('content.e-commerce.backoffice.products.flavors', compact('flavor'));
+    return view('content.e-commerce.backoffice.products.flavors', $flavor);
   }
 
   /**
@@ -197,10 +197,10 @@ class ProductController extends Controller
    * @param  int  $id
    * @return View
   */
-  public function editFlavor(int $id): View
+  public function editFlavor(int $id): JsonResponse
   {
     $flavor = $this->productRepo->editFlavor($id);
-    return view('content.e-commerce.backoffice.products.flavors.edit-flavor', $flavor);
+    return response()->json($flavor);
   }
 
   /**
@@ -210,10 +210,10 @@ class ProductController extends Controller
    * @param  int  $id
    * @return View
   */
-  public function updateFlavor(UpdateFlavorRequest $request, int $id): View
+  public function updateFlavor(UpdateFlavorRequest $request, int $id): JsonResponse
   {
-    $flavor = $this->productRepo->updateFlavor($request, $id);
-    return view ('content.e-commerce.backoffice.products.flavors', $flavor)->with('success', 'Sabor actualizado correctamente.');
+      $flavor = $this->productRepo->updateFlavor($request, $id);
+      return response()->json(['success' => true, 'message' => 'Sabor actualizado con éxito']);
   }
 
   /**

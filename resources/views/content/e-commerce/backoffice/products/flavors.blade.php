@@ -38,9 +38,6 @@
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFlavorModal">
           Agregar Sabor
         </button>
-        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#addMultipleFlavorsModal">
-          Agregar Varios
-        </button>
       </div>
       <div class="dropdown d-inline float-end mx-2">
         <button class="btn btn-primary dropdown-toggle d-none" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -76,10 +73,26 @@
   </div>
 </div>
 
+<style>
+  .addRawMaterials {
+    box-shadow: none;
+    padding: 0px;
+    border: 1px solid #e9ecef;
+  }
+
+  .addRawMaterials .card-header, .card-body {
+    background-color: #f8f9fa;
+  }
+</style>
+
+<script>
+  const rawMaterials = @json($rawMaterials);
+</script>
+
+
 
 @include('content.e-commerce.backoffice.products.flavors.add-flavor')
 @include('content.e-commerce.backoffice.products.flavors.add-multiple-flavors')
 @include('content.e-commerce.backoffice.products.flavors.edit-flavor')
 
 @endsection
-

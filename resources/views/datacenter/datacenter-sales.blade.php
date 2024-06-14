@@ -12,11 +12,13 @@
 
 @section('vendor-script')
 @vite('resources/assets/vendor/libs/apex-charts/apexcharts.js',)
-
+@vite('resources/assets/vendor/libs/chartjs/chartjs.js')
 @endsection
 
+
+
 @section('page-script')
-@vite(['resources/assets/js/ui-cards-analytics.js']),
+@vite(['resources/assets/js/datacenter-sales.js'])
 @endsection
 
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -30,8 +32,11 @@
 </div>
 @endif
 
+<script>
+  window.paymentMethodsUrl = '{{ route('datacenter.paymentMethodsData') }}';
+</script>
 
-<div class="row">
+<div class="row sticky-top" style="top: 80px;">
   <!-- Filtros Temporales -->
   <div class="col-12 text-end" data-aos="fade-right">
     <form method="GET" action="{{ route('datacenter.sales') }}">
@@ -41,7 +46,16 @@
           <option value="week" {{ $period == 'week' ? 'selected' : '' }}>Esta Semana</option>
           <option value="month" {{ $period == 'month' ? 'selected' : '' }}>Este Mes</option>
           <option value="year" {{ $period == 'year' ? 'selected' : '' }}>Este Año</option>
+          <option value="always" {{ $period == 'always' ? 'selected' : '' }}>Todo el registro</option>
           <option value="custom" {{ $period == 'custom' ? 'selected' : '' }}>Personalizado</option>
+        </select>
+
+        <!-- Filtro por Local -->
+        <select name="store_id" class="form-select">
+          <option value="">Todos los Locales</option>
+          @foreach ($stores as $store)
+            <option value="{{ $store->id }}" {{ $storeId == $store->id ? 'selected' : '' }}>{{ $store->name }}</option>
+          @endforeach
         </select>
 
         <!-- Fechas Personalizadas -->
@@ -61,7 +75,6 @@ document.getElementById('timePeriodSelector').addEventListener('change', functio
   document.getElementById('endDate').disabled = !isCustom;
 });
 </script>
-
 
 <script>
   AOS.init();
@@ -155,7 +168,7 @@ document.getElementById('timePeriodSelector').addEventListener('change', functio
           <p class="mb-1 fw-medium me-1">Pedidos completados</p>
         @endif
         <p class="mb-0">
-          <span class="fw-medium me-1 text-success">+18.2%</span>
+          {{-- <span class="fw-medium me-1 text-success">+18.2%</span> --}}
         </p>
       </div>
     </div>
@@ -175,7 +188,7 @@ document.getElementById('timePeriodSelector').addEventListener('change', functio
           <p class="mb-1 fw-medium me-1">Pedidos pendientes</p>
         @endif
         <p class="mb-0">
-          <span class="fw-medium me-1 text-danger">-8.7%</span>
+          {{-- <span class="fw-medium me-1 text-danger">-8.7%</span> --}}
         </p>
       </div>
     </div>
@@ -195,7 +208,7 @@ document.getElementById('timePeriodSelector').addEventListener('change', functio
           <p class="mb-1">Pedidos cancelados</p>
         @endif
         <p class="mb-0">
-          <span class="fw-medium me-1 text-success">+4.3%</span>
+          {{-- <span class="fw-medium me-1 text-success">+4.3%</span> --}}
         </p>
       </div>
     </div>
@@ -211,7 +224,7 @@ document.getElementById('timePeriodSelector').addEventListener('change', functio
         </div>
         <p class="mb-1">Ticket medio</p>
         <p class="mb-0">
-          <span class="fw-medium me-1 text-danger">-2.5%</span>
+          {{-- <span class="fw-medium me-1 text-danger">-2.5%</span> --}}
         </p>
       </div>
     </div>
@@ -260,7 +273,7 @@ document.getElementById('timePeriodSelector').addEventListener('change', functio
                       <span>Físico</span>
                       <h5 class="mb-0"> {{ $settings->currency_symbol }}{{ $physicalIncomes }} </h5>
                     </div>
-                    <small class="text-success">+2.34%</small>
+                    {{-- <small class="text-success">+2.34%</small> --}}
                   </div>
                 </div>
               </div>
@@ -274,7 +287,7 @@ document.getElementById('timePeriodSelector').addEventListener('change', functio
                       <span>E-Commerce</span>
                       <h5 class="mb-0"> {{ $settings->currency_symbol }}{{ $ecommerceIncomes }} </h5>
                     </div>
-                    <small class="text-danger">-1.15%</small>
+                    {{-- <small class="text-danger">-1.15%</small> --}}
                   </div>
                 </div>
               </div>
@@ -288,7 +301,7 @@ document.getElementById('timePeriodSelector').addEventListener('change', functio
                       <span>Total</span>
                       <h5 class="mb-0">{{ $settings->currency_symbol }}{{ $totalIncomes }}</h5>
                     </div>
-                    <small class="text-success">+1.35%</small>
+                    {{-- <small class="text-success">+1.35%</small> --}}
                   </div>
                 </div>
               </div>
@@ -302,125 +315,214 @@ document.getElementById('timePeriodSelector').addEventListener('change', functio
   <!--/ Total Income -->
 
 
+  <div class="col-md-12 col-12 mb-4 order-2 order-xl-0">
+    <div class="card h-100 text-center" data-aos="fade-left" data-aos-anchor="#example-anchor" data-aos-offset="500" data-aos-duration="500">
+        <div class="card-header">
+            <h5 class="card-title text-start pb-4 mb-0">Comparativas</h5>
+            <ul class="nav nav-pills nav- card-header-pills" role="tablist">
+                <li class="nav-item">
+                    <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-browser" aria-controls="navs-pills-browser" aria-selected="true">Locales</button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-os" aria-controls="navs-pills-os" aria-selected="false">Productos</button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-coupons" aria-controls="navs-pills-coupons" aria-selected="false">Cupones</button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-categories" aria-controls="navs-pills-categories" aria-selected="false">Categorías</button>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-content pt-0">
+            <div class="tab-pane fade show active" id="navs-pills-browser" role="tabpanel">
+                <!-- Tabla de ventas por local -->
+                <div class="table-responsive text-start text-nowrap">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Local</th>
+                                <th>Ventas</th>
+                                <th class="w-50">Porcentaje del total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($salesByStore as $index => $store)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar avatar-xm me-2">
+                                            <span class="avatar-initial rounded-circle bg-label-primary">{{ substr($store['store'], 0, 2) }}</span>
+                                        </div>
+                                        <span>{{ $store['store'] }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ $settings->currency_symbol }}{{ $store['storeTotal'] }}</td>
+                                <td>
+                                    <div class="d-flex justify-content-between align-items-center gap-3">
+                                        <div class="progress w-100" style="height:10px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $store['percent'] }}%" aria-valuenow="{{ $store['percent'] }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <small class="fw-medium">{{ number_format($store['percent'], 2) }}%</small>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Tab Productos -->
+            <div class="tab-pane fade" id="navs-pills-os" role="tabpanel">
+                <!-- Tabla de Ventas por Producto -->
+                <div class="table-responsive text-start text-nowrap">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Producto</th>
+                                <th>Ventas</th>
+                                <th class="w-50">Porcentaje del total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($salesByProduct as $index => $product)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <span>{{ $product['product'] }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ $settings->currency_symbol }}{{ number_format($product['productTotal'], 2, ',', '.') }}</td>
+                                <td>
+                                    <div class="d-flex justify-content-between align-items-center gap-3">
+                                        <div class="progress w-100" style="height:10px;">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ $product['percent'] }}%" aria-valuenow="{{ $product['percent'] }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <small class="fw-medium">{{ number_format($product['percent'], 2, ',', '.') }}%</small>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Tab Categorías -->
+            <div class="tab-pane fade" id="navs-pills-categories" role="tabpanel">
+                <!-- Tabla de Ventas por Categoría -->
+                <div class="table-responsive text-start text-nowrap">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Categoría</th>
+                                <th>Ventas</th>
+                                <th class="w-50">Porcentaje del total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($salesByCategory as $index => $category)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <span>{{ $category['category'] }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ $settings->currency_symbol }}{{ number_format($category['categoryTotal'], 2, ',', '.') }}</td>
+                                <td>
+                                    <div class="d-flex justify-content-between align-items-center gap-3">
+                                        <div class="progress w-100" style="height:10px;">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ $category['percent'] }}%" aria-valuenow="{{ $category['percent'] }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <small class="fw-medium">{{ number_format($category['percent'], 2, ',', '.') }}%</small>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Tab Cupones -->
+            <div class="tab-pane fade" id="navs-pills-coupons" role="tabpanel">
+                <!-- Tabla de uso de Cupones -->
+                <div class="table-responsive text-start text-nowrap">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Cupón</th>
+                                <th>Usos</th>
+                                <th class="w-50">Monto Total Descuento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($couponUsage as $index => $coupon)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $coupon['code'] }}</td>
+                                <td>{{ $coupon['uses'] }}</td>
+                                <td>{{ $settings->currency_symbol }}{{ number_format((float) $coupon['total_discount'], 2, ',', '.') }}</td>
+                              </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
 
-  <!-- Reasons for delivery exceptions -->
-  <div class="col-md-3 col-12">
-    <div class="card h-100" data-aos="zoom-in">
-      <div class="card-header d-flex align-items-center justify-content-between">
-        <div class="card-title mb-0">
-          <h5 class="m-0 me-2">Ventas por local</h5>
-        </div>
-        <div class="dropdown">
-          <button class="btn p-0" type="button" id="deliveryExceptions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="bx bx-dots-vertical-rounded"></i>
-          </button>
-          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="deliveryExceptions">
-            <a class="dropdown-item" href="javascript:void(0);">Recargar</a>
-            <a class="dropdown-item" href="javascript:void(0);">Compartir</a>
-          </div>
-        </div>
+  <!-- Gráfica de promedio de pedidos por hora -->
+  <div class="col-12 mb-4 mt-4">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Promedio de ventas por hora</h5>
       </div>
       <div class="card-body">
-        <div id="deliveryExceptionsChart"></div>
+        <canvas id="averageOrdersByHourChart"></canvas>
       </div>
     </div>
   </div>
-  <!--/ Reasons for delivery exceptions -->
-   <!-- pill table -->
-   <div class="col-md-9 col-12 mb-4 order-2 order-xl-0">
-    <div class="card h-100 text-center" data-aos="fade-left" data-aos-anchor="#example-anchor" data-aos-offset="500" data-aos-duration="500">
-      <div class="card-header">
-        <ul class="nav nav-pills nav- card-header-pills" role="tablist">
-          <li class="nav-item">
-            <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-browser" aria-controls="navs-pills-browser" aria-selected="true">Locales</button>
-          </li>
-          <li class="nav-item">
-            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-os" aria-controls="navs-pills-os" aria-selected="false">Productos</button>
-          </li>
-        </ul>
-      </div>
-      <div class="tab-content pt-0">
-        <div class="tab-pane fade show active" id="navs-pills-browser" role="tabpanel">
-          <div class="table-responsive text-start text-nowrap">
-            <table class="table table-borderless">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Local</th>
-                  <th>Ventas</th>
-                  <th class="w-50">Porcentaje del total</th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach ($salesByStore as $index => $store)
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div class="avatar avatar-xm me-2">
-                                <!-- Puedes personalizar este span con un ícono o inicial del nombre del local si es necesario -->
-                                <span class="avatar-initial rounded-circle bg-label-primary">
-                                    {{ substr($store['store'], 0, 2) }}  <!-- Muestra las dos primeras letras del nombre del local -->
-                                </span>
-                            </div>
-                            <span>{{ $store['store'] }}</span>
-                        </div>
-                    </td>
-                    <td>{{ $settings->currency_symbol}}{{ $store['storeTotal'] }}</td>
-                    <td>
-                        <div class="d-flex justify-content-between align-items-center gap-3">
-                            <div class="progress w-100" style="height:10px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ $store['percent'] }}%" aria-valuenow="{{ $store['percent'] }}" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <small class="fw-medium">{{ number_format($store['percent'], 2) }}%</small>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-            </table>
-          </div>
+
+    <!-- Gráfica venta por locales -->
+    <div class="col-md-4 col-12 mb-4 mt-4">
+      <div class="card" data-aos="zoom-in">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <div class="card-title mb-0">
+                <h5 class="m-0 me-2">Ventas por local</h5>
+            </div>
         </div>
-        <!-- Tab Productos -->
-        <div class="tab-pane fade" id="navs-pills-os" role="tabpanel">
-          <!-- Tabla de Ventas por Producto -->
-          <div class="table-responsive text-start text-nowrap">
-            <table class="table table-borderless">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Producto</th>
-                        <th>Ventas</th>
-                        <th class="w-50">Porcentaje del total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($salesByProduct as $index => $product)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <span>{{ $product['product'] }}</span>
-                            </div>
-                        </td>
-                        <td>{{ $settings->currency_symbol }}{{ number_format($product['productTotal'], 2, ',', '.') }}</td> <!-- Formato de número ajustado para incluir decimales y separadores -->
-                        <td>
-                            <div class="d-flex justify-content-between align-items-center gap-3">
-                                <div class="progress w-100" style="height:10px;">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ $product['percent'] }}%" aria-valuenow="{{ $product['percent'] }}" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <small class="fw-medium">{{ number_format($product['percent'], 2, ',', '.') }}%</small> <!-- Formato de número ajustado para incluir decimales y separadores -->
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <div class="card-body">
+            <div id="deliveryExceptionsChart" style="height: 420px;"></div>
+        </div>
+      </div>
+    </div>
+    <!--/ Gráfica venta por locales -->
+
+  <!-- Gráfica métodos de pago -->
+  <div class="col-md-4 col-12 mb-4 mt-4">
+    <div class="card" data-aos="zoom-in">
+      <div class="card-header d-flex align-items-center justify-content-between">
+          <div class="card-title mb-0">
+              <h5 class="m-0 me-2">Métodos de Pago</h5>
           </div>
+      </div>
+      <div class="card-body">
+          <div id="paymentMethodsChart" style="height: 420px;"></div> <!-- Asegúrate de que tenga dimensiones -->
       </div>
     </div>
   </div>
+  <!--/ Gráfica métodos de pago -->
+
 </div>
+
+
 
 <script>
   $(document).ready(function() {
@@ -431,6 +533,10 @@ document.getElementById('timePeriodSelector').addEventListener('change', functio
   });
   </script>
 
+<script>
+  AOS.init();
 
-
+  // Total Income Chart
+  const averageOrdersByHourData = @json($averageOrdersByHour);
+</script>
 @endsection

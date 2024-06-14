@@ -12,6 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+
 class User extends Authenticatable
 {
     use HasApiTokens;

@@ -82,7 +82,7 @@
                   <div class="d-flex justify-content-between align-items-center">
                       <div>
                           <h6 class="mb-2">Tiendas Inactivas</h6>
-                          <h4>{{ $stores->filter(fn($store) => $store->status == false)->count() }}</h4>
+                          <h4>{{ $stores->filter(fn($store) => $store->status == 0)->count() }}</h4>
                       </div>
                       <div class="avatar">
                           <span class="avatar-initial rounded bg-label-danger"><i class="bx bx-block bx-sm"></i></span>

@@ -118,7 +118,7 @@ class OrderRepository
   */
   public function loadOrderRelations(Order $order): Order
   {
-    return $order->load('client', 'products');
+    return $order->load('client');
   }
 
   /**
@@ -142,6 +142,7 @@ class OrderRepository
   {
     $query = Order::select([
                 'orders.id',
+                'orders.uuid',
                 'orders.date',
                 'orders.time',
                 'orders.client_id',
@@ -209,5 +210,16 @@ class OrderRepository
           })
           ->rawColumns(['product_name'])  // Indica a DataTables que no escape HTML en la columna 'product_name'
           ->make(true);
+  }
+
+  /**
+   * Obtiene el conteo de ordenes del cliente.
+   *
+   * @param int $clientId
+   * @return int
+  */
+  public function getClientOrdersCount(int $clientId): int
+  {
+    return Order::where('client_id', $clientId)->count();
   }
 }
