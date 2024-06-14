@@ -85,8 +85,12 @@ class OrderController extends Controller
   public function show(Order $order): View
   {
       $order = $this->orderRepository->loadOrderRelations($order);
-      return view('content.e-commerce.backoffice.orders.show-order', compact('order'));
+      $products = json_decode($order->products, true);
+      $clientOrdersCount = $this->orderRepository->getClientOrdersCount($order->client_id);
+
+      return view('content.e-commerce.backoffice.orders.show-order', compact('order', 'products', 'clientOrdersCount'));
   }
+
 
   /**
    * Eliminar un pedido específico.

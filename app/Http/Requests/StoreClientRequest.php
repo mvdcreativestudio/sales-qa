@@ -25,7 +25,8 @@ class StoreClientRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'type' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
             'rut' => 'nullable|string|max:255',
             'ci' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
@@ -34,7 +35,7 @@ class StoreClientRequest extends FormRequest
             'country' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:255',
             'email' => 'required|string|email|max:255|unique:clients,email',
-            'website' => 'nullable|url|max:255',
+            'website' => 'nullable|string|max:255',
             'logo' => 'nullable|string|max:255',
         ];
     }

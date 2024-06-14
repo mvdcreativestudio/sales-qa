@@ -20,6 +20,7 @@ class DashboardController extends Controller
     {
         $stores = $this->storeRepository->getStoresWithStatus();
 
+
         return view('content.dashboard.index', compact('stores'));
     }
 }

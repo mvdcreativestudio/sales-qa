@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <a class="dropdown-item" href="${supplierOrderEditTemplate.replace(':id', row.id)}">
               <i class="bx bx-pencil"></i> Editar
             </a>
-            <a class="dropdown-item" href="/supplier-orders/${row.id}/pdf" target="_blank">
+            <a class="dropdown-item" href="supplier-orders/${row.id}/pdf" target="_blank">
               <i class="bx bx-file"></i> Descargar PDF
             </a>
             <form class="delete-form-${row.id}" action="${supplierOrderDeleteTemplate.replace(':id', row.id)}" method="POST">

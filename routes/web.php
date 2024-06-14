@@ -26,7 +26,9 @@ use App\Http\Controllers\{
     DatacenterController,
     MercadoPagoController,
     EmailTemplateController,
-};
+    NotificationController,
+    OrderPdfController
+  };
 
 // Middleware de autenticación y verificación de email
 Route::middleware([
@@ -47,6 +49,7 @@ Route::middleware([
     Route::get('/marketing/coupons/datatable', [CouponController::class, 'datatable'])->name('coupons.datatable');
     Route::get('/products/flavors/datatable', [ProductController::class, 'flavorsDatatable'])->name('products.flavors.datatable');
 
+
     // Recursos con acceso autenticado
     Route::resources([
         'stores' => StoreController::class,
@@ -64,11 +67,14 @@ Route::middleware([
         'clients' => ClientController::class,
     ]);
 
+
     // Datacenter
     Route::get('/datacenter-sales', [DatacenterController::class, 'sales'])->name('datacenter.sales');
     Route::get('/api/monthly-income', [DatacenterController::class, 'monthlyIncome']);
     Route::get('/api/sales-by-store', [DatacenterController::class, 'salesByStore']);
     Route::get('/sales-by-store', [DatacenterController::class, 'showSalesByStore'])->name('sales.by.store');
+    Route::get('/datacenter/payment-methods', [DatacenterController::class, 'paymentMethodsData'])->name('datacenter.paymentMethodsData');
+
 
     // Gestión de Productos
     Route::get('products/{id}/duplicate', [ProductController::class, 'duplicate'])->name('products.duplicate');
@@ -119,6 +125,7 @@ Route::middleware([
 
     // Detalles de Ordenes
     Route::get('/orders/{order}/show', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}/pdf', [OrderPdfController::class, 'generatePdf'])->name('orders.pdf');
 
     // Gestión de Cupones
     Route::post('marketing/coupons/delete-selected', [CouponController::class, 'deleteSelected'])->name('coupons.deleteSelected');
@@ -175,3 +182,6 @@ Route::get('lang/{locale}', [LanguageController::class, 'swap']);
 
 // Test email
 Route::get('/test-email', [EmailTemplateController::class, 'testEmail']);
+
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::post('/notifications/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');

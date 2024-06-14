@@ -102,7 +102,7 @@
               </div>
               <div class="comment-editor border-0 pb-4" id="ecommerce-category-description"></div>
               <!-- Campo oculto para enviar la descripción -->
-              <input type="hidden" id="hiddenDescription" value="{{ old('description', $product->description) }}">
+              <input type="hidden" name="description" id="hiddenDescription" value="{{ old('description', $product->description) }}">
             </div>
           </div>
 
