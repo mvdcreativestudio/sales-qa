@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.toggleStoreStatusClosed = async function(storeId) {
     console.log(`Store ID: ${storeId}`);
 
-    const url = `${window.baseUrl}admin/stores/${storeId}/toggle-status`;
+    const url = `${window.baseUrl}admin/stores/${storeId}/toggle-store-status-closed`;
 
     try {
       const response = await fetch(url, {

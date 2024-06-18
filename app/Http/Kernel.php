@@ -72,5 +72,6 @@ class Kernel extends HttpKernel
     'ensure_store_selected' => \App\Http\Middleware\EnsureStoreSelected::class,
     'ensure_store_matches' => \App\Http\Middleware\EnsureStoreMatches::class,
     'ensure_cart_not_empty' => \App\Http\Middleware\EnsureCartNotEmpty::class,
+    'check.store.open' => \App\Http\Middleware\CheckStoreOpen::class,
   ];
 }
