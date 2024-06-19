@@ -8,6 +8,13 @@
       "url": "/admin"
     },
     {
+      "id": "tour-datacenter",
+      "name": "Datacenter",
+      "icon": "menu-icon tf-icons bx bx-line-chart",
+      "slug": "datacenter",
+      "url": "/admin/datacenter-sales"
+    },
+    {
       "id": "tour-materias-primas",
       "name": "Materias Primas",
       "icon": "menu-icon tf-icons bx bx-box",
@@ -155,13 +162,6 @@
           "url": "/admin/omnichannel/settings"
         }
       ]
-    },
-    {
-      "id": "tour-datacenter",
-      "name": "Datacenter",
-      "icon": "menu-icon tf-icons bx bx-line-chart",
-      "slug": "datacenter",
-      "url": "/admin/datacenter-sales"
     },
     {
       "id": "tour-crm",
