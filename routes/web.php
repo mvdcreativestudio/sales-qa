@@ -101,7 +101,6 @@ Route::middleware([
     });
 
     // Gestión de Sabores de Productos
-
     Route::get('/product-flavors', [ProductController::class, 'flavors'])->name('product-flavors');
     Route::post('/product-flavors', [ProductController::class, 'storeFlavor'])->name('product-flavors.store-modal');
     Route::post('/product-flavors/multiple', [ProductController::class, 'storeMultipleFlavors'])->name('product-flavors.store-multiple');
@@ -125,8 +124,9 @@ Route::middleware([
     Route::post('/email-templates/update/{templateId?}', [EmailTemplateController::class, 'update'])->name('email-templates.update');
     Route::post('/upload-image', [EmailTemplateController::class, 'uploadImage'])->name('upload-image');
 
-    // Detalles de Ordenes
+    // Gestión de Ordenes
     Route::get('/orders/{order}/show', [OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{orderId}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::get('/orders/{order}/pdf', [OrderPdfController::class, 'generatePdf'])->name('orders.pdf');
 
     // Gestión de Cupones

@@ -36,18 +36,29 @@ class CouponRepository
    * @return array
   */
   public function createCoupon(array $data): array
-  {
-    $coupon = Coupon::create([
-        'code' => $data['code'],
-        'type' => $data['type'],
-        'amount' => $data['amount'],
-        'due_date' => $data['due_date'],
-        'creator_id' => auth()->id(),
-        'status' => 1,
-    ]);
+{
+    try {
+        $currentDate = date('Y-m-d');
 
-    return ['success' => true, 'message' => 'Cupón creado con éxito'];
-  }
+        $dueDate = date('Y-m-d', strtotime($data['due_date']));
+
+        $status = $dueDate <= $currentDate ? 0 : 1;
+
+        $coupon = Coupon::create([
+            'code' => $data['code'],
+            'type' => $data['type'],
+            'amount' => $data['amount'],
+            'due_date' => $data['due_date'],
+            'creator_id' => auth()->id(),
+            'status' => $status,
+        ]);
+
+        return ['success' => true, 'message' => 'Cupón creado con éxito'];
+    } catch (\Exception $e) {
+        return ['success' => false, 'message' => 'No se pudo crear el cupón: ' . $e->getMessage()];
+    }
+}
+
 
   /**
    * Actualiza un cupón existente.
@@ -57,7 +68,7 @@ class CouponRepository
    * @return array
   */
   public function updateCoupon(int $id, array $data): array
-  {
+{
     $coupon = Coupon::find($id);
 
     if (!$coupon) {
@@ -65,20 +76,26 @@ class CouponRepository
     }
 
     try {
+        $currentDate = date('Y-m-d');
+        $dueDate = date('Y-m-d', strtotime($data['due_date'])); 
+
+        $status = $dueDate <= $currentDate ? 0 : 1;
+
         $coupon->update([
             'code' => $data['code'],
             'type' => $data['type'],
             'amount' => $data['amount'],
             'due_date' => $data['due_date'],
             'creator_id' => auth()->id(),
-            'status' => 1,
+            'status' => $status,
         ]);
 
         return ['success' => true, 'message' => 'Cupón actualizado con éxito'];
     } catch (\Exception $e) {
         return ['success' => false, 'message' => 'No se pudo actualizar el cupón: ' . $e->getMessage()];
     }
-  }
+}
+
 
   /**
    * Elimina un cupón por su ID.

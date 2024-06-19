@@ -180,7 +180,7 @@ $(function () {
       }).then(result => {
         if (result.isConfirmed) {
           $.ajax({
-            url: baseUrl + 'orders/' + recordId,
+            url: baseUrl + 'admin/orders/' + recordId,
             type: 'DELETE',
             headers: {
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
