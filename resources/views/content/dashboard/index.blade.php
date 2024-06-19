@@ -88,7 +88,7 @@
     </div>
   @endif
 
-  <!-- Single Card -->
+  {{-- <!-- Single Card -->
   <div class="col-12" id="tour-single-card">
     <div class="card mb-4">
       <div class="card-widget-separator-wrapper">
@@ -624,5 +624,5 @@
     </div>
   </div>
   <!-- /Reasons for delivery exceptions -->
-</div>
+</div> --}}
 @endsection
