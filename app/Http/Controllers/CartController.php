@@ -48,7 +48,6 @@ class CartController extends Controller
   */
   public function selectStore(SelectStoreRequest $request): RedirectResponse
   {
-    Log::error('Seleccionar tienda: ' . $request->slug);
     return $this->cartRepository->selectStore($request);
   }
 

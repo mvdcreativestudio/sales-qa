@@ -4,6 +4,26 @@
 
 @section('content')
 
+@if(session('store_closed_error'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Error',
+                text: '{{ session('store_closed_error') }}',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                onClose: () => {
+                    window.location.href = "{{ route('session.clear') }}";
+                }
+            });
+        });
+        setTimeout(() => {
+            window.location.href = "{{ route('session.clear') }}";
+        }, 3000);
+
+    </script>
+@endif
+
 <div class="video-container">
   <video autoplay muted loop id="myVideo" class="video-background">
       <source src="assets/img/videos/back-chelato.mp4" type="video/mp4">
@@ -37,18 +57,32 @@
       <div class="d-flex justify-content-center">
         <div class="row gy-3 mt-0 col-12 col-md-8 justify-content-center">
             @foreach ($stores as $store)
+              @if ($store->closed != 1)
               <div class="col-xl-3 col-md-5 col-sm-6 col-6">
                 <div class="form-check custom-option custom-option-icon">
                   <label class="form-check-label custom-option-content" for="store{{ $store->id }}">
                     <span class="custom-option-body">
                       <i class="fa-solid fa-store"></i>
                       <span class="custom-option-title">{{$store->name}}</span>
-                      <small>{{$store->address}}</small>
+                      <small class="text-success">Tienda abierta</small>
                     </span>
                     <input name="slug" class="form-check-input" type="radio" value="{{ $store->slug }}" id="store{{ $store->id }}" {{ $loop->first ? 'checked' : '' }} />
                   </label>
                 </div>
               </div>
+              @else
+              <div class="col-xl-3 col-md-5 col-sm-6 col-6">
+                <div class="form-check custom-option custom-option-icon">
+                  <label class="form-check-label custom-option-content" for="store{{ $store->id }}">
+                    <span class="custom-option-body">
+                      <i class="fa-solid fa-store"></i>
+                      <span class="custom-option-title">{{$store->name}}</span>
+                      <small class="text-danger">Tienda cerrada</small>
+                    </span>
+                  </label>
+                </div>
+              </div>
+              @endif
             @endforeach
         </div>
       </div>
