@@ -374,6 +374,10 @@ class CheckoutRepository
 
         $discount = $coupon->type === 'fixed' ? $coupon->amount : round($subtotal * ($coupon->amount / 100), 2);
 
+        if ($discount > $subtotal) {
+            $discount = $subtotal;
+        }
+
         if ($discount <= 0) {
             throw new \Exception('No se pudo calcular un descuento válido.');
         }
@@ -389,4 +393,5 @@ class CheckoutRepository
 
         return ['code' => $coupon->code, 'discount' => $discount];
     }
+
 }

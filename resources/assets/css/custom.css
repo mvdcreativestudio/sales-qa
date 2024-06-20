@@ -170,7 +170,8 @@
   position: fixed;
   bottom: 20px;
   left: 20px;
-  width: 3%;
+  width: 12%;
+  max-width: 70px;
   z-index: 1000;
 }
 
@@ -185,7 +186,8 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 3%;
+  width: 12%;
+  max-width: 70px;
   padding: 7px;
   z-index: 1000;
   background-color: white;

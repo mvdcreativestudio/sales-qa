@@ -141,8 +141,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   dtSupplierOrdersTable.on('click', '.delete-button', function () {
     var form = $(this).closest('form');
-    if (confirm('¿Estás seguro de querer eliminar este elemento?')) {
-      form.submit();
-    }
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará completamente la orden al proveedor, perdiendo definitivamente sus datos',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar!',
+      cancelButtonText: 'Cancelar'
+    }).then(result => {
+      if (result.isConfirmed) {
+        form.submit();
+      }});
   });
 });

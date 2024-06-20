@@ -71,7 +71,10 @@ $(function () {
                   if (data === null) {
                       return 'Sin expiración';
                   } else {
-                    return moment(data).locale('es').format('DD/MM/YYYY');
+                    var currentDate = moment().startOf('day');
+                    var dueDate = moment(data).startOf('day');
+                    var dateClass = dueDate.isBefore(currentDate) ? 'text-danger' : 'text-success';
+                    return '<span class="' + dateClass + '">' + moment(data).locale('es').format('DD/MM/YYYY') + '</span>';
                 }
               },
             },
@@ -206,23 +209,35 @@ $(function () {
   });
 
   $('.datatables-coupons tbody').on('click', '.edit-record', function () {
-    var recordId = $(this).data('id'); // Obtenemos el ID del cupón
-     $('#updateCouponBtn').attr('data-id', recordId); // Asignamos el ID del cupón al botón de "Actualizar Cupón"
-     var $couponExpiryInput = $('#editCouponModal #couponExpiry'); 
-     // Aquí puedes realizar cualquier acción necesaria antes de abrir el modal de edición, como cargar los datos del cupón en el formulario de edición
+    var recordId = $(this).data('id'); // Obtener el ID del cupón
+    $('#updateCouponBtn').attr('data-id', recordId); // Asignar el ID del cupón al botón de "Actualizar Cupón"
+
+    // Acceder al input de fecha de expiración del modal de edición
+    var $couponExpiryInput = $('#editCouponModal #couponExpiry'); 
+
+    // Realizar la solicitud Ajax para obtener los detalles del cupón
     $.ajax({
         url: 'coupons/' + recordId, // Reemplaza 'coupons/' por la ruta correcta para obtener los detalles del cupón
         type: 'GET',
         success: function (response) {
             // Llenar los campos del formulario de edición con los detalles del cupón obtenidos de la base de datos
+            console.log('Response:', response); // Añadir log para verificar la respuesta
+            
             $('#editCouponModal #couponCode').val(response.code);
             $('#editCouponModal #couponType').val(response.type);
             $('#editCouponModal #couponAmount').val(response.amount);
-            if ($couponExpiryInput.val().trim() === '') {
-                $couponExpiryInput.val(response.due_date);
+
+            // Verificar si existe fecha de expiración antes de intentar dividirla
+            if (response.due_date) {
+                var dueDate = response.due_date.split(' ')[0];
+                $('#editCouponModal #couponExpiry').val(dueDate);
+            } else {
+                // Si no hay fecha de expiración, dejar el campo vacío o manejarlo según sea necesario
+                $('#editCouponModal #couponExpiry').val('');
             }
+
             // Otros campos pueden ser llenados de manera similar
-            // Luego, abrimos el modal de edición
+            // Luego, abrir el modal de edición
             $('#editCouponModal').modal('show');
         },
         error: function (xhr) {
@@ -230,7 +245,8 @@ $(function () {
             // Manejar el error si es necesario
         }
     });
-  });
+});
+
 
 
   function submitEditCoupon(recordId) {
@@ -256,7 +272,8 @@ $(function () {
                 icon: 'success',
                 title: 'Cupón actualizado',
                 text: 'El cupón ha sido actualizado correctamente.'
-            });
+            }).then((result) => {window.location.reload();});    
+            
         },
         error: function (xhr) {
             console.error('Error al actualizar el cupón:', xhr);
@@ -408,7 +425,7 @@ $(function () {
                 icon: 'success',
                 title: 'Cupón Agregado',
                 text: response.message
-            });
+            }).then((result) => {window.location.reload();});       
         },
         error: function (xhr) {
             

@@ -139,25 +139,25 @@ $configData = Helper::appClasses();
               <div class="row">
                 <div class="col-12 col-md-6">
                   <label class="form-label" for="name">Nombre</label>
-                  <input type="text" id="name" name="name" class="form-control" placeholder="Introduzca su nombre" />
+                  <input type="text" id="name" name="name" class="form-control" placeholder="Introduzca su nombre" required/>
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="form-label" for="lastname">Apellido</label>
-                  <input type="text" id="lastname" name="lastname" class="form-control" placeholder="Introduzca su apellido" />
+                  <input type="text" id="lastname" name="lastname" class="form-control" placeholder="Introduzca su apellido" required/>
                 </div>
 
                 <div class="col-12 mt-3" id="address-container">
                   <label class="form-label" for="address">Dirección</label>
-                  <input id="address" name="address" class="form-control" placeholder="Calle, esquina, número de puerta" onFocus="geolocate()" role="presentation" autocomplete="off">
+                  <input id="address" name="address" class="form-control" placeholder="Calle, esquina, número de puerta" onFocus="geolocate()" role="presentation" autocomplete="off" required>
                 </div>
 
                 <div class="col-12 col-md-6 mt-3">
                   <label class="form-label" for="phone">Teléfono</label>
-                  <input type="text" id="phone" name="phone" class="form-control" placeholder="Introduzca su teléfono" />
+                  <input type="text" id="phone" name="phone" class="form-control" placeholder="Introduzca su teléfono" required />
                 </div>
                 <div class="col-12 col-md-6 mt-3">
                   <label class="form-label" for="email">Correo Electrónico</label>
-                  <input type="text" id="email" name="email" class="form-control" placeholder="Introduzca su correo electrónico" />
+                  <input type="text" id="email" name="email" class="form-control" placeholder="Introduzca su correo electrónico" required/>
                 </div>
               </div>
           </div>

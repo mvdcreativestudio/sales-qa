@@ -89,7 +89,8 @@ Route::middleware([
         Route::post('associate-user', [StoreController::class, 'associateUser'])->name('associateUser');
         Route::post('disassociate-user', [StoreController::class, 'disassociateUser'])->name('disassociateUser');
         Route::post('save-hours', [StoreController::class, 'saveHours'])->name('saveHours');
-        Route::post('toggle-status', [StoreController::class, 'toggleStoreStatusClosed'])->name('toggleStatusClosed');
+        Route::post('toggle-store-status', [StoreController::class, 'toggleStoreStatus'])->name('toggle-status');
+        Route::post('toggle-store-status-closed', [StoreController::class, 'toggleStoreStatusClosed'])->name('toggleStoreStatusClosed');
       });
 
     // Gestión de Roles
@@ -102,7 +103,6 @@ Route::middleware([
     });
 
     // Gestión de Sabores de Productos
-
     Route::get('/product-flavors', [ProductController::class, 'flavors'])->name('product-flavors');
     Route::post('/product-flavors', [ProductController::class, 'storeFlavor'])->name('product-flavors.store-modal');
     Route::post('/product-flavors/multiple', [ProductController::class, 'storeMultipleFlavors'])->name('product-flavors.store-multiple');
@@ -126,8 +126,9 @@ Route::middleware([
     Route::post('/email-templates/update/{templateId?}', [EmailTemplateController::class, 'update'])->name('email-templates.update');
     Route::post('/upload-image', [EmailTemplateController::class, 'uploadImage'])->name('upload-image');
 
-    // Detalles de Ordenes
+    // Gestión de Ordenes
     Route::get('/orders/{order}/show', [OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{orderId}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::get('/orders/{order}/pdf', [OrderPdfController::class, 'generatePdf'])->name('orders.pdf');
 
     // Gestión de Cupones
@@ -172,12 +173,12 @@ Route::resources([
     'checkout' => CheckoutController::class,
 ]);
 
+
 // E-Commerce
 Route::get('/', [EcommerceController::class, 'home'])->name('home');
-Route::get('shop', [EcommerceController::class, 'index'])->name('shop'); // Seleccionar Tienda
+Route::get('shop', [EcommerceController::class, 'index'])->name('shop'); //
 Route::get('store/{slug}', [EcommerceController::class, 'store'])->name('store'); // Tienda
 Route::post('/cart/select-store', [CartController::class, 'selectStore'])->name('cart.selectStore'); // Seleccionar Tienda en el Carrito
-Route::post('/cart/add/{productId}', [CartController::class, 'addToCart'])->name('cart.add'); // Agregar al Carrito
 Route::post('/cart/remove-item', [CartController::class, 'removeItem'])->name('cart.removeItem'); // Eliminar del Carrito
 Route::get('/session/clear', [CartController::class, 'clearSession'])->name('session.clear'); // Limpiar Sesión
 Route::get('/checkout/{orderId}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment'); // Pago de Orden
@@ -185,6 +186,12 @@ Route::get('/checkout/success/{order:uuid}', [CheckoutController::class, 'succes
 Route::get('/checkout/pending/{order:uuid}', [CheckoutController::class, 'pending'])->name('checkout.pending'); // Pago Pendiente
 Route::get('/checkout/failure/{order:uuid}', [CheckoutController::class, 'failure'])->name('checkout.failure'); // Pago Fallido
 Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('apply.coupon'); // Aplicar Cupón
+
+// Rutas de autenticación de Tienda Abierta
+Route::middleware(['check.store.open'])->group(function () {
+  Route::post('/cart/add/{productId}', [CartController::class, 'addToCart'])->name('cart.add');
+  // Otras rutas que deben estar protegidas
+});
 
 // MercadoPago WebHooks
 Route::post('/mpagohook', [MercadoPagoController::class, 'webhooks'])->name('mpagohook');
