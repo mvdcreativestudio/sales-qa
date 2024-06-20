@@ -41,55 +41,61 @@ class ProductRepository
    *
    * @param  StoreProductRequest  $request
    * @return Product
-  */
+   */
   public function createProduct(StoreProductRequest $request): Product
   {
-    // Se crea una nueva instancia del modelo Product.
-    $product = new Product();
-    // Se rellenan los campos del producto con los datos del formulario.
-    $product->fill($request->only([
-      'name', 'sku', 'description', 'type', 'max_flavors', 'old_price',
-      'price', 'discount', 'store_id', 'status'
-    ]));
+      // Se crea una nueva instancia del modelo Product.
+      $product = new Product();
+      // Se rellenan los campos del producto con los datos del formulario.
+      $product->fill($request->only([
+          'name', 'sku', 'description', 'type', 'max_flavors', 'old_price',
+          'price', 'discount', 'store_id', 'status'
+      ]));
 
-    // Manejo de la imagen si se ha subido un archivo
-    if ($request->hasFile('image')) {
-      $file = $request->file('image');
-      $filename = time() . '.' . $file->getClientOriginalExtension();
-      $path = $file->move(public_path('assets/img/ecommerce-images'), $filename);
-      $product->image = 'assets/img/ecommerce-images/' . $filename;
-    }
-
-    // Se establece el estado de borrador del producto.
-    $product->draft = $request->action === 'save_draft' ? 1 : 0;
-    // Se guarda el producto en la base de datos.
-    $product->save();
-
-    // Se sincronizan las categorías del producto.
-    $product->categories()->sync($request->input('categories', []));
-
-    // Se sincronizan los sabores del producto si se han seleccionado sabores.
-    if ($request->filled('flavors')) {
-      $product->flavors()->sync($request->flavors);
-    }
-
-    // Manejar recetas para productos simples
-    if ($request->input('type') === 'simple') {
-      $recipes = $request->input('recipes', []);
-      foreach ($recipes as $recipe) {
-        if (isset($recipe['raw_material_id']) && isset($recipe['quantity'])) {
-          Recipe::create([
-            'product_id' => $product->id,
-            'raw_material_id' => $recipe['raw_material_id'],
-            'quantity' => $recipe['quantity'],
-          ]);
-        }
+      // Manejo de la imagen si se ha subido un archivo
+      if ($request->hasFile('image')) {
+          $file = $request->file('image');
+          $filename = time() . '.' . $file->getClientOriginalExtension();
+          $path = $file->move(public_path('assets/img/ecommerce-images'), $filename);
+          $product->image = 'assets/img/ecommerce-images/' . $filename;
       }
-    }
 
-    return $product;
+      // Se establece el estado de borrador del producto.
+      $product->draft = $request->action === 'save_draft' ? 1 : 0;
+      // Se guarda el producto en la base de datos.
+      $product->save();
+
+      // Se sincronizan las categorías del producto.
+      $product->categories()->sync($request->input('categories', []));
+
+      // Se sincronizan los sabores del producto si se han seleccionado sabores.
+      if ($request->filled('flavors')) {
+          $product->flavors()->sync($request->flavors);
+      }
+
+      // Manejar recetas para productos simples
+      if ($request->input('type') === 'simple') {
+          $recipes = $request->input('recipes', []);
+          foreach ($recipes as $recipe) {
+              if (isset($recipe['raw_material_id']) && isset($recipe['quantity'])) {
+                  Recipe::create([
+                      'product_id' => $product->id,
+                      'raw_material_id' => $recipe['raw_material_id'],
+                      'quantity' => $recipe['quantity'],
+                  ]);
+              }
+              if (isset($recipe['used_flavor_id']) && isset($recipe['units_per_bucket'])) {
+                  Recipe::create([
+                      'product_id' => $product->id,
+                      'used_flavor_id' => $recipe['used_flavor_id'],
+                      'quantity' => (1 / $recipe['units_per_bucket']),
+                  ]);
+              }
+          }
+      }
+
+      return $product;
   }
-
 
   /**
    * Obtiene los datos de los productos para DataTables.
@@ -127,7 +133,7 @@ class ProductRepository
   */
   public function edit(int $id): array
   {
-    $product = Product::with('categories', 'flavors', 'recipes.rawMaterial')->findOrFail($id);
+    $product = Product::with('categories', 'flavors', 'recipes.rawMaterial', 'recipes.usedFlavor')->findOrFail($id);
     $categories = ProductCategory::all();
     $stores = Store::all();
     $flavors = Flavor::all();
@@ -150,11 +156,11 @@ class ProductRepository
     $originalType = $product->type;
 
     $product->update($request->only([
-      'name', 'sku', 'description', 'type', 'max_flavors', 'old_price',
-      'price', 'discount', 'store_id', 'status', 'stock'
+        'name', 'sku', 'description', 'type', 'max_flavors', 'old_price',
+        'price', 'discount', 'store_id', 'status', 'stock'
     ]));
 
-    if ($request->hasFile('image')) {
+    if ($request->hasFile('image') && !$request->file('image')->getClientOriginalName() === 'existing_image.jpg') {
       $file = $request->file('image');
       $filename = time() . '.' . $file->getClientOriginalExtension();
       $path = $file->move(public_path('assets/img/ecommerce-images'), $filename);
@@ -166,51 +172,75 @@ class ProductRepository
 
     $product->categories()->sync($request->input('categories', []));
     if ($request->filled('flavors')) {
-      $product->flavors()->sync($request->flavors);
+        $product->flavors()->sync($request->flavors);
     }
 
-    // Eliminar recetas existentes si cambia de configurable a simple
     if ($originalType === 'simple' && $request->input('type') === 'configurable') {
-      $product->recipes()->delete();
+        $product->recipes()->delete();
     }
 
-    // Eliminar variaciones existentes si cambia de configurable a simple
     if ($originalType === 'configurable' && $request->input('type') === 'simple') {
-      $product->flavors()->detach();
+        $product->flavors()->detach();
     }
 
     if ($request->input('type') === 'simple') {
-      $newRecipes = collect($request->input('recipes', []));
+        $newRecipes = collect($request->input('recipes', []));
 
-      // Obtener los IDs de las materias primas nuevas
-      $newRawMaterialIds = $newRecipes->pluck('raw_material_id')->filter();
+        // Filtrar recetas por raw_material_id o used_flavor_id
+        $newRawMaterialIds = $newRecipes->pluck('raw_material_id')->filter();
+        $newUsedFlavorIds = $newRecipes->pluck('used_flavor_id')->filter();
 
-      // Eliminar recetas que no están en las nuevas recetas
-      $product->recipes()->whereNotIn('raw_material_id', $newRawMaterialIds)->delete();
+        // Eliminar recetas no presentes en las nuevas recetas
+        $product->recipes()
+            ->whereNotIn('raw_material_id', $newRawMaterialIds)
+            ->orWhereNotIn('used_flavor_id', $newUsedFlavorIds)
+            ->delete();
 
-      // Actualizar o crear nuevas recetas
-      foreach ($newRecipes as $recipe) {
-        if (isset($recipe['raw_material_id']) && isset($recipe['quantity'])) {
-          $existingRecipe = Recipe::where('product_id', $product->id)
-            ->where('raw_material_id', $recipe['raw_material_id'])
-            ->first();
+        // Crear o actualizar recetas
+        foreach ($newRecipes as $recipe) {
+            if (isset($recipe['raw_material_id'])) {
+                $existingRecipe = Recipe::where('product_id', $product->id)
+                    ->where('raw_material_id', $recipe['raw_material_id'])
+                    ->first();
 
-          if ($existingRecipe) {
-            $existingRecipe->quantity = $recipe['quantity'];
-            $existingRecipe->save();
-          } else {
-            Recipe::create([
-                'product_id' => $product->id,
-                'raw_material_id' => $recipe['raw_material_id'],
-                'quantity' => $recipe['quantity'],
-            ]);
-          }
+                if ($existingRecipe) {
+                    if (isset($recipe['quantity'])) {
+                      $existingRecipe->quantity = $recipe['quantity'];
+                      $existingRecipe->save();
+                    }
+                } else {
+                    Recipe::create([
+                        'product_id' => $product->id,
+                        'raw_material_id' => $recipe['raw_material_id'],
+                        'quantity' => $recipe['quantity'],
+                    ]);
+                }
+            }
+
+            if (isset($recipe['used_flavor_id'])) {
+                $existingRecipe = Recipe::where('product_id', $product->id)
+                    ->where('used_flavor_id', $recipe['used_flavor_id'])
+                    ->first();
+
+                if ($existingRecipe) {
+                    if (isset($recipe['units_per_bucket'])) {
+                      $existingRecipe->quantity = 1 / $recipe['units_per_bucket'];
+                      $existingRecipe->save();
+                    }
+                } else {
+                    Recipe::create([
+                        'product_id' => $product->id,
+                        'used_flavor_id' => $recipe['used_flavor_id'],
+                        'quantity' => 1 / $recipe['units_per_bucket'],
+                    ]);
+                }
+            }
         }
-      }
     }
 
     return $product;
   }
+
   /**
    * Cambia el estado de un producto.
    *

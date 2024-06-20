@@ -75,7 +75,6 @@
       "icon": "menu-icon tf-icons bx bx-world",
       "slug": "ecommerce",
       "url": "/admin/ecommerce",
-      "slug": "ecommerce",
       "submenu": [
         {
           "id": "tour-pedidos",
@@ -114,6 +113,13 @@
           "url": "/admin/ecommerce/email-templates"
         }
       ]
+    },
+    {
+      "id": "productions",
+      "name": "Producciones",
+      "icon": "menu-icon tf-icons bx bxl-product-hunt",
+      "slug": "productions",
+      "url": "/admin/productions"
     },
     {
       "id": "tour-marketing",

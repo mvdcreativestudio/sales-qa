@@ -47,5 +47,9 @@ return [
 
     'checkout' => [
         'return_url' => env('CHECKOUT_RETURN_URL'),
-    ]
+    ],
+
+    'flavorUnit' => [
+        'unit' => 5,
+    ],
 ];

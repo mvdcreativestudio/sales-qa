@@ -12,16 +12,27 @@ class Production extends Model
 
     protected $fillable = [
         'product_id',
-        'quantity',
+        'flavor_id',
+        'quantity'
     ];
 
     /**
-     * Relación con el producto.
+     * Obtiene el producto de la producción.
      *
      * @return BelongsTo
-    */
+     */
     public function product(): BelongsTo
     {
-      return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Obtiene el sabor de la producción.
+     *
+     * @return BelongsTo
+     */
+    public function flavor(): BelongsTo
+    {
+        return $this->belongsTo(Flavor::class);
     }
 }

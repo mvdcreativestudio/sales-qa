@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateProductionsTable extends Migration
 {
     /**
-     * Ejecuta las migraciones.
+     * Run the migrations.
      *
      * @return void
      */
@@ -15,14 +15,18 @@ class CreateProductionsTable extends Migration
     {
         Schema::create('productions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->unsignedBigInteger('flavor_id')->nullable();
             $table->integer('quantity');
             $table->timestamps();
+
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreign('flavor_id')->references('id')->on('flavors')->onDelete('cascade');
         });
     }
 
     /**
-     * Revierte las migraciones.
+     * Reverse the migrations.
      *
      * @return void
      */

@@ -79,6 +79,14 @@ class CreatePermissions extends Command
                     'view_all' => false,
                 ],
                 [
+                    'slug' => 'productions',
+                    'view_all' => true,
+                ],
+                [
+                  'slug' => 'bypass_raw_material_check',
+                  'view_all' => false,
+                ],
+                [
                     'slug' => 'marketing',
                     'submenus' => [
                         'coupons',

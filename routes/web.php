@@ -27,8 +27,9 @@ use App\Http\Controllers\{
     MercadoPagoController,
     EmailTemplateController,
     NotificationController,
-    OrderPdfController
-  };
+    OrderPdfController,
+    ProductionController
+};
 
 // Middleware de autenticación y verificación de email
 Route::middleware([
@@ -65,6 +66,7 @@ Route::middleware([
         'marketing/coupons' => CouponController::class,
         'company-settings' => CompanySettingsController::class,
         'clients' => ClientController::class,
+        'productions' => ProductionController::class,
     ]);
 
 

@@ -32,7 +32,6 @@ function initQuillEditor() {
   }
 }
 
-
 const existingImage = document.querySelector('#existingImage img');
 
 if (existingImage) {
@@ -147,6 +146,7 @@ function initSelect2Components() {
           return JSON.parse(selectedData);
         } catch (e) {
           console.error('Invalid JSON in data-selected attribute:', selectedData);
+          return [];
         }
       }
       return [];
@@ -156,13 +156,12 @@ function initSelect2Components() {
   $('#flavorsContainer select').each(function () {
     const selectedData = $(this).data('selected');
     if (selectedData) {
-      $(this).val(JSON.parse(selectedData)).trigger('change');
+      try {
+        $(this).val(JSON.parse(selectedData)).trigger('change');
+      } catch (e) {
+        console.error('Invalid JSON in data-selected attribute:', selectedData);
+      }
     }
-  });
-
-  $('#flavorsContainer select').select2({
-    placeholder: 'Seleccione opciones',
-    allowClear: true
   });
 }
 
@@ -200,6 +199,7 @@ function setupDiscardButton() {
 function initRepeater() {
   const rawMaterials = JSON.parse(document.querySelector('.app-ecommerce').getAttribute('data-raw-materials'));
   const recipes = JSON.parse(document.querySelector('.app-ecommerce').getAttribute('data-recipes'));
+  const flavors = JSON.parse(document.querySelector('.app-ecommerce').getAttribute('data-flavors'));
   const repeaterList = document.querySelector('[data-repeater-list="recipes"]');
 
   function updateRawMaterialOptions() {
@@ -214,9 +214,21 @@ function initRepeater() {
     });
   }
 
-  function addRecipeRow(rawMaterialId = null, quantity = null, unit = '') {
-    const row = document.createElement('div');
+  function updateFlavorOptions() {
+    const selectedFlavors = Array.from(repeaterList.querySelectorAll('.used-flavor-select'))
+      .map(select => select.value)
+      .filter(value => value);
+
+    repeaterList.querySelectorAll('.used-flavor-select').forEach(select => {
+      select.querySelectorAll('option').forEach(option => {
+        option.disabled = selectedFlavors.includes(option.value) && option.value !== select.value;
+      });
+    });
+  }
+
+  function addRawMaterialRow(recipe = {}) {
     const index = repeaterList.children.length;
+    const row = document.createElement('div');
     row.className = 'row mb-3';
     row.innerHTML = `
       <div class="col-4">
@@ -226,7 +238,7 @@ function initRepeater() {
           ${rawMaterials
             .map(
               rawMaterial => `
-              <option value="${rawMaterial.id}" data-unit="${rawMaterial.unit_of_measure}" ${rawMaterialId == rawMaterial.id ? 'selected' : ''}>${rawMaterial.name}</option>
+              <option value="${rawMaterial.id}" data-unit="${rawMaterial.unit_of_measure}" ${recipe.raw_material_id == rawMaterial.id ? 'selected' : ''}>${rawMaterial.name}</option>
           `
             )
             .join('')}
@@ -234,40 +246,80 @@ function initRepeater() {
       </div>
       <div class="col-3">
         <label class="form-label" for="quantity">Cantidad</label>
-        <input type="number" class="form-control" name="recipes[${index}][quantity]" placeholder="Cantidad" aria-label="Cantidad" value="${quantity || ''}" ${rawMaterialId ? '' : 'disabled'}>
+        <input type="number" class="form-control" name="recipes[${index}][quantity]" placeholder="Cantidad" aria-label="Cantidad" value="${recipe.quantity || ''}" ${recipe.raw_material_id ? '' : 'disabled'}>
       </div>
       <div class="col-3 d-flex align-items-end">
-        <input type="text" class="form-control unit-of-measure" placeholder="Unidad de medida" value="${unit}" readonly>
+        <input type="text" class="form-control unit-of-measure" placeholder="Unidad de medida" value="${recipe.raw_material_id ? rawMaterials.find(rm => rm.id == recipe.raw_material_id).unit_of_measure : ''}" readonly>
       </div>
       <div class="col-2 d-flex align-items-end">
         <button type="button" class="btn btn-danger" data-repeater-delete>Eliminar</button>
       </div>
     `;
-
     repeaterList.appendChild(row);
     updateRawMaterialOptions();
   }
 
-  if (recipes.length > 0) {
-    recipes.forEach(recipe => {
-      const rawMaterial = rawMaterials.find(rm => rm.id == recipe.raw_material_id);
-      addRecipeRow(recipe.raw_material_id, recipe.quantity, rawMaterial ? rawMaterial.unit_of_measure : '');
-    });
-  } else {
-    addRecipeRow();
+  function addUsedFlavorRow(recipe = {}) {
+    const index = repeaterList.children.length;
+    const row = document.createElement('div');
+    row.className = 'row mb-3';
+    row.innerHTML = `
+      <div class="col-4">
+        <label class="form-label" for="used-flavor">Sabor Usado</label>
+        <select class="form-select used-flavor-select" name="recipes[${index}][used_flavor_id]">
+          <option value="">Selecciona un sabor</option>
+          ${flavors
+            .map(
+              flavor => `
+              <option value="${flavor.id}" ${recipe.used_flavor_id == flavor.id ? 'selected' : ''}>Balde de ${flavor.name}</option>
+          `
+            )
+            .join('')}
+        </select>
+      </div>
+      <div class="col-3">
+        <label class="form-label" for="units-per-bucket">Unidades por Balde</label>
+        <input type="number" class="form-control units-per-bucket" name="recipes[${index}][units_per_bucket]" placeholder="Unidades por balde" aria-label="Unidades por balde" value="${recipe.units_per_bucket || ''}" ${recipe.used_flavor_id ? '' : 'disabled'}>
+      </div>
+      <div class="col-3">
+        <label class="form-label" for="quantity-individual">Cantidad Individual</label>
+        <input type="number" class="form-control quantity-individual" name="recipes[${index}][quantity]" placeholder="Cantidad Individual" aria-label="Cantidad Individual" value="${recipe.quantity || ''}" readonly>
+      </div>
+      <div class="col-2 d-flex align-items-end">
+        <button type="button" class="btn btn-danger" data-repeater-delete>Eliminar</button>
+      </div>
+    `;
+    repeaterList.appendChild(row);
+    updateFlavorOptions();
   }
 
-  document.querySelector('[data-repeater-create]').addEventListener('click', () => {
-    addRecipeRow();
+  if (recipes.length > 0) {
+    recipes.forEach(recipe => {
+      if (recipe.raw_material_id) {
+        addRawMaterialRow(recipe);
+      } else if (recipe.used_flavor_id) {
+        addUsedFlavorRow(recipe);
+      }
+    });
+  } else {
+    addRawMaterialRow();
+  }
+
+  document.getElementById('addRawMaterial').addEventListener('click', () => {
+    addRawMaterialRow();
+  });
+
+  document.getElementById('addUsedFlavor').addEventListener('click', () => {
+    addUsedFlavorRow();
   });
 
   repeaterList.addEventListener('click', event => {
     if (event.target.matches('[data-repeater-delete]')) {
       event.target.closest('.row.mb-3').remove();
       updateRawMaterialOptions();
-
+      updateFlavorOptions();
       if (repeaterList.querySelectorAll('.row.mb-3').length === 0) {
-        addRecipeRow();
+        addRawMaterialRow();
       }
     }
   });
@@ -281,6 +333,25 @@ function initRepeater() {
       quantityInput.value = select.value ? quantityInput.value : '';
       select.closest('.row.mb-3').querySelector('.unit-of-measure').value = select.value ? unitOfMeasure : '';
       updateRawMaterialOptions();
+    } else if (event.target.matches('.used-flavor-select')) {
+      const select = event.target;
+      const unitsPerBucketInput = select.closest('.row.mb-3').querySelector('.units-per-bucket');
+      unitsPerBucketInput.disabled = !select.value;
+      unitsPerBucketInput.value = select.value ? unitsPerBucketInput.value : '';
+      updateFlavorOptions();
+    }
+  });
+
+  repeaterList.addEventListener('input', event => {
+    if (event.target.matches('.units-per-bucket')) {
+      const unitsPerBucket = parseFloat(event.target.value);
+      const quantityIndividualInput = event.target.closest('.row.mb-3').querySelector('.quantity-individual');
+      if (unitsPerBucket > 0) {
+        const individualQuantity = 1 / unitsPerBucket;
+        quantityIndividualInput.value = individualQuantity.toFixed(4);
+      } else {
+        quantityIndividualInput.value = '';
+      }
     }
   });
 }
