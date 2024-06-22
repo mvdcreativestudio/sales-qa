@@ -13,16 +13,26 @@ class RawMaterialRepository
     /**
      * Devuelve todas las Materias Primas.
      *
-     * @return Collection
+     * @return array
      */
-    public function getAll(): Collection
+    public function getAll(): array
     {
       if (auth()->user() && auth()->user()->can('view_all_raw-materials')) {
-          return RawMaterial::with('store')->get();
+          $rawMaterials = RawMaterial::with('store')->get();
       } else {
           $storeId = auth()->user()->store_id;
-          return RawMaterial::where('store_id', $storeId)->get();
+          $rawMaterials = RawMaterial::where('store_id', $storeId)->get();
       }
+
+      $quantityByUnitOfMeasure = $rawMaterials
+                                  ->groupBy('unit_of_measure')
+                                  ->map(function ($item) {
+                                      return $item->sum('quantity');
+                                  });
+
+      $totalStock = $rawMaterials->sum('stock');
+
+      return compact('rawMaterials', 'quantityByUnitOfMeasure', 'totalStock');
     }
 
     /**

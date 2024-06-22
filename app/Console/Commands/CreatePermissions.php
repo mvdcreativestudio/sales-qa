@@ -39,6 +39,10 @@ class CreatePermissions extends Command
                     'view_all' => false,
                 ],
                 [
+                  'slug' => 'raw-materials-management',
+                  'view_all' => false,
+                ],
+                [
                     'slug' => 'raw-materials',
                     'view_all' => true,
                 ],

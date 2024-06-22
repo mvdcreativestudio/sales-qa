@@ -47,7 +47,8 @@ class ProductCategoryController extends Controller
     */
     public function index(): View
     {
-      return view('content.e-commerce.backoffice.product-categories.product-categories');
+      $categories = $this->productCategoryRepo->index();
+      return view('content.e-commerce.backoffice.product-categories.product-categories', $categories);
     }
 
     /**
@@ -109,7 +110,7 @@ class ProductCategoryController extends Controller
       $this->productCategoryRepo->updateSelected($request, $id);
       return response()->json(['success' => 'Categoría actualizada correctamente.']);
     }
-    
+
 
 
     /**

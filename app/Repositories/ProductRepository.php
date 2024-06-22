@@ -271,18 +271,21 @@ class ProductRepository
     return $product;
   }
 
-  /**
-   * Obtiene los sabores de los productos.
-   *
-   * @return array
-  */
-  public function flavors(): array
-  {
-    $flavor = Flavor::all();
-    $rawMaterials = RawMaterial::all();
+    /**
+     * Obtiene los sabores de los productos y las estadísticas necesarias para las cards.
+     *
+     * @return array
+    */
+    public function flavors(): array
+    {
+      $flavors = Flavor::all();
+      $rawMaterials = RawMaterial::all();
+      $totalFlavors = $flavors->count();
+      $activeFlavors = $flavors->where('status', 'active')->count();
+      $inactiveFlavors = $flavors->where('status', 'inactive')->count();
 
-    return compact('rawMaterials', 'flavor');
-  }
+      return compact('rawMaterials', 'flavors', 'totalFlavors', 'activeFlavors', 'inactiveFlavors');
+    }
 
   /**
    * Obtiene los datos de los sabores para DataTables.

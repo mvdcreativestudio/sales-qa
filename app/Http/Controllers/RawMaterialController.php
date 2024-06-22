@@ -48,21 +48,8 @@ class RawMaterialController extends Controller
      */
     public function index(): View
     {
-        if (!auth()->user()->store_id) {
-            session()->flash('error', 'No se puede acceder a las materias primas sin una tienda asignada.');
-            return view('raw-materials.index');
-        }
-
         $rawMaterials = $this->rawMaterialRepository->getAll();
-
-        $quantityByUnitOfMeasure = $rawMaterials
-                                    ->groupBy('unit_of_measure')
-                                    ->map(function ($item) {
-                                        return $item->count();
-                                    });
-
-
-        return view('raw-materials.index', compact('rawMaterials', 'quantityByUnitOfMeasure'));
+        return view('raw-materials.index', $rawMaterials);
     }
 
     /**
