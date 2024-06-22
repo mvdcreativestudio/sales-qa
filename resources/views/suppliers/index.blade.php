@@ -56,21 +56,38 @@
 @endif
 
 <div class="card mb-4">
-  <div class="card-body">
-    <div class="row gy-4 gy-sm-1">
-      <div class="col-sm-6 col-lg-4">
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-2">Proveedores</h6>
-                        <h4>{{ isset($suppliers) ? $suppliers->count() : 0}}</h4>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-user bx-sm"></i></span>
-                    </div>
-                </div>
+  <div class="card-widget-separator-wrapper">
+    <div class="card-body card-widget-separator">
+      <div class="row gy-4 gy-sm-1">
+        <div class="col-sm-6 col-lg-6">
+          <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Proveedores</h6>
+              <h4 class="mb-2">{{ isset($suppliers) ? $suppliers->count() : 0 }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Total</span></p>
             </div>
+            <div class="avatar me-sm-4">
+              <span class="avatar-initial rounded bg-label-secondary">
+                <i class="bx bx-user bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none me-4">
+        </div>
+        <div class="col-sm-6 col-lg-6">
+          <div class="d-flex justify-content-between align-items-start card-widget-2 pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Pedidos Recientes</h6>
+              <h4 class="mb-2">{{ isset($recentOrders) ? $recentOrders->count() : 0 }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Últimos 30 días</span></p>
+            </div>
+            <div class="avatar me-lg-4">
+              <span class="avatar-initial rounded bg-label-secondary">
+                <i class="bx bx-cart bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none">
         </div>
       </div>
     </div>

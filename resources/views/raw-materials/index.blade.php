@@ -38,42 +38,59 @@
 </h4>
 
 <div class="card mb-4">
-  <div class="card-body">
-    <div class="row gy-4 gy-sm-1">
-      <div class="col-sm-6 col-lg-4">
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-2">Materias Primas</h6>
-                        <h4>{{ isset($rawMaterials) ? $rawMaterials->count() : 0}}</h4>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-layer bx-sm"></i></span>
-                    </div>
-                </div>
+  <div class="card-widget-separator-wrapper">
+    <div class="card-body card-widget-separator">
+      <div class="row gy-4 gy-sm-1">
+        <div class="col-sm-6 col-lg-4">
+          <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Materias Primas</h6>
+              <h4 class="mb-2">{{ isset($rawMaterials) ? $rawMaterials->count() : 0 }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Total</span></p>
             </div>
+            <div class="avatar me-sm-4">
+              <span class="avatar-initial rounded bg-label-secondary">
+                <i class="bx bx-layer bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none me-4">
         </div>
-      </div>
-
-      <div class="col-sm-6 col-lg-4">
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-2">Unidades de Medida</h6>
-                        <h4>{{ isset($quantityByUnitOfMeasure) ? $quantityByUnitOfMeasure->count() : 0 }}</h4>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-list-ol bx-sm"></i></span>
-                    </div>
-                </div>
+        <div class="col-sm-6 col-lg-4">
+          <div class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Unidades de Medida</h6>
+              <h4 class="mb-2">{{ isset($quantityByUnitOfMeasure) ? $quantityByUnitOfMeasure->count() : 0 }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Total</span></p>
             </div>
+            <div class="avatar me-lg-4">
+              <span class="avatar-initial rounded bg-label-secondary">
+                <i class="bx bx-list-ol bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none">
+        </div>
+        <div class="col-sm-12 col-lg-4">
+          <div class="d-flex justify-content-between align-items-start pb-3 pb-sm-0 card-widget-3">
+            <div>
+              <h6 class="mb-2">Stock Total</h6>
+              <h4 class="mb-2">{{ isset($totalStock) ? $totalStock : 0 }}</h4>
+              <p class="mb-0 text-muted">Total en stock</p>
+            </div>
+            <div class="avatar me-sm-4">
+              <span class="avatar-initial rounded bg-label-secondary">
+                <i class="bx bx-bar-chart-alt bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none">
         </div>
       </div>
     </div>
   </div>
 </div>
+
 
 @if (session('success'))
 <div class="alert alert-success mt-3 mb-3">

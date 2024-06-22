@@ -38,57 +38,56 @@
 </h4>
 
 <div class="card mb-4">
-  <div class="card-body">
-    <div class="row gy-4 gy-sm-1">
-      <!-- Card Total de Tiendas -->
-      <div class="col-sm-6 col-lg-4">
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-2">Total de Tiendas</h6>
-                        <h4>{{ $stores->count() }}</h4>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-store bx-sm"></i></span>
-                    </div>
-                </div>
+  <div class="card-widget-separator-wrapper">
+    <div class="card-body card-widget-separator">
+      <div class="row gy-4 gy-sm-1">
+        <div class="col-sm-6 col-lg-4">
+          <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Total de Tiendas</h6>
+              <h4 class="mb-2">{{ $stores->count() }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Total</span></p>
             </div>
+            <div class="avatar me-sm-4">
+              <span class="avatar-initial rounded bg-label-primary">
+                <i class="bx bx-store bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none me-4">
         </div>
-      </div>
 
-      <!-- Card Tiendas Activas -->
-      <div class="col-sm-6 col-lg-4">
-          <div class="card mb-3">
-              <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-center">
-                      <div>
-                          <h6 class="mb-2">Tiendas Activas</h6>
-                          <h4>{{ $stores->filter(fn($store) => $store->status == true)->count() }}</h4>
-                      </div>
-                      <div class="avatar">
-                          <span class="avatar-initial rounded bg-label-success"><i class="bx bx-check-circle bx-sm"></i></span>
-                      </div>
-                  </div>
-              </div>
+        <div class="col-sm-6 col-lg-4">
+          <div class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Tiendas Activas</h6>
+              <h4 class="mb-2">{{ $stores->filter(fn($store) => $store->status == true)->count() }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Activas</span></p>
+            </div>
+            <div class="avatar me-lg-4">
+              <span class="avatar-initial rounded bg-label-success">
+                <i class="bx bx-check-circle bx-sm"></i>
+              </span>
+            </div>
           </div>
-      </div>
+          <hr class="d-none d-sm-block d-lg-none">
+        </div>
 
-      <!-- Card Tiendas Inactivas -->
-      <div class="col-sm-6 col-lg-4">
-          <div class="card mb-3">
-              <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-center">
-                      <div>
-                          <h6 class="mb-2">Tiendas Inactivas</h6>
-                          <h4>{{ $stores->filter(fn($store) => $store->status == 0)->count() }}</h4>
-                      </div>
-                      <div class="avatar">
-                          <span class="avatar-initial rounded bg-label-danger"><i class="bx bx-block bx-sm"></i></span>
-                      </div>
-                  </div>
-              </div>
+        <div class="col-sm-6 col-lg-4">
+          <div class="d-flex justify-content-between align-items-start card-widget-3 pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Tiendas Inactivas</h6>
+              <h4 class="mb-2">{{ $stores->filter(fn($store) => $store->status == false)->count() }}</h4>
+              <p class="mb-0 text-muted">Inactivas</p>
+            </div>
+            <div class="avatar me-sm-4">
+              <span class="avatar-initial rounded bg-label-danger">
+                <i class="bx bx-block bx-sm"></i>
+              </span>
+            </div>
           </div>
+          <hr class="d-none d-sm-block d-lg-none">
+        </div>
       </div>
     </div>
   </div>

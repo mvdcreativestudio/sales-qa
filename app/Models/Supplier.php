@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supplier extends Model
 {
@@ -14,9 +16,9 @@ class Supplier extends Model
     /**
      * Obtiene la tienda a la que pertenece el proveedor.}
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
     */
-    public function store()
+    public function store(): BelongsTo
     {
       return $this->belongsTo(Store::class);
     }
@@ -24,9 +26,9 @@ class Supplier extends Model
     /**
      * Obtiene las ordenes de compra asociadas al proveedor.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
     */
-    public function supplierOrders()
+    public function orders(): HasMany
     {
       return $this->hasMany(SupplierOrder::class);
     }
