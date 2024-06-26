@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use App\Http\Requests\UpdateProductCategoryRequest;
 
 class ProductCategoryRepository
 {
@@ -66,11 +67,11 @@ class ProductCategoryRepository
   /**
    * Actualiza una categoría de producto en la base de datos dado un id.
    *
-   * @param  Request  $request
-   * @param  int  $id
+   * @param  UpdateProductCategoryRequest  $request
+   * @param  int $id
    * @return ProductCategory
   */
-  public function updateSelected(Request $request,$id): ProductCategory
+  public function updateSelected(UpdateProductCategoryRequest $request,int $id): ProductCategory
   {
     $category = ProductCategory::find($id);
 
@@ -88,7 +89,6 @@ class ProductCategoryRepository
     }
 
     $category->save();
-
     return $category;
   }
 

@@ -94,9 +94,10 @@ $(function () {
                       '<div class="d-flex justify-content-center align-items-center">' +
                       '<button class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i></button>' +
                       '<div class="dropdown-menu dropdown-menu-end m-0">' +
-                      '<a href="' + baseUrl + 'coupons/' + full['id'] + '/show" class="dropdown-item">Ver</a>' +
+                      '<a href="javascript:void(0);" class="dropdown-item detail-record" data-id="' + full['id'] + '">Ver</a>' +
                       '<a href="javascript:void(0);" class="dropdown-item edit-record" data-id="' + full['id'] + '">Editar</a>' +
                       '<a href="javascript:void(0);" class="dropdown-item delete-record" data-id="' + full['id'] + '">Eliminar</a>' +
+                      
                       '</div>' +
                       '</div>'
                   );
@@ -202,12 +203,48 @@ $(function () {
       });
   }
 
+
+  //Ver detalles del cupón.
+
+  $('.datatables-coupons tbody').on('click', '.detail-record', function () {
+    var recordId = $(this).data('id'); 
+
+    var $couponExpiryInput = $('#detailCouponModal #couponExpiry'); 
+
+    $.ajax({
+        url: 'coupons/' + recordId, 
+        type: 'GET',
+        success: function (response) {
+            console.log('Detalles del cupon:', response); 
+            
+            $('#detailCouponModal #couponCode').val(response.code);
+            $('#detailCouponModal #couponType').val(response.type);
+            $('#detailCouponModal #couponAmount').val(response.amount);
+
+            if (response.due_date) {
+                var dueDate = response.due_date.split(' ')[0];
+                $('#detailCouponModal #couponExpiry').val(dueDate);
+            } else {
+                $('#detailCouponModal #couponExpiry').val('');
+            }
+            $('#detailCouponModal').modal('show'); // Asegúrate de que el ID es del modal contenedor
+        },
+        error: function (xhr) {
+            console.error('Error al obtener los detalles del cupón:', xhr);
+        }
+    });
+});
+
+  // Enviar FORM de edicion del cupon.
+
   $('#editCouponModal').on('click', '#updateCouponBtn', function () {
     var recordId = $(this).data('id');
     console.log('recordId:', recordId);
     submitEditCoupon(recordId); //
   });
 
+  // Abrir FORM para editar el cupon.
+  
   $('.datatables-coupons tbody').on('click', '.edit-record', function () {
     var recordId = $(this).data('id'); // Obtener el ID del cupón
     $('#updateCouponBtn').attr('data-id', recordId); // Asignar el ID del cupón al botón de "Actualizar Cupón"
@@ -236,8 +273,6 @@ $(function () {
                 $('#editCouponModal #couponExpiry').val('');
             }
 
-            // Otros campos pueden ser llenados de manera similar
-            // Luego, abrir el modal de edición
             $('#editCouponModal').modal('show');
         },
         error: function (xhr) {
@@ -248,6 +283,7 @@ $(function () {
 });
 
 
+// POST para editar el cupon en la base de datos.
 
   function submitEditCoupon(recordId) {
     var formData = {
@@ -286,11 +322,6 @@ $(function () {
         }
     });
   }
-
-
-
-
-
 
 
   $('#deleteSelected').on('click', function () {

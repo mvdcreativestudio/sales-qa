@@ -21,6 +21,14 @@ if (commentEditor) {
 // Datatable (jquery)
 
 $(function () {
+    var quillEdit = new Quill('#edit_ecommerce-category-description', {
+      modules: {
+          toolbar: '.comment-toolbar'
+      },
+      placeholder: 'Ingrese la descripción de la categoría',
+      theme: 'snow'
+  });
+
   let borderColor, bodyBg, headingColor;
 
   if (isDarkStyle) {
@@ -197,61 +205,123 @@ $('#eCommerceCategoryListForm').submit(function(event) {
       }
     });
   });
-  
-
-  // Editar categoría
-  $(document).ready(function () {
-    console.log('Edit button clicked');  // Añadir mensaje de consola
-
-    $(document).on('click', '.edit-record', function () {
-      var recordId = $(this).data('id');
-      console.log('Record ID:', recordId);  // Añadir mensaje de consola
 
 
-      // Realizar una solicitud AJAX para obtener los datos de la categoría
-      $.ajax({
-        url: 'product-categories/' + recordId + '/get-selected',
-        type: 'GET',
-        success: function (data) {
+  // Función para cargar datos en el formulario de edición
+$(document).on('click', '.edit-record', function () {
+  var recordId = $(this).data('id');
+  console.log('Record ID:', recordId);
+
+  // Aquí puedes cargar los datos en el formulario de edición, si es necesario
+  // Por ejemplo, haciendo una solicitud AJAX para obtener los datos y llenar los campos del formulario
+  $.ajax({
+      url: 'product-categories/' + recordId + '/get-selected',
+      type: 'GET',
+      success: function (data) {
           console.log('Data received:', data);
+          $('#edit_ecommerce-category-title').val(data.name);
+          $('#edit_ecommerce-category-slug').val(data.slug);
+          $('#edit_ecommerce-category-parent-category').val(data.parent_id).trigger('change');
+          $('#edit-statusSwitch').prop('checked', data.status == 1);
+          
+          // Set Quill's content
+          quillEdit.root.innerHTML = data.description;
 
-          // Llenar el formulario con los datos de la categoría
-          $('#ecommerce-category-title').val(data.name);
-          $('#ecommerce-category-slug').val(data.slug);
-          $('#ecommerce-category-description').val(data.description);
-          $('#ecommerce-category-parent-category').val(data.parent_id).trigger('change');
-          $('#statusSwitch').prop('checked', data.status == 1);
+          // Actualizar el atributo data-id del botón #editCategoryButton
+          $('#editCategoryButton').data('id', recordId);
 
-          // Establecer la acción del formulario dinámicamente
-          $('#eCommerceCategoryListForm').attr('action', baseUrl + 'admin/product-categories/' + recordId + '/update-selected');
-
-          // Mostrar el modal
-          $('#editCategoryModal').modal('show');
-        },
-        error: function (xhr) {
-          console.log('Error occurred:', xhr); 
-
+          // Mostrar el offcanvas para editar
+          var editOffcanvas = new bootstrap.Offcanvas(document.getElementById('offcanvasEcommerceCategoryEdit'));
+          editOffcanvas.show();
+      },
+      error: function (xhr) {
+          console.log('Error occurred:', xhr);
           Swal.fire({
-            icon: 'error',
-            title: 'Error al cargar la categoría',
-            text: 'No se pudo cargar la categoría. Intente nuevamente.'
+              icon: 'error',
+              title: 'Error al cargar la categoría',
+              text: 'No se pudo cargar la categoría. Intente nuevamente.'
           });
-        }
-      });
-    });
-
-    $('#updateCategoryBtn').click(function () {
-      $('#eCommerceCategoryListForm').submit();
-    });
+      }
   });
+});
 
+// POST para editar la categoría en la base de datos
+function submitEditProductCategory(recordId) {
+
+
+  var formData = new FormData();
+    
+  formData.append('name', $('#edit_ecommerce-category-title').val());
+  formData.append('slug', $('#edit_ecommerce-category-slug').val());
+  formData.append('description', $('#edit_ecommerce-category-description').text()); 
+  formData.append('parent_id', $('#edit_ecommerce-category-parent-category').val());
+  formData.append('status', $('#edit-statusSwitch').is(':checked') ? 1 : 0);
+  // Agregar la imagen al FormData, si existe
+  var imageFile = $('#edit_ecommerce-category-image')[0].files[0];
+  if (imageFile) {
+      formData.append('image', imageFile);
+  }
+
+  formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+
+$.ajax({
+    url: `product-categories/${recordId}/update-selected`,
+    method: 'POST',
+    contentType: 'application/json', 
+    data: formData, 
+    contentType: false, 
+    processData: false,
+    success: function (response) {
+          console.log('Categoría actualizada:', response);
+          dt_category.ajax.reload(null, false);
+          $('#offcanvasEcommerceCategoryEdit').offcanvas('hide');
+          Swal.fire({
+              icon: 'success',
+              title: 'Categoría actualizada',
+              text: 'La categoría ha sido actualizada correctamente.'
+          }).then((result) => {
+              window.location.reload();
+          });
+
+      },
+      error: function (xhr) {
+          console.error('Error al actualizar la categoría:', xhr);
+          // Mostrar SweetAlert de error
+          $('#offcanvasEcommerceCategoryEdit').offcanvas('hide');
+          Swal.fire({
+              icon: 'error',
+              title: 'Error al actualizar la categoría',
+              text: 'No se pudo actualizar la categoría. Intente nuevamente.'
+          });
+      }
+  });
+}
+
+
+
+// Asociar el clic del botón a la función submitEditProductCategory con el recordId del botón
+$(document).on('click', '#editCategoryButton', function () {
+  var recordId = $(this).data('id'); // Obtener el recordId del botón
+  console.log('recordId:', recordId);
+  submitEditProductCategory(recordId); // Llamar a submitEditProductCategory con el recordId
+});
+
+
+
+  // Guardar el contenido de Quill en un campo oculto antes de enviar el formulario de edición
+  $('#editECommerceCategoryListForm').on('submit', function() {
+    $('#hidden-edit-description').val(quillEdit.root.innerHTML);
+  });
+});
+  
   // Filter form control to default size
   // ? setTimeout used for multilingual table initialization
   setTimeout(() => {
     $('.dataTables_filter .form-control').removeClass('form-control-sm');
     $('.dataTables_length .form-select').removeClass('form-select-sm');
   }, 300);
-});
+
 
 // Switch de estado de la categoría
 document.addEventListener('DOMContentLoaded', function () {
