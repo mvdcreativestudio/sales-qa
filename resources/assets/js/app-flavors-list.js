@@ -123,7 +123,7 @@ $(function () {
       }).then(result => {
         if (result.isConfirmed) {
           $.ajax({
-            url: 'admin/product-flavors/' + recordId + '/delete',
+            url: baseUrl + 'admin/product-flavors/' + recordId + '/delete',
             type: 'DELETE',
             headers: {
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -168,7 +168,7 @@ $(function () {
     $('.datatables-flavors tbody').on('click', '.edit-record', function () {
       var recordId = $(this).data('id');
       $.ajax({
-        url: 'admin/product-flavors/' + recordId,
+        url: baseUrl + 'admin/product-flavors/' + recordId,
         type: 'GET',
         success: function (response) {
           $('#editFlavorForm #flavorName').val(response.name); // Colocar el nombre del sabor en el input
@@ -196,7 +196,7 @@ $(function () {
     };
 
     $.ajax({
-      url: 'admin/product-flavors/' + recordId,
+      url: baseUrl + 'admin/product-flavors/' + recordId,
       type: 'PUT',
       data: formData,
       success: function (response) {
@@ -363,7 +363,7 @@ $(function () {
 
   function switchStatus(recordId, newStatus) {
     $.ajax({
-      url: `admin/product-flavors/${recordId}/switch-status`,
+      url: baseUrl + `admin/product-flavors/${recordId}/switch-status`,
       method: 'PUT',
       data: {
         status: newStatus,

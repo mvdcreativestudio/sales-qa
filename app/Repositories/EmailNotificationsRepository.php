@@ -15,7 +15,7 @@ class EmailNotificationsRepository
 
     public function __construct()
     {
-        $this->baseUrl = 'https://0d5c-2800-a4-1789-f200-10d8-cd7b-708e-6818.ngrok-free.app/';
+        $this->baseUrl = 'https://chelato.mvdstudio.com.uy';
     }
 
     /**

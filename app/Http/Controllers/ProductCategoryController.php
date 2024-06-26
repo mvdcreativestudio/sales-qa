@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use App\Repositories\ProductCategoryRepository;
 use App\Http\Requests\StoreProductCategoryRequest;
 use App\Http\Requests\UpdateProductCategoryRequest;
+use Illuminate\Http\JsonResponse;
 
 class ProductCategoryController extends Controller
 {
@@ -102,12 +103,12 @@ class ProductCategoryController extends Controller
      *
      * @param UpdateProductCategoryRequest $request
      * @param int $id
-     * @return RedirectResponse
+     * @return JsonResponse
     */
-    public function updateSelected(UpdateProductCategoryRequest $request, $id): RedirectResponse
+    public function updateSelected(UpdateProductCategoryRequest $request, int $id): JsonResponse
     {
       $this->productCategoryRepo->updateSelected($request, $id);
-      return redirect()->route('product-categories.index')->with('success', 'Categoría actualizada correctamente.');
+      return response()->json(['success' => 'Categoría actualizada correctamente.']);
     }
 
 
