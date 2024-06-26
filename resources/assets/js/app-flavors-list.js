@@ -1,3 +1,5 @@
+'use strict';
+
 $(function () {
   let borderColor, bodyBg, headingColor;
 
@@ -16,7 +18,13 @@ $(function () {
   if (dt_flavor_table.length) {
     var dt_flavors = dt_flavor_table.DataTable({
       ajax: 'products/flavors/datatable',
-      columns: [{ data: 'id' }, { data: 'name' }, { data: 'status' }, { data: null, defaultContent: '' }],
+      columns: [
+        { data: 'id' },
+        { data: 'name' },
+        { data: 'status' },
+        { data: 'stock' },
+        { data: null, defaultContent: '' }
+      ],
       columnDefs: [
         {
           targets: 2,
@@ -26,6 +34,18 @@ $(function () {
             return data === 'active'
               ? '<span class="badge pill bg-success">Activo</span>'
               : '<span class="badge pill bg-danger">Inactivo</span>';
+          }
+        },
+        {
+          targets: 3,
+          render: function (data, type, full, meta) {
+            if (full.stock === 0) {
+              return `<span class="badge bg-danger">${full.stock}</span>`;
+            } else if (full.stock < 10) {
+              return `<span class="badge bg-warning">${full.stock}</span>`;
+            } else {
+              return `<span class="badge bg-success">${full.stock}</span>`;
+            }
           }
         },
         {

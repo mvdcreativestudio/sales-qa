@@ -33,6 +33,45 @@
   <h4><span class="text-muted fw-light">Administración /</span> Roles</h4>
 </div>
 
+<div class="card mb-4">
+  <div class="card-widget-separator-wrapper">
+    <div class="card-body card-widget-separator">
+      <div class="row gy-4 gy-sm-1">
+        <div class="col-sm-6 col-lg-6">
+          <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Total de Roles</h6>
+              <h4 class="mb-2">{{ $roles->count() }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Total</span></p>
+            </div>
+            <div class="avatar me-sm-4">
+              <span class="avatar-initial rounded bg-label-primary">
+                <i class="bx bx-user bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none me-4">
+        </div>
+        <div class="col-sm-6 col-lg-6">
+          <div class="d-flex justify-content-between align-items-start card-widget-2 pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Roles Activos</h6>
+              <h4 class="mb-2">{{ $roles->filter(fn($role) => $role->status == false)->count() }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Activos</span></p>
+            </div>
+            <div class="avatar me-lg-4">
+              <span class="avatar-initial rounded bg-label-success">
+                <i class="bx bx-check-circle bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 @if (session('success'))
 <div class="alert alert-success mt-3 mb-3">
   {{ session('success') }}
@@ -60,28 +99,6 @@
     </div>
   @endforeach
 @endif
-
-<div class="card mb-4">
-  <div class="card-body">
-    <div class="row gy-4 gy-sm-1">
-      <div class="col-sm-6 col-lg-4">
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-2">Roles</h6>
-                        <h4>{{ isset($roles) ? $roles->count() : 0}}</h4>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-user bx-sm"></i></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 <div class="card">
   <div class="card-header">

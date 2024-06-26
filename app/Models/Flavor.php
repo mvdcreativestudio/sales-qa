@@ -32,4 +32,14 @@ class Flavor extends Model
     {
         return $this->hasMany(Recipe::class);
     }
+
+    /**
+     * Obtiene la receta a la que pertenece el sabor.
+     *
+     * @return BelongsToMany
+    */
+    public function usedRecipes(): BelongsToMany
+    {
+        return $this->belongsToMany(Recipe::class, 'recipes', 'flavor_id', 'used_flavor_id');
+    }
 }

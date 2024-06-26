@@ -83,7 +83,7 @@ class ProductController extends Controller
     $validated = $request->validated();
 
     $this->productRepo->createProduct($request);
-  
+
     return redirect()->route('products.index')->with('success', 'Producto creado correctamente.');
   }
 
@@ -153,8 +153,8 @@ class ProductController extends Controller
   */
   public function flavors(): View
   {
-    $flavor = $this->productRepo->flavors();
-    return view('content.e-commerce.backoffice.products.flavors', $flavor);
+    $flavors = $this->productRepo->flavors();
+    return view('content.e-commerce.backoffice.products.flavors', $flavors);
   }
 
   /**

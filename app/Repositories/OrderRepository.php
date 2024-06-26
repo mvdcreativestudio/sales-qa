@@ -18,13 +18,20 @@ use Illuminate\Support\Facades\Log;
 class OrderRepository
 {
   /**
-   * Obtiene todos los pedidos.
+   * Obtiene todos los pedidos y las estadísticas necesarias para las cards.
    *
-   * @return Collection
+   * @return array
   */
-  public function getAllOrders(): Collection
+  public function getAllOrders(): array
   {
-    return Order::all();
+    $orders = Order::all();
+    $totalOrders = $orders->count();
+    $totalIncome = $orders->sum('total');
+    $pendingOrders = $orders->where('shipping_status', 'pending')->count();
+    $shippedOrders = $orders->where('shipping_status', 'shipped')->count();
+    $completedOrders = $orders->where('shipping_status', 'completed')->count();
+
+    return compact('orders', 'totalOrders', 'totalIncome', 'pendingOrders', 'shippedOrders', 'completedOrders');
   }
 
   /**

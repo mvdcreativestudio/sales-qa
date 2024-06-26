@@ -47,8 +47,8 @@ class OrderController extends Controller
   */
   public function index(): View
   {
-      $orders = $this->orderRepository->getAllOrders();
-      return view('content.e-commerce.backoffice.orders.orders', compact('orders'));
+    $orders = $this->orderRepository->getAllOrders();
+    return view('content.e-commerce.backoffice.orders.orders', $orders);
   }
 
   /**

@@ -56,44 +56,46 @@
 @endif
 
 <div class="card mb-4">
-  <div class="card-body">
-    <div class="row gy-4 gy-sm-1">
-      <div class="col-sm-6 col-lg-3">
-        <div class="card mb-3">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="mb-2">Total de Órdenes</h6>
-                <h4>{{ $supplierOrders->count() }}</h4>
-              </div>
-              <div class="avatar">
-                <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-purchase-tag bx-sm"></i></span>
-              </div>
+  <div class="card-widget-separator-wrapper">
+    <div class="card-body card-widget-separator">
+      <div class="row gy-4 gy-sm-1">
+        <div class="col-sm-6 col-lg-3">
+          <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Total de Órdenes</h6>
+              <h4 class="mb-2">{{ $supplierOrders->count() }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Total</span></p>
+            </div>
+            <div class="avatar me-sm-4">
+              <span class="avatar-initial rounded bg-label-secondary">
+                <i class="bx bx-purchase-tag bx-sm"></i>
+              </span>
             </div>
           </div>
+          <hr class="d-none d-sm-block d-lg-none me-4">
         </div>
-      </div>
 
-      @php
-      $statuses = ['pending' => 'Pendiente', 'sending' => 'Enviando', 'completed' => 'Completada'];
-      @endphp
-      @foreach ($statuses as $status => $label)
-      <div class="col-sm-6 col-lg-3">
-        <div class="card mb-3">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="mb-2">Órdenes {{ $label }}</h6>
-                <h4>{{ $supplierOrders->where('shipping_status', $status)->count() }}</h4>
-              </div>
-              <div class="avatar">
-                <span class="avatar-initial rounded bg-label-{{ $status == 'completed' ? 'success' : ($status == 'sending' ? 'warning' : 'secondary') }}"><i class="bx bx-{{ $status == 'completed' ? 'check' : ($status == 'sending' ? 'package' : 'timer')}} bx-sm"></i></span>
-              </div>
+        @php
+        $statuses = ['pending' => 'Pendiente', 'sending' => 'Enviando', 'completed' => 'Completada'];
+        @endphp
+        @foreach ($statuses as $status => $label)
+        <div class="col-sm-6 col-lg-3">
+          <div class="d-flex justify-content-between align-items-start card-widget-{{ $loop->iteration + 1 }} {{ $loop->iteration == count($statuses) ? null : 'border-end' }} pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Órdenes {{ $label }}</h6>
+              <h4 class="mb-2">{{ $supplierOrders->where('shipping_status', $status)->count() }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Total</span></p>
+            </div>
+            <div class="avatar me-sm-4">
+              <span class="avatar-initial rounded bg-label-{{ $status == 'completed' ? 'success' : ($status == 'sending' ? 'warning' : 'secondary') }}">
+                <i class="bx bx-{{ $status == 'completed' ? 'check' : ($status == 'sending' ? 'package' : 'timer')}} bx-sm"></i>
+              </span>
             </div>
           </div>
+          <hr class="d-none d-sm-block d-lg-none me-4">
         </div>
+        @endforeach
       </div>
-      @endforeach
     </div>
   </div>
 </div>

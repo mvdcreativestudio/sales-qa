@@ -30,5 +30,9 @@ return [
   'access_coupons' => 'Acceder a cupones',
   'access_company_settings' => 'Acceder a configuración de empresa',
   'access_email_templates' => 'Acceder a plantillas de correo electrónico',
-  'access_product-flavors' => 'Acceder a sabores de productos'
+  'access_product-flavors' => 'Acceder a sabores de productos',
+  'access_productions' => 'Acceder a producciones',
+  'view_all_productions' => 'Ver todas las producciones',
+  'access_bypass_raw_material_check' => 'Saltar verificación de materia prima para producciones',
+  'access_raw-materials-management' => 'Acceder a gestión de materias primas',
 ];

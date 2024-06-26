@@ -39,6 +39,10 @@ class CreatePermissions extends Command
                     'view_all' => false,
                 ],
                 [
+                  'slug' => 'raw-materials-management',
+                  'view_all' => false,
+                ],
+                [
                     'slug' => 'raw-materials',
                     'view_all' => true,
                 ],
@@ -77,6 +81,14 @@ class CreatePermissions extends Command
                         'product-flavors'
                     ],
                     'view_all' => false,
+                ],
+                [
+                    'slug' => 'productions',
+                    'view_all' => true,
+                ],
+                [
+                  'slug' => 'bypass_raw_material_check',
+                  'view_all' => false,
                 ],
                 [
                     'slug' => 'marketing',

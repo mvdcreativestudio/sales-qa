@@ -4,11 +4,23 @@ namespace App\Repositories;
 
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Yajra\DataTables\DataTables;
 use App\Http\Requests\UpdateProductCategoryRequest;
 
 class ProductCategoryRepository
 {
+  /**
+   * Obtiene una lista de todas las categorías de productos.
+   *
+   * @return array
+  */
+  public function index(): array
+  {
+    $categories = ProductCategory::all();
+    return compact('categories');
+  }
+
   /**
    * Almacena una nueva categoría de producto en la base de datos.
    *
@@ -112,7 +124,7 @@ class ProductCategoryRepository
   public function deleteSelected(int $id): bool
   {
     $category = ProductCategory::find($id);
-    
+
     if ($category) {
         $category->delete();
         return true;
@@ -132,7 +144,7 @@ class ProductCategoryRepository
     public function getSelected($id): ProductCategory
     {
         $category = ProductCategory::find($id);
-        
+
         if ($category) {
           return $category;
         } else {

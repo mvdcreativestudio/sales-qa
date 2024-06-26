@@ -30,6 +30,73 @@
   <span class="text-muted fw-light">E-Commerce /</span> Pedidos
 </h4>
 
+<div class="card mb-4">
+  <div class="card-widget-separator-wrapper">
+    <div class="card-body card-widget-separator">
+      <div class="row gy-4 gy-sm-1">
+        <div class="col-sm-6 col-lg-3">
+          <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Total de Pedidos</h6>
+              <h4 class="mb-2">{{ $totalOrders }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Total</span></p>
+            </div>
+            <div class="avatar me-sm-4">
+              <span class="avatar-initial rounded bg-label-secondary">
+                <i class="bx bx-receipt bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none me-4">
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Ingresos Totales</h6>
+              <h4 class="mb-2">{{ $settings->currency_symbol }} {{ number_format($totalIncome, 2) }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Total</span></p>
+            </div>
+            <div class="avatar me-lg-4">
+              <span class="avatar-initial rounded bg-label-secondary">
+                <i class="bx bx-dollar bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none">
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="d-flex justify-content-between align-items-start border-end pb-3 pb-sm-0 card-widget-3">
+            <div>
+              <h6 class="mb-2">Pedidos Pendientes</h6>
+              <h4 class="mb-2">{{ $pendingOrders }}</h4>
+              <p class="mb-0 text-muted">Total Pendientes</p>
+            </div>
+            <div class="avatar me-sm-4">
+              <span class="avatar-initial rounded bg-label-secondary">
+                <i class="bx bx-hourglass bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none">
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="mb-2">Pedidos Completados</h6>
+              <h4 class="mb-2">{{ $completedOrders }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Total Completados</span></p>
+            </div>
+            <div class="avatar">
+              <span class="avatar-initial rounded bg-label-secondary">
+                <i class="bx bx-check bx-sm"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Order List Table -->
 <div class="card">

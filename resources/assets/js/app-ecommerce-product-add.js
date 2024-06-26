@@ -164,7 +164,7 @@
       });
 
       function updateRawMaterialOptions() {
-        var rawMaterialSelects = $('.recipe-card select[name^="recipes["][name$="[raw_material_id]"]');
+        var rawMaterialSelects = $('.raw-material-select');
         var selectedRawMaterials = rawMaterialSelects
           .map(function () {
             return $(this).val();
@@ -185,6 +185,28 @@
         });
       }
 
+      function updateFlavorOptions() {
+        var flavorSelects = $('.used-flavor-select');
+        var selectedFlavors = flavorSelects
+          .map(function () {
+            return $(this).val();
+          })
+          .get();
+
+        flavorSelects.each(function () {
+          $(this)
+            .find('option')
+            .each(function () {
+              var $option = $(this);
+              if (selectedFlavors.includes($option.val()) && !$option.is(':selected')) {
+                $option.prop('disabled', true);
+              } else {
+                $option.prop('disabled', false);
+              }
+            });
+        });
+      }
+
       function canAddMoreRawMaterials() {
         var lastQuantityInput = $('.recipe-card input[name^="recipes["][name$="[quantity]"]').last();
         return lastQuantityInput.val() !== '';
@@ -192,29 +214,48 @@
 
       function getRawMaterialOptions() {
         var rawMaterials = JSON.parse(document.querySelector('.app-ecommerce').dataset.rawMaterials);
-        var options = '';
+        var options = '<option value="" disabled selected>Selecciona una materia prima</option>';
         rawMaterials.forEach(function (rawMaterial) {
           options += `<option value="${rawMaterial.id}" data-unit="${rawMaterial.unit_of_measure}">${rawMaterial.name}</option>`;
         });
         return options;
       }
 
-      $(document).on('click', '[data-repeater-create]', function () {
+      function getFlavorOptions() {
+        var flavors = JSON.parse(document.querySelector('.app-ecommerce').dataset.flavors);
+        var options = '<option value="" disabled selected>Selecciona un sabor</option>';
+        flavors.forEach(function (flavor) {
+          options += `<option value="${flavor.id}">Balde de ${flavor.name}</option>`;
+        });
+        return options;
+      }
+
+      function updateRecipeIndices() {
+        $('[data-repeater-list="recipes"]')
+          .children()
+          .each(function (index) {
+            $(this).find('.raw-material-select').attr('name', `recipes[${index}][raw_material_id]`);
+            $(this).find('.used-flavor-select').attr('name', `recipes[${index}][used_flavor_id]`);
+            $(this).find('input[name$="[quantity]"]').attr('name', `recipes[${index}][quantity]`);
+            $(this).find('input[name$="[units_per_bucket]"]').attr('name', `recipes[${index}][units_per_bucket]`);
+          });
+      }
+
+      $(document).on('click', '#addRawMaterial', function () {
         if (canAddMoreRawMaterials()) {
           var repeaterList = $('[data-repeater-list="recipes"]');
           var rawMaterialOptions = getRawMaterialOptions();
-          var index = repeaterList.children().length;
           var repeaterItem = `
-            <div data-repeater-item class="row mb-3">
+            <div class="row mb-3" data-repeater-item>
               <div class="col-4">
                 <label class="form-label" for="raw-material">Materia Prima</label>
-                <select class="form-select raw-material-select" name="recipes[${index}][raw_material_id]">
+                <select class="form-select raw-material-select" name="recipes[][raw_material_id]">
                   ${rawMaterialOptions}
                 </select>
               </div>
               <div class="col-3">
                 <label class="form-label" for="quantity">Cantidad</label>
-                <input type="number" class="form-control" name="recipes[${index}][quantity]" placeholder="Cantidad" aria-label="Cantidad">
+                <input type="number" class="form-control" name="recipes[][quantity]" placeholder="Cantidad" aria-label="Cantidad" disabled>
               </div>
               <div class="col-3 d-flex align-items-end">
                 <input type="text" class="form-control unit-of-measure" placeholder="Unidad de medida" readonly>
@@ -224,24 +265,77 @@
               </div>
             </div>`;
           repeaterList.append(repeaterItem);
+          updateRecipeIndices();
           updateRawMaterialOptions();
         } else {
           alert('Por favor, ingrese la cantidad antes de agregar una nueva materia prima.');
         }
       });
 
+      $(document).on('click', '#addUsedFlavor', function () {
+        if (canAddMoreRawMaterials()) {
+          var repeaterList = $('[data-repeater-list="recipes"]');
+          var flavorOptions = getFlavorOptions();
+          var repeaterItem = `
+            <div class="row mb-3" data-repeater-item>
+              <div class="col-4">
+                <label class="form-label" for="used-flavor">Sabor Usado</label>
+                <select class="form-select used-flavor-select" name="recipes[][used_flavor_id]">
+                  ${flavorOptions}
+                </select>
+              </div>
+              <div class="col-3">
+                <label class="form-label" for="units-per-bucket">Unidades por Balde</label>
+                <input type="number" class="form-control units-per-bucket" name="recipes[][units_per_bucket]" placeholder="Unidades por balde" aria-label="Unidades por balde" disabled>
+              </div>
+              <div class="col-3">
+                <label class="form-label" for="quantity-individual">Cantidad Individual</label>
+                <input type="number" class="form-control quantity-individual" name="recipes[][quantity]" placeholder="Cantidad Individual" aria-label="Cantidad Individual" readonly>
+              </div>
+              <div class="col-2 d-flex align-items-end">
+                <button type="button" class="btn btn-danger" data-repeater-delete>Eliminar</button>
+              </div>
+            </div>`;
+          repeaterList.append(repeaterItem);
+          updateRecipeIndices();
+          updateFlavorOptions();
+        } else {
+          alert('Por favor, ingrese la cantidad antes de agregar un nuevo sabor.');
+        }
+      });
+
       $(document).on('click', '[data-repeater-delete]', function () {
-        $(this).closest('[data-repeater-item]').remove();
+        $(this).closest('.row').remove();
+        updateRecipeIndices();
         updateRawMaterialOptions();
+        updateFlavorOptions();
       });
 
       $(document).on('change', '.raw-material-select', function () {
         var unitOfMeasure = $(this).find('option:selected').data('unit');
         $(this).closest('.row').find('.unit-of-measure').val(unitOfMeasure);
-        var quantityInput = $(this).closest('.row').find('input[name^="recipes"][name$="[quantity]"]');
+        var quantityInput = $(this).closest('.row').find('input[name$="[quantity]"]');
         quantityInput.prop('disabled', !$(this).val());
         quantityInput.val($(this).val() ? quantityInput.val() : '');
         updateRawMaterialOptions();
+      });
+
+      $(document).on('change', '.used-flavor-select', function () {
+        var unitsPerBucketInput = $(this).closest('.row').find('.units-per-bucket');
+        unitsPerBucketInput.prop('disabled', !$(this).val());
+        unitsPerBucketInput.val($(this).val() ? unitsPerBucketInput.val() : '');
+        updateFlavorOptions();
+      });
+
+      $(document).on('input', '.units-per-bucket', function () {
+        var unitsPerBucket = parseFloat($(this).val());
+        var quantityIndividualInput = $(this).closest('.row').find('.quantity-individual');
+        if (unitsPerBucket > 0) {
+          var individualQuantity = 1 / unitsPerBucket;
+          quantityIndividualInput.val(individualQuantity.toFixed(4));
+        } else {
+          quantityIndividualInput.val('');
+        }
       });
     });
 

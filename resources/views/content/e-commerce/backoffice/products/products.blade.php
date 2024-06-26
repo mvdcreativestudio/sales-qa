@@ -115,8 +115,6 @@
   </div>
 </div>
 
-
-
 <!-- Product List Table -->
 <div class="card">
   <div class="card-header">
@@ -241,6 +239,16 @@
               <span class="switch-on"><i class="bx bx-check"></i></span>
               <span class="switch-off"><i class="bx bx-x"></i></span>
             </span>
+            <span class="switch-label">Stock</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="11" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
             <span class="switch-label">Acciones</span>
           </label>
         </div>
@@ -254,7 +262,6 @@
       <div class="col-md-2 product_store"></div>
     </div>
   </div>
-
 
   <div class="card-datatable table-responsive pt-0 mt-0">
     <table class="datatables-products table border-top" data-ajax-url="{{ route('products.datatable') }}" data-symbol="{{ $settings->currency_symbol }}">
@@ -270,6 +277,7 @@
           <th>Categoría</th>
           <th>Local</th>
           <th>Estado</th>
+          <th>Stock</th>
           <th>Acciones</th>
         </tr>
       </thead>

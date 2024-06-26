@@ -47,6 +47,7 @@
                     <button type="button" class="btn btn-danger" data-repeater-delete>Eliminar</button>
                   </div>
                 </div>
+                <p class="text-muted">Cantidad para elaborar 1 (un) balde de {{ config('services.flavorUnit.unit') }} litros</p>
               </div>
               <button type="button" class="btn btn-primary" data-repeater-create>Agregar Ingrediente</button>
             </div>

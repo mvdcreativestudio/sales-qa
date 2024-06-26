@@ -47,7 +47,7 @@
     </div>
 @endif
 
-<div class="app-ecommerce" data-raw-materials='@json($rawMaterials)' data-recipes='@json($product->recipes)'>
+<div class="app-ecommerce" data-raw-materials='@json($rawMaterials)' data-recipes='@json($product->recipes)' data-flavors='@json($flavors)'>
 
   <!-- Add Product -->
   <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
@@ -89,7 +89,7 @@
             <div class="form-control p-0 pt-1">
               <div class="comment-toolbar border-0 border-bottom">
                 <div class="d-flex justify-content-start">
-                  <span class="ql-formats me-0">1
+                  <span class="ql-formats me-0">
                     <button class="ql-bold"></button>
                     <button class="ql-italic"></button>
                     <button class="ql-underline"></button>
@@ -153,10 +153,11 @@
         <div class="card-body">
           <div data-repeater-list="recipes">
           </div>
-          <button type="button" class="btn btn-primary" data-repeater-create>Agregar Ingrediente</button>
+          <button type="button" class="btn btn-primary" id="addRawMaterial">Agregar Materia Prima</button>
+          <button type="button" class="btn btn-secondary" id="addUsedFlavor">Agregar Sabor Usado</button>
         </div>
       </div>
-      <!-- /Recipe -->
+
     </div>
     <!-- /Second column -->
 
