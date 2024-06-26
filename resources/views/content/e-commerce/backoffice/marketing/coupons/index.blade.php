@@ -138,5 +138,7 @@
 
 @include('content.e-commerce.backoffice.marketing.coupons.add-coupon')
 @include('content.e-commerce.backoffice.marketing.coupons.edit-coupon')
+@include('content.e-commerce.backoffice.marketing.coupons.details-coupon')
+
 
 @endsection
