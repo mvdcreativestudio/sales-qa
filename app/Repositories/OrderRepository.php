@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Client;
+use App\Models\OrderStatusChange;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
@@ -125,7 +126,7 @@ class OrderRepository
   */
   public function loadOrderRelations(Order $order): Order
   {
-    return $order->load('client');
+    return $order->load(['client', 'statusChanges.user']);
   }
 
   /**
@@ -229,4 +230,64 @@ class OrderRepository
   {
     return Order::where('client_id', $clientId)->count();
   }
+
+  /**
+   * Actualiza el estado del pago de un pedido.
+   *
+   * @param int $orderId
+   * @param string $paymentStatus
+   * @return Order
+   */
+  public function updatePaymentStatus(int $orderId, string $paymentStatus): Order
+  {
+      $order = Order::findOrFail($orderId);
+      $oldStatus = $order->payment_status;
+
+      // Verificar si hay un cambio en el estado de pago
+      if ($oldStatus !== $paymentStatus) {
+          $order->payment_status = $paymentStatus;
+          $order->save();
+          // Registrar el cambio de estado
+          OrderStatusChange::create([
+              'order_id' => $orderId,
+              'user_id' => Auth::id(),
+              'change_type' => 'payment',
+              'old_status' => $oldStatus,
+              'new_status' => $paymentStatus,
+          ]);
+      }
+
+      return $order;
+  }
+
+
+    /**
+   * Actualiza el estado del envío de un pedido.
+   *
+   * @param int $orderId
+   * @param string $shippingStatus
+   * @return Order
+   */
+  public function updateShippingStatus(int $orderId, string $shippingStatus): Order
+  {
+      $order = Order::findOrFail($orderId);
+      $oldStatus = $order->shipping_status;
+
+      // Verificar si hay un cambio en el estado de envío
+      if ($oldStatus !== $shippingStatus) {
+          $order->shipping_status = $shippingStatus;
+          $order->save();
+          // Registrar el cambio de estado
+          OrderStatusChange::create([
+              'order_id' => $orderId,
+              'user_id' => Auth::id(),
+              'change_type' => 'shipping',
+              'old_status' => $oldStatus,
+              'new_status' => $shippingStatus,
+          ]);
+      }
+
+      return $order;
+  }
+
 }
