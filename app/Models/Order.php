@@ -86,6 +86,16 @@ class Order extends Model
         return 'uuid';
     }
 
+    /**
+     * Obtiene los cambios de estado de la orden.
+     *
+     * @return HasMany
+    */
+    public function statusChanges()
+    {
+      return $this->hasMany(OrderStatusChange::class);
+    }
+
 
 
 }

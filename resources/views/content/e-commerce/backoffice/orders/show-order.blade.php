@@ -50,6 +50,30 @@
 
 @section('content')
 
+@php
+use Carbon\Carbon;
+Carbon::setLocale('es');
+
+$paymentStatusTranslations = [
+  'paid' => 'Pagado',
+  'pending' => 'Pendiente',
+  'failed' => 'Fallido',
+];
+
+$shippingStatusTranslations = [
+  'pending' => 'Pendiente',
+  'shipped' => 'Enviado',
+  'delivered' => 'Entregado',
+  'pickup' => 'Retira en tienda',
+];
+
+$changeTypeTranslations = [
+  'payment' => 'Pago',
+  'shipping' => 'Envío',
+  'status' => 'Estado',
+];
+@endphp
+
 <h4 class="py-3 mb-4">
   <span class="text-muted fw-light">E-Commerce /</span> Detalles del pedido
 </h4>
@@ -94,10 +118,15 @@
     <a href="{{ route('orders.pdf', ['order' => $order->uuid]) }}?action=download" class="btn btn-label-primary">Descargar PDF</a>
     <button class="btn btn-label-danger delete-order">Eliminar</button>
   </div>
-
-
-
 </div>
+
+<!-- Formulario para actualizar el estado del pago y envío -->
+<div class="row mb-4">
+  <div class="col-12">
+
+  </div>
+</div>
+
 
 <!-- Order Details Table -->
 <div class="row">
@@ -187,75 +216,102 @@
         @endif
       </div>
     </div>
-    {{-- <div class="card mb-4">
-      <div class="card-header">
-        <h5 class="card-title m-0">Actividad de entrega</h5>
-      </div>
-      <div class="card-body">
-        <ul class="timeline pb-0 mb-0">
-          <li class="timeline-item timeline-item-transparent border-primary">
-            <span class="timeline-point-wrapper"><span class="timeline-point timeline-point-primary"></span></span>
-            <div class="timeline-event">
-              <div class="timeline-header">
-                <h6 class="mb-0">Order was placed (Order ID: #32543)</h6>
-                <span class="text-muted">Tuesday 11:29 AM</span>
-              </div>
-              <p class="mt-2">Your order has been placed successfully</p>
-            </div>
-          </li>
-          <li class="timeline-item timeline-item-transparent border-primary">
-            <span class="timeline-point-wrapper"><span class="timeline-point timeline-point-primary"></span></span>
-            <div class="timeline-event">
-              <div class="timeline-header">
-                <h6 class="mb-0">Pick-up</h6>
-                <span class="text-muted">Wednesday 11:29 AM</span>
-              </div>
-              <p class="mt-2">Pick-up scheduled with courier</p>
-            </div>
-          </li>
-          <li class="timeline-item timeline-item-transparent border-primary">
-            <span class="timeline-point-wrapper"><span class="timeline-point timeline-point-primary"></span></span>
-            <div class="timeline-event">
-              <div class="timeline-header">
-                <h6 class="mb-0">Dispatched</h6>
-                <span class="text-muted">Thursday 11:29 AM</span>
-              </div>
-              <p class="mt-2">Item has been picked up by courier</p>
-            </div>
-          </li>
-          <li class="timeline-item timeline-item-transparent border-primary">
-            <span class="timeline-point-wrapper"><span class="timeline-point timeline-point-primary"></span></span>
-            <div class="timeline-event">
-              <div class="timeline-header">
-                <h6 class="mb-0">Package arrived</h6>
-                <span class="text-muted">Saturday 15:20 AM</span>
-              </div>
-              <p class="mt-2">Package arrived at an Amazon facility, NY</p>
-            </div>
-          </li>
-          <li class="timeline-item timeline-item-transparent border-left-dashed">
-            <span class="timeline-point-wrapper"><span class="timeline-point timeline-point-primary"></span></span>
-            <div class="timeline-event">
-              <div class="timeline-header">
-                <h6 class="mb-0">Dispatched for delivery</h6>
-                <span class="text-muted">Today 14:12 PM</span>
-              </div>
-              <p class="mt-2">Package has left an Amazon facility, NY</p>
-            </div>
-          </li>
-          <li class="timeline-item timeline-item-transparent border-transparent pb-0">
-            <span class="timeline-point-wrapper"><span class="timeline-point timeline-point-secondary"></span></span>
-            <div class="timeline-event pb-0">
-              <div class="timeline-header">
-                <h6 class="mb-0">Delivery</h6>
-              </div>
-              <p class="mt-2 mb-0">Package will be delivered by tomorrow</p>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div> --}}
+<!-- Order Status Changes Table -->
+<div class="card mb-4">
+  <div class="card-header">
+    <h5 class="card-title m-0">Actualizaciones del pedido</h5>
   </div>
+  <div class="card-body">
+    <ul class="timeline pb-0 mb-0">
+      @if($order->statusChanges == null)
+        <li class="timeline-item timeline-item-transparent border-primary">
+          <span class="timeline-point-wrapper"><span class="timeline-point timeline-point-primary"></span></span>
+          <div class="timeline-event">
+            <div class="timeline-header">
+              <h6 class="mb-0">Pedido creado (ID: #{{ $order->id }})</h6>
+              <span class="text-muted">{{ $order->created_at->translatedFormat('l H:i A') }}</span>
+            </div>
+          </div>
+        </li>
+      @else
+        @foreach($order->statusChanges->reverse() as $change)
+          @php
+            $oldBadgeClass = '';
+            $newBadgeClass = '';
+            switch ($change->old_status) {
+              case 'pending':
+                $oldBadgeClass = 'bg-warning';
+                break;
+              case 'paid':
+              case 'shipped':
+              case 'delivered':
+                $oldBadgeClass = 'bg-success';
+                break;
+              case 'failed':
+                $oldBadgeClass = 'bg-danger';
+                break;
+              default:
+                $oldBadgeClass = 'bg-secondary';
+                break;
+            }
+            switch ($change->new_status) {
+              case 'pending':
+                $newBadgeClass = 'bg-warning';
+                break;
+              case 'paid':
+              case 'shipped':
+                $newBadgeClass = 'bg-success';
+                break;
+              case 'delivered':
+                $newBadgeClass = 'bg-info';
+                break;
+              case 'failed':
+                $newBadgeClass = 'bg-danger';
+                break;
+              default:
+                $newBadgeClass = 'bg-secondary';
+                break;
+            }
+            $timelineClass = $newBadgeClass;
+          @endphp
+          <li class="timeline-item timeline-item-transparent border-{{ str_replace('bg-', '', $timelineClass) }}">
+            <span class="timeline-point-wrapper">
+              <span class="timeline-point {{ $timelineClass }}">
+              </span>
+            </span>
+            <div class="timeline-event">
+              <div class="timeline-header">
+                <h6 class="mb-0">Estado de {{ $changeTypeTranslations[$change->change_type] ?? ucfirst($change->change_type) }} (Pedido: #{{ $change->order_id }})</h6>
+                <span class="text-muted">{{ Carbon::parse($change->created_at)->locale('es')->translatedFormat('l H:i A') }}</span>
+              </div>
+              <p class="mt-2">
+                @if($change->change_type === 'payment')
+                  <span class="badge {{ $oldBadgeClass }}">{{ $paymentStatusTranslations[$change->old_status] ?? $change->old_status }}</span>
+                  <i class="bx bx-right-arrow-alt mx-2"></i>
+                  <span class="badge {{ $newBadgeClass }}">{{ $paymentStatusTranslations[$change->new_status] ?? $change->new_status }}</span>
+                @elseif($change->change_type === 'shipping')
+                  <span class="badge {{ $oldBadgeClass }}">{{ $shippingStatusTranslations[$change->old_status] ?? $change->old_status }}</span>
+                  <i class="bx bx-right-arrow-alt mx-2"></i>
+                  <span class="badge {{ $newBadgeClass }}">{{ $shippingStatusTranslations[$change->new_status] ?? $change->new_status }}</span>
+                @else
+                  <span class="badge {{ $oldBadgeClass }}">{{ $change->old_status }}</span>
+                  <i class="bx bx-right-arrow-alt mx-2"></i>
+                  <span class="badge {{ $newBadgeClass }}">{{ $change->new_status }}</span>
+                @endif
+                <br>
+                <small class="text-muted">por {{ optional($change->user)->name ?? 'Usuario eliminado' }}</small>
+              </p>
+            </div>
+          </li>
+        @endforeach
+      @endif
+    </ul>
+  </div>
+</div>
+
+
+  </div>
+
   <div class="col-12 col-lg-4">
     <div class="card mb-4">
       <div class="card-header">
@@ -287,6 +343,34 @@
     </div>
 
     <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title m-0">Actualizar Estado del Pedido</h5>
+      </div>
+      <div class="card-body">
+        <form action="{{ route('orders.updateStatus', $order->id) }}" method="POST">
+          @csrf
+          <div class="mb-3">
+            <label for="payment_status" class="form-label">Estado del Pago:</label>
+            <select name="payment_status" id="payment_status" class="form-select">
+              <option value="pending" {{ $order->payment_status === 'pending' ? 'selected' : '' }}>Pendiente</option>
+              <option value="paid" {{ $order->payment_status === 'paid' ? 'selected' : '' }}>Pagado</option>
+              <option value="failed" {{ $order->payment_status === 'failed' ? 'selected' : '' }}>Fallido</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="shipping_status" class="form-label">Estado del Envío:</label>
+            <select name="shipping_status" id="shipping_status" class="form-select">
+              <option value="pending" {{ $order->shipping_status === 'pending' ? 'selected' : '' }}>Pendiente</option>
+              <option value="shipped" {{ $order->shipping_status === 'shipped' ? 'selected' : '' }}>Enviado</option>
+              <option value="delivered" {{ $order->shipping_status === 'delivered' ? 'selected' : '' }}>Entregado</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Actualizar Estado del Pedido</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card mb-4">
       <div class="card-header d-flex justify-content-between">
         <h6 class="card-title m-0">Dirección de envío</h6>
         <h6 class="m-0"><a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#addNewAddress">Editar</a></h6>
@@ -306,9 +390,6 @@
     </div>
   </div>
 </div>
-
-
-
 
 <!-- Modals -->
 @include('_partials/_modals/modal-edit-user')
