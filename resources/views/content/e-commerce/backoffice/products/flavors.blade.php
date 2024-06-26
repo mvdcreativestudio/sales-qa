@@ -93,14 +93,6 @@
           Agregar Sabor
         </button>
       </div>
-      <div class="dropdown d-inline float-end mx-2">
-        <button class="btn btn-primary dropdown-toggle d-none" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-          Acciones
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <li><a class="dropdown-item" href="#" id="deleteSelected">Eliminar seleccionados</a></li>
-        </ul>
-      </div>
     </h5>
   </div>
   <div class="card-datatable table-responsive pt-0">
@@ -111,6 +103,7 @@
             <th>ID</th>
             <th>Nombre</th>
             <th>Estado</th>
+            <th>Stock</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -126,26 +119,5 @@
     @endif
   </div>
 </div>
-
-<style>
-  .addRawMaterials {
-    box-shadow: none;
-    padding: 0px;
-    border: 1px solid #e9ecef;
-  }
-
-  .card .card {
-    box-shadow: none;
-  }
-
-</style>
-
-<script>
-  const rawMaterials = @json($rawMaterials);
-</script>
-
-@include('content.e-commerce.backoffice.products.flavors.add-flavor')
-@include('content.e-commerce.backoffice.products.flavors.add-multiple-flavors')
-@include('content.e-commerce.backoffice.products.flavors.edit-flavor')
 
 @endsection

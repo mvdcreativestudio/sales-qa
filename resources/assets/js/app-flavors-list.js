@@ -1,3 +1,5 @@
+'use strict';
+
 $(function () {
   let borderColor, bodyBg, headingColor;
 
@@ -16,7 +18,13 @@ $(function () {
   if (dt_flavor_table.length) {
     var dt_flavors = dt_flavor_table.DataTable({
       ajax: 'products/flavors/datatable',
-      columns: [{ data: 'id' }, { data: 'name' }, { data: 'status' }, { data: null, defaultContent: '' }],
+      columns: [
+        { data: 'id' },
+        { data: 'name' },
+        { data: 'status' },
+        { data: 'stock' },
+        { data: null, defaultContent: '' }
+      ],
       columnDefs: [
         {
           targets: 2,
@@ -26,6 +34,18 @@ $(function () {
             return data === 'active'
               ? '<span class="badge pill bg-success">Activo</span>'
               : '<span class="badge pill bg-danger">Inactivo</span>';
+          }
+        },
+        {
+          targets: 3,
+          render: function (data, type, full, meta) {
+            if (full.stock === 0) {
+              return `<span class="badge bg-danger">${full.stock}</span>`;
+            } else if (full.stock < 10) {
+              return `<span class="badge bg-warning">${full.stock}</span>`;
+            } else {
+              return `<span class="badge bg-success">${full.stock}</span>`;
+            }
           }
         },
         {
@@ -103,7 +123,7 @@ $(function () {
       }).then(result => {
         if (result.isConfirmed) {
           $.ajax({
-            url: '/chelatoapp/public/admin/product-flavors/' + recordId + '/delete',
+            url: 'admin/product-flavors/' + recordId + '/delete',
             type: 'DELETE',
             headers: {
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -148,7 +168,7 @@ $(function () {
     $('.datatables-flavors tbody').on('click', '.edit-record', function () {
       var recordId = $(this).data('id');
       $.ajax({
-        url: '/chelatoapp/public/admin/product-flavors/' + recordId,
+        url: 'admin/product-flavors/' + recordId,
         type: 'GET',
         success: function (response) {
           $('#editFlavorForm #flavorName').val(response.name); // Colocar el nombre del sabor en el input
@@ -176,7 +196,7 @@ $(function () {
     };
 
     $.ajax({
-      url: '/chelatoapp/public/admin/product-flavors/' + recordId,
+      url: 'admin/product-flavors/' + recordId,
       type: 'PUT',
       data: formData,
       success: function (response) {
@@ -343,7 +363,7 @@ $(function () {
 
   function switchStatus(recordId, newStatus) {
     $.ajax({
-      url: `/chelatoapp/public/admin/product-flavors/${recordId}/switch-status`,
+      url: `admin/product-flavors/${recordId}/switch-status`,
       method: 'PUT',
       data: {
         status: newStatus,

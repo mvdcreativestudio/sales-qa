@@ -19,9 +19,13 @@
 @endsection
 
 @section('page-script')
-@vite([
-  'resources/assets/js/app-ecommerce-product-list.js'
-])
+<script type="text/javascript">
+    window.productions = @json($productions);
+    window.productionActivateTemplate = "{{ route('productions.activate', ':id') }}";
+    window.productionDeactivateTemplate = "{{ route('productions.deactivate', ':id') }}";
+    window.csrfToken = "{{ csrf_token() }}";
+</script>
+@vite(['resources/assets/js/app-productions-list.js'])
 @endsection
 
 @section('content')
@@ -29,213 +33,276 @@
   <span class="text-muted fw-light">Producción /</span> Elaboraciones
 </h4>
 
-@if(session('success'))
-  <div class="alert alert-success d-flex" role="alert">
-    <span class="badge badge-center rounded-pill bg-success border-label-success p-3 me-2"><i class="bx bx-user fs-6"></i></span>
-    <div class="d-flex flex-column ps-1">
-      <h6 class="alert-heading d-flex align-items-center fw-bold mb-1">¡Correcto!</h6>
-      <span>{{ session('success') }}</span>
+<div class="card mb-4">
+  <div class="card-widget-separator-wrapper">
+    <div class="card-body card-widget-separator">
+      <div class="row gy-4 gy-sm-1">
+        <div class="col-sm-6 col-lg-4">
+          <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Total de Producciones</h6>
+              <h4 class="mb-2">{{ $productions->count() }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Total</span></p>
+            </div>
+            <div class="avatar me-sm-4">
+              <span class="avatar-initial rounded bg-label-secondary">
+                <i class="bx bx-layer bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none me-4">
+        </div>
+        <div class="col-sm-6 col-lg-4">
+          <div class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-3 pb-sm-0">
+            <div>
+              <h6 class="mb-2">Producciones Recientes</h6>
+              <h4 class="mb-2">{{ $productions->where('created_at', '>=', now()->subMonth())->count() }}</h4>
+              <p class="mb-0"><span class="text-muted me-2">Último mes</span></p>
+            </div>
+            <div class="avatar me-lg-4">
+              <span class="avatar-initial rounded bg-label-secondary">
+                <i class="bx bx-list-ol bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none">
+        </div>
+        <div class="col-sm-12 col-lg-4">
+          <div class="d-flex justify-content-between align-items-start pb-3 pb-sm-0 card-widget-3">
+            <div>
+              <h6 class="mb-2">Producción del día</h6>
+              <h4 class="mb-2">{{ $productions->where('created_at', '>=', now()->startOfDay())->count() }}</h4>
+              <p class="mb-0 text-muted">Hoy</p>
+            </div>
+            <div class="avatar me-sm-4">
+              <span class="avatar-initial rounded bg-label-secondary">
+                <i class="bx bx-bar-chart-alt bx-sm"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="d-none d-sm-block d-lg-none">
+        </div>
+      </div>
     </div>
   </div>
-@elseif(session('error'))
-  <div class="alert alert-danger d-flex" role="alert">
-    <span class="badge badge-center rounded-pill bg-danger border-label-danger p-3 me-2"><i class="bx bx-user fs-6"></i></span>
-    <div class="d-flex flex-column ps-1">
-      <h6 class="alert-heading d-flex align-items-center fw-bold mb-1">¡Error!</h6>
-      <span>{{ session('error') }}</span>
-    </div>
-  </div>
+</div>
+
+@if (session('success'))
+<div class="alert alert-success mt-3 mb-3">
+  {{ session('success') }}
+</div>
 @endif
 
-<!-- Production List Table -->
+@if (session('error'))
+<div class="alert alert-danger mt-3 mb-3">
+  {{ session('error') }}
+</div>
+@endif
+
+@if ($errors->any())
+@foreach ($errors->all() as $error)
+  <div class="alert alert-danger">
+    {{ $error }}
+  </div>
+@endforeach
+@endif
+
 <div class="card">
   <div class="card-header">
-    <div class="d-flex col-12 justify-content-between align-items-center">
-      <!-- Ver / Ocultar columnas de la tabla -->
-      <div class="d-flex">
-        <p class="text-muted small">
-          <a href="" class="toggle-switches" data-bs-toggle="collapse" data-bs-target="#columnSwitches" aria-expanded="false" aria-controls="columnSwitches">Ver / Ocultar columnas de la tabla</a>
-        </p>
-      </div>
-    </div>
-
-    <!-- Columnas de la tabla -->
-    <div class="collapse" id="columnSwitches">
-      <div class="mt-0 d-flex flex-wrap">
-        <div class="mx-0">
-          <label class="switch switch-square">
-            <input type="checkbox" class="toggle-column switch-input" data-column="0" checked>
-            <span class="switch-toggle-slider">
-              <span class="switch-on"><i class="bx bx-check"></i></span>
-              <span class="switch-off"><i class="bx bx-x"></i></span>
-            </span>
-            <span class="switch-label">Producto</span>
-          </label>
-        </div>
-        <div class="mx-3">
-          <label class="switch switch-square">
-            <input type="checkbox" class="toggle-column switch-input" data-column="1" checked>
-            <span class="switch-toggle-slider">
-              <span class="switch-on"><i class="bx bx-check"></i></span>
-              <span class="switch-off"><i class="bx bx-x"></i></span>
-            </span>
-            <span class="switch-label">Sabor</span>
-          </label>
-        </div>
-        <div class="mx-3">
-          <label class="switch switch-square">
-            <input type="checkbox" class="toggle-column switch-input" data-column="2" checked>
-            <span class="switch-toggle-slider">
-              <span class="switch-on"><i class="bx bx-check"></i></span>
-              <span class="switch-off"><i class="bx bx-x"></i></span>
-            </span>
-            <span class="switch-label">Cantidad</span>
-          </label>
-        </div>
-        <div class="mx-3">
-          <label class="switch switch-square">
-            <input type="checkbox" class="toggle-column switch-input" data-column="3" checked>
-            <span class="switch-toggle-slider">
-              <span class="switch-on"><i class="bx bx-check"></i></span>
-              <span class="switch-off"><i class="bx bx-x"></i></span>
-            </span>
-            <span class="switch-label">Acciones</span>
-          </label>
-        </div>
-      </div>
-    </div>
+    <h5 class="card-title">Elaboraciones</h5>
   </div>
-
-  <div class="card-datatable table-responsive pt-0 mt-0">
-    <table class="datatables-productions table border-top" data-ajax-url="{{ route('productions.index') }}">
+  <div class="card-datatable table-responsive">
+    <table class="table datatables-productions border-top">
       <thead>
         <tr>
+          <th>ID</th>
           <th>Producto</th>
           <th>Sabor</th>
           <th>Cantidad</th>
+          <th>Fecha de Elaboración</th>
+          <th>Estado</th>
           <th>Acciones</th>
         </tr>
       </thead>
     </table>
   </div>
 </div>
-
 @endsection
 
 <script>
-'use strict';
+document.addEventListener('DOMContentLoaded', function () {
+    var dt_productions_table = $('.datatables-productions');
 
-$(function () {
-  var dt_production_table = $('.datatables-productions');
+    var productionActivate = window.productionActivateTemplate;
+    var productionDeactivate = window.productionDeactivateTemplate;
+    var productions = window.productions;
 
-  if (dt_production_table.length) {
-    var dt_productions = dt_production_table.DataTable({
-      ajax: {
-        url: dt_production_table.data('ajax-url'),
-        type: 'GET'
-      },
-      columns: [
-        { data: 'product_name' },
-        { data: 'flavor_name' },
+    var columns = [
+        { data: 'id' },
+        { data: 'product.name', defaultContent: 'N/A' },
+        { data: 'flavor.name', defaultContent: 'N/A' },
         { data: 'quantity' },
-        { data: 'actions', orderable: false, searchable: false }
-      ],
-      columnDefs: [
+        { data: 'created_at' },
+        { data: 'status' }
+    ];
+
+    var columnsDefs = [
         {
-          targets: 0,
-          render: function (data, type, full, meta) {
-            return data ? data : 'N/A';
-          }
+            targets: 0,
+            searchable: false,
+            orderable: true,
+            render: function (data, type, row) {
+                return data;
+            }
         },
         {
-          targets: 1,
-          render: function (data, type, full, meta) {
-            return data ? data : 'N/A';
-          }
-        }
-      ],
-      order: [0, 'asc'],
-      dom: '<"card-header d-flex flex-column flex-md-row align-items-start align-items-md-center pt-0"<"ms-n2"f><"d-flex align-items-md-center justify-content-md-end mt-2 mt-md-0"l<"dt-action-buttons"B>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-      lengthMenu: [10, 25, 50, 100],
-      language: {
-        search: '',
-        searchPlaceholder: 'Buscar...',
-        sLengthMenu: '_MENU_',
-        info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
-        infoFiltered: "filtrados de _MAX_ elaboraciones",
-        paginate: {
-          first: '<<',
-          last: '>>',
-          next: '>',
-          previous: '<'
+            targets: 1,
+            searchable: true,
+            responsivePriority: 1,
+            orderable: true,
+            render: function (data, type, row, meta) {
+                return data ? data : 'N/A';
+            }
         },
-        pagingType: "full_numbers",
-        emptyTable: 'No hay registros disponibles',
-        dom: 'Bfrtip',
-        renderer: "bootstrap"
-      },
-      buttons: [
         {
-          text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Añadir elaboración</span>',
-          className: 'add-new btn btn-primary',
-          action: function () {
-            window.location.href = '{{ route("productions.create") }}';
-          }
+            targets: 2,
+            searchable: true,
+            responsivePriority: 2,
+            orderable: true,
+            render: function (data, type, row, meta) {
+                return data ? data : 'N/A';
+            }
+        },
+        {
+            targets: 3,
+            searchable: true,
+            responsivePriority: 3,
+            orderable: true,
+            render: function (data, type, row, meta) {
+                return data;
+            }
+        },
+        {
+            targets: 4,
+            searchable: true,
+            responsivePriority: 4,
+            orderable: true,
+            render: function (data, type, row, meta) {
+                return data;
+            }
+        },
+        {
+            targets: 5,
+            searchable: true,
+            responsivePriority: 5,
+            orderable: true,
+            render: function (data, type, row, meta) {
+                var badgeClass = data === 'active' ? 'bg-success' : 'bg-danger';
+                var badgeText = data === 'active' ? 'Activa' : 'Inactiva';
+                return '<span class="badge ' + badgeClass + '">' + badgeText + '</span>';
+            }
+        },
+        {
+            targets: 6,
+            searchable: false,
+            responsivePriority: 6,
+            orderable: false,
+            render: function (data, type, row, meta) {
+                var actionUrl = row.status === 'active' ? productionDeactivate.replace(':id', row.id) : productionActivate.replace(':id', row.id);
+                var actionText = row.status === 'active' ? 'Desactivar' : 'Activar';
+                return `
+                    <div class="dropdown">
+                        <button class="btn btn-icon btn-icon-only" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="bx bx-dots-horizontal-rounded"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <form class="status-form-${row.id}" action="${actionUrl}" method="POST">
+                                <input type="hidden" name="_token" value="${window.csrfToken}">
+                                <input type="hidden" name="production_id" value="${row.id}">
+                                <div class="dropdown-item text-${row.status === 'active' ? 'danger' : 'success'} status-button" style="cursor: pointer;">
+                                    <i class="bx bx-${row.status === 'active' ? 'trash' : 'check'}"></i> ${actionText}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                `;
+            }
         }
-      ]
-    });
+    ];
+
+    if (dt_productions_table.length) {
+        dt_productions_table.DataTable({
+            data: productions,
+            columns: columns,
+            columnDefs: columnsDefs,
+            language: {
+                searchPlaceholder: 'Buscar...',
+                sLengthMenu: '_MENU_',
+                info: 'Mostrando _START_ a _END_ de _TOTAL_ Elaboraciones',
+                paginate: {
+                    first: 'Primero',
+                    last: 'Último',
+                    next: '<span class="mx-2">Siguiente</span>',
+                    previous: '<span class="mx-2">Anterior</span>'
+                },
+                aria: {
+                    sortAscending: ': activar para ordenar la columna ascendente',
+                    sortDescending: ': activar para ordenar la columna descendente'
+                },
+                emptyTable: 'No hay datos disponibles en la tabla',
+                zeroRecords: 'No se encontraron coincidencias',
+                lengthMenu: '_MENU_',
+                loadingRecords: 'Cargando...',
+                processing: 'Procesando...',
+                search: '',
+                infoFiltered: '(filtrado de un total de _MAX_ Elaboraciones)',
+                infoEmpty: 'Mostrando 0 a 0 de 0 Elaboraciones'
+            },
+            dom:
+                '<"card-header d-flex border-top rounded-0 flex-wrap py-md-0"' +
+                '<"me-5 ms-n2 pe-5"f>' +
+                '<"d-flex justify-content-start justify-content-md-end align-items-baseline"<"dt-action-buttons d-flex align-items-start align-items-md-center justify-content-sm-center mb-3 mb-sm-0"lB>>' +
+                '>t' +
+                '<"row mx-2"' +
+                '<"col-sm-12 col-md-6"i>' +
+                '<"col-sm-12 col-md-6"p>' +
+                '>',
+            buttons: [
+                {
+                    text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Crear</span>',
+                    className: 'btn btn-primary ml-3',
+                    action: function () {
+                        window.location.href = '/admin/productions/create';
+                    }
+                }
+            ]
+        });
+    }
 
     $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
     $('.dt-buttons > .btn-group > button').removeClass('btn-secondary');
     $('.dt-buttons').addClass('d-flex flex-wrap');
-    $('.dataTables_length label select').addClass('form-select form-select-sm');
-    $('.dataTables_filter label input').addClass('form-control');
-  }
 
-  $('.datatables-productions tbody').on('click', '.delete-button', function () {
-    var productionId = $(this).data('id');
+    $('div.dataTables_filter input').addClass('form-control');
+    $('div.dataTables_length select').addClass('form-select');
 
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Una vez eliminada, no podrás recuperar esta elaboración.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+    $('.datatables-productions tbody').on('click', '.status-button', function () {
+        var form = $(this).closest('form');
 
-        $.ajax({
-          type: "DELETE",
-          url: '{{ url("productions") }}/' + productionId,
-          data: {
-            _token: csrfToken
-          },
-          success: function (response) {
-            Swal.fire({
-              title: '¡Eliminado!',
-              text: 'La elaboración ha sido eliminada correctamente.',
-              icon: 'success',
-              showConfirmButton: false,
-              timer: 1500
-            });
-            dt_productions.ajax.reload(null, false);
-          },
-          error: function (xhr, status, error) {
-            console.error(xhr.responseText);
-            Swal.fire({
-              title: 'Error',
-              text: 'Hubo un error al intentar eliminar la elaboración.',
-              icon: 'error',
-              confirmButtonText: 'OK'
-            });
-          }
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Esta acción cambiará el estado de la elaboración.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, continuar!',
+            cancelButtonText: 'Cancelar'
+        }).then(result => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
         });
-      }
     });
-  });
 });
 </script>

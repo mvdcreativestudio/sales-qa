@@ -49,6 +49,7 @@ Route::middleware([
     Route::get('/orders/{order}/datatable', [OrderController::class, 'orderProductsDatatable'])->name('order-products.datatable');
     Route::get('/marketing/coupons/datatable', [CouponController::class, 'datatable'])->name('coupons.datatable');
     Route::get('/products/flavors/datatable', [ProductController::class, 'flavorsDatatable'])->name('products.flavors.datatable');
+    Route::get('/productions/datatable', [ProductionController::class, 'datatable'])->name('productions.datatable');
 
 
     // Recursos con acceso autenticado
@@ -165,6 +166,12 @@ Route::middleware([
         // Chat
         Route::get('/', [OmnichannelController::class, 'chats'])->name('omnichannel.chat');
         Route::get('/fetch-messages', [WhatsAppController::class, 'fetchMessages'])->name('omnichannel.fetch.messages');
+    });
+
+    // Producciones
+    Route::group(['prefix' => 'productions'], function () {
+      Route::post('/activate/{production}', [ProductionController::class, 'activate'])->name('productions.activate');
+      Route::post('/deactivate/{production}', [ProductionController::class, 'destroy'])->name('productions.deactivate');
     });
 });
 
