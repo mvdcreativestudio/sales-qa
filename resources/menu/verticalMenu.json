@@ -177,13 +177,6 @@
       ]
     },
     {
-      "id": "tour-crm",
-      "name": "CRM",
-      "icon": "menu-icon tf-icons bx bx-group",
-      "slug": "crm",
-      "url": "/admin/crm"
-    },
-    {
       "id": "tour-tiendas",
       "name": "Tiendas",
       "icon": "menu-icon tf-icons bx bx-store-alt",

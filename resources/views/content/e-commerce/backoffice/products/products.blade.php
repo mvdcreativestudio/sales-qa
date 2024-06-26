@@ -46,7 +46,7 @@
   </div>
 @endif
 
-<!-- Product List Widget -->
+{{-- <!-- Product List Widget -->
 
 <div class="card mb-4">
   <div class="card-widget-separator-wrapper">
@@ -113,7 +113,7 @@
       </div>
     </div>
   </div>
-</div>
+</div> --}}
 
 <!-- Product List Table -->
 <div class="card">
