@@ -24,9 +24,9 @@ class EnsureCartNotEmpty
           return redirect()->route('shop')->with('error', 'Por favor, selecciona una tienda antes de proceder al checkout.');
       }
 
-      if (empty($cart)) {
-          return redirect('/store/' . $selectedStore['slug'])->with('error', 'El carrito está vacío. Por favor, agrega productos antes de proceder al checkout.');
-      }
+      // if (empty($cart)) {
+      //     return redirect('/store/' . $selectedStore['slug'])->with('error', 'El carrito está vacío. Por favor, agrega productos antes de proceder al checkout.');
+      // }
 
       return $next($request);
   }

@@ -50,9 +50,11 @@ class CheckoutRepository
         $cart = session('cart');
         $subtotal = 0;
 
-        foreach ($cart as $item) {
-            $price = !empty($item['price']) ? $item['price'] : $item['old_price'];
-            $subtotal += $price * $item['quantity'];
+        if ($cart && is_array($cart)) {
+          foreach ($cart as $item) {
+              $price = !empty($item['price']) ? $item['price'] : $item['old_price'];
+              $subtotal += $price * $item['quantity'];
+          }
         }
 
         $discount = session('coupon.discount', 0);

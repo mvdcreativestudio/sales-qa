@@ -9,6 +9,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\StoreOrderRequest;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -129,4 +130,31 @@ class OrderController extends Controller
   {
       return $this->orderRepository->getOrderProductsForDataTable($order);
   }
+
+
+  /**
+   * Actualiza el estado del pago y envío de un pedido.
+   *
+   * @param Request $request
+   * @param int $orderId
+   * @return RedirectResponse
+   */
+  public function updateStatus(Request $request, int $orderId): RedirectResponse
+  {
+      $request->validate([
+          'payment_status' => 'required|string',
+          'shipping_status' => 'required|string',
+      ]);
+
+      try {
+          $this->orderRepository->updatePaymentStatus($orderId, $request->input('payment_status'));
+          $this->orderRepository->updateShippingStatus($orderId, $request->input('shipping_status'));
+          return redirect()->back()->with('success', 'Estado del pedido actualizado correctamente.');
+      } catch (\Exception $e) {
+          Log::error($e->getMessage());
+          return redirect()->back()->with('error', 'No se pudo actualizar. Por favor, intente nuevamente');
+      }
+  }
+
+
 }
