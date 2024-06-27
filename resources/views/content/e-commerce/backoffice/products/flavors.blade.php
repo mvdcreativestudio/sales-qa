@@ -87,6 +87,68 @@
 
 <div class="card">
   <div class="card pb-3">
+  <div class="card-header">
+    <h5 class="card-title">Sabores</h5>
+    <div class="d-flex">
+        <p class="text-muted small">
+          <a href="" class="toggle-switches" data-bs-toggle="collapse" data-bs-target="#columnSwitches" aria-expanded="false" aria-controls="columnSwitches">Ver / Ocultar columnas de la tabla</a>
+        </p>
+      </div>
+      <div class="collapse" id="columnSwitches">
+      <div class="mt-0 d-flex flex-wrap">
+        <div class="mx-0">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="0" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">ID</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="1" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Nombre</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="2" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Estado</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="3" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Stock</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="4" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Acciones</span>
+          </label>
+        </div>
+</div>
+</div>
+
     <h5 class="card-header pb-0 row text-end">
       <div class="justify-content-end">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFlavorModal">

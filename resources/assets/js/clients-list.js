@@ -96,6 +96,10 @@ $(document).ready(function() {
     // To remove default btn-secondary in export buttons
     $('.dt-buttons > .btn-group > button').removeClass('btn-secondary');
     $('.dt-buttons').addClass('d-flex flex-wrap');
+    $('.toggle-column').on('change', function() {
+      var column = dt_customer.column($(this).attr('data-column'));
+      column.visible(!column.visible());
+  });
   }
 
   // Delete Record

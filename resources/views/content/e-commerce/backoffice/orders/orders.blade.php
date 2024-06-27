@@ -101,6 +101,89 @@
 <!-- Order List Table -->
 <div class="card">
   <div class="card-datatable table-responsive">
+  <div class="card-header">
+  <h5 class="card-title">Pedidos</h5>
+    <div class="d-flex">
+        <p class="text-muted small">
+          <a href="" class="toggle-switches" data-bs-toggle="collapse" data-bs-target="#columnSwitches" aria-expanded="false" aria-controls="columnSwitches">Ver / Ocultar columnas de la tabla</a>
+        </p>
+      </div>
+      <div class="collapse" id="columnSwitches">
+      <div class="mt-0 d-flex flex-wrap">
+        <!-- Selectores de columnas -->
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="1" checked> 
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Fecha</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="2" checked> 
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Cliente</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="3" checked> 
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Local</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="4" checked> 
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Importe</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="5" checked> 
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Pago</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="6" checked> 
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Envío</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="8" checked> 
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Acciones</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
     <table class="datatables-order table border-top" data-symbol="{{ $settings->currency_symbol }}">
       <thead>
         <tr>

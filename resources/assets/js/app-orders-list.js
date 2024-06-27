@@ -162,6 +162,10 @@ $(function () {
       }
     });
 
+    $('.toggle-column').on('change', function() {
+      var column = dt_products.column($(this).attr('data-column'));
+      column.visible(!column.visible());
+  });
     // Estilos buscador y paginación
     $('.dataTables_length label select').addClass('form-select form-select-sm');
     $('.dataTables_filter label input').addClass('form-control');

@@ -110,6 +110,85 @@
 <div class="card">
   <div class="card-header">
     <h5 class="card-title">Elaboraciones</h5>
+    <div class="d-flex">
+        <p class="text-muted small">
+          <a href="" class="toggle-switches" data-bs-toggle="collapse" data-bs-target="#columnSwitches" aria-expanded="false" aria-controls="columnSwitches">Ver / Ocultar columnas de la tabla</a>
+        </p>
+      </div>
+      <div class="collapse" id="columnSwitches">
+      <div class="mt-0 d-flex flex-wrap">
+        <div class="mx-0">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="0" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">ID</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="1" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Producto</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="2" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Sabor</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="3" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Cantidad</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="4" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Fecha de elaboración</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="5" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Estado</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="6" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Acciones</span>
+          </label>
+        </div>
+</div>
+</div>
   </div>
   <div class="card-datatable table-responsive">
     <table class="table datatables-productions border-top">
@@ -188,6 +267,11 @@ document.addEventListener('DOMContentLoaded', function () {
             responsivePriority: 4,
             orderable: true,
             render: function (data, type, row, meta) {
+                if (type === 'display' || type === 'filter') {
+                    var date = new Date(data);
+                    var options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                    return date.toLocaleDateString('es-ES', options);
+                }
                 return data;
             }
         },
@@ -231,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function () {
     ];
 
     if (dt_productions_table.length) {
-        dt_productions_table.DataTable({
+        var table = dt_productions_table.DataTable({
             data: productions,
             columns: columns,
             columnDefs: columnsDefs,
@@ -272,11 +356,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     text: '<i class="bx bx-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Crear</span>',
                     className: 'btn btn-primary ml-3',
                     action: function () {
-                        window.location.href = '/admin/productions/create';
+                        window.location.href = 'productions/create';
                     }
                 }
             ]
         });
+        $('.toggle-column').on('change', function() {
+      var column = table.column($(this).attr('data-column'));
+      column.visible(!column.visible());
+  });
     }
 
     $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
