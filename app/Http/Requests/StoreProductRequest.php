@@ -31,13 +31,16 @@ class StoreProductRequest extends FormRequest
         ];
     }
 
-    public function messages()
-    {
-        return [
-            'price.lt' => 'El precio rebajado no puede ser mayor o igual al precio normal.',
-            'recipes.*.raw_material_id.required_without' => 'El campo materia prima es obligatorio cuando no se selecciona un sabor.',
-            'recipes.*.used_flavor_id.required_without' => 'El campo sabor es obligatorio cuando no se selecciona una materia prima.',
-            'recipes.*.quantity.required_with' => 'La cantidad es obligatoria cuando se agrega una receta.',
-        ];
-    }
+  public function messages()
+  {
+      return [
+               'price.lt' => 'El precio rebajado no puede ser mayor o igual al precio normal.',
+              'recipes' => 'nullable|array',
+              'categories' => 'Faltó completar el campo "CATEGORÍA"',
+              'recipes.*.raw_material_id' => 'required_with:recipes|exists:raw_materials,id',
+              'recipes.*.quantity' => 'required_with:recipes|numeric|min:0.01',
+              ];
+  }
+
 }
+

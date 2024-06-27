@@ -22,5 +22,5 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (error) {
           console.error('Hubo un problema al intentar cambiar el estado de la tienda:', error);
       }
-  };})
+ };})
   
