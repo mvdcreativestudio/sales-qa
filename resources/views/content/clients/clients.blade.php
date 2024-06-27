@@ -54,7 +54,67 @@
 
 <!-- customers List Table -->
 <div class="card">
-
+<div class="card-header">
+    <h5 class="card-title">Clientes</h5>
+    <div class="d-flex">
+        <p class="text-muted small">
+          <a href="" class="toggle-switches" data-bs-toggle="collapse" data-bs-target="#columnSwitches" aria-expanded="false" aria-controls="columnSwitches">Ver / Ocultar columnas de la tabla</a>
+        </p>
+      </div>
+      <div class="collapse" id="columnSwitches">
+      <div class="mt-0 d-flex flex-wrap">
+        <div class="mx-0">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="0" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">ID</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="1" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Cliente</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="2" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Dirección</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="3" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Ciudad</span>
+          </label>
+        </div>
+        <div class="mx-3">
+          <label class="switch switch-square">
+            <input type="checkbox" class="toggle-column switch-input" data-column="4" checked>
+            <span class="switch-toggle-slider">
+              <span class="switch-on"><i class="bx bx-check"></i></span>
+              <span class="switch-off"><i class="bx bx-x"></i></span>
+            </span>
+            <span class="switch-label">Departamento</span>
+          </label>
+        </div>
+  </div>
+</div>
   <div class="card-datatable table-responsive">
     <table class="datatables-customers table border-top" data-ajax-url="{{ route('clients.datatable') }}">
       <thead>

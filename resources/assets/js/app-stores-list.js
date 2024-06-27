@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var storeChangeStatus = window.toggleStoreStatus;
 
   if (dt_stores_table.length) {
-    dt_stores_table.DataTable({
+    var table = dt_stores_table.DataTable({
       data: stores,
       columns: [
         { data: 'name' },
@@ -115,6 +115,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       ]
     });
+    $('.toggle-column').on('change', function() {
+      var column = table.column($(this).attr('data-column'));
+      column.visible(!column.visible());
+  });
   }
 
   $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
