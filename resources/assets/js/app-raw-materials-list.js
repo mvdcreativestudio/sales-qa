@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   if (dt_raw_materials_table.length) {
-    dt_raw_materials_table.DataTable({
+    var table = dt_raw_materials_table.DataTable({
       data: rawMaterials,
       columns: columns,
       columnDefs: columnsDefs,
@@ -154,6 +154,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       ]
     });
+    $('.toggle-column').on('change', function() {
+      var column = table.column($(this).attr('data-column'));
+      column.visible(!column.visible());
+  });
   }
 
   $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
