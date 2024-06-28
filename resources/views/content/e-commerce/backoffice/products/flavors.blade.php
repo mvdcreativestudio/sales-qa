@@ -182,4 +182,11 @@
   </div>
 </div>
 
+<script>
+  const rawMaterials = @json($rawMaterials);
+</script>
+
+@include('content.e-commerce.backoffice.products.flavors.add-flavor')
+@include('content.e-commerce.backoffice.products.flavors.edit-flavor')
+
 @endsection

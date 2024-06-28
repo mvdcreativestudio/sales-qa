@@ -177,7 +177,7 @@ $(function () {
         type: 'GET',
         success: function (response) {
           $('#editFlavorForm #flavorName').val(response.name); // Colocar el nombre del sabor en el input
-          loadRecipes(response.recipes); // Cargar las recetas
+          loadRecipes(response.recipes);
           $('#editFlavorModal').modal('show');
           $('#updateFlavorBtn').data('id', recordId);
         },
@@ -257,11 +257,11 @@ $(function () {
   }
 
   function loadRecipes(recipes) {
-    const recipesList = $('#editRecipesList');
-    recipesList.empty(); // Limpiar la lista de recetas
-
-    if (recipes.length === 0) {
-      const row = `
+    try {
+      const recipesList = $('#editRecipesList');
+      recipesList.empty(); // Limpiar la lista de recetas
+      if (recipes.length === 0) {
+        const row = `
         <div data-repeater-item class="row mb-3">
           <div class="col-4">
             <label class="form-label" for="raw-material">Materia Prima</label>
@@ -282,10 +282,10 @@ $(function () {
           </div>
         </div>
       `;
-      recipesList.append(row);
-    } else {
-      recipes.forEach((recipe, index) => {
-        const row = `
+        recipesList.append(row);
+      } else {
+        recipes.forEach((recipe, index) => {
+          const row = `
           <div data-repeater-item class="row mb-3">
             <div class="col-4">
               <label class="form-label" for="raw-material">Materia Prima</label>
@@ -306,11 +306,14 @@ $(function () {
             </div>
           </div>
         `;
-        recipesList.append(row);
-      });
-    }
+          recipesList.append(row);
+        });
+      }
 
-    updateRawMaterialOptions();
+      updateRawMaterialOptions();
+    } catch (error) {
+      console.error('Error al cargar las recetas:', error);
+    }
   }
 
   function initRepeater() {
@@ -326,7 +329,7 @@ $(function () {
             <label class="form-label" for="raw-material">Materia Prima</label>
             <select class="form-select raw-material-select" name="recipes[${index}][raw_material_id]">
               <option value="" disabled selected>Selecciona materia prima</option>
-              ${rawMaterials.map(rawMaterial => `<option value="${rawMaterial.id}" data-unit="${rawMaterial.unit_of_measure}">${rawMaterial.name}</option>`).join('')}
+              ${window.rawMaterials.map(rawMaterial => `<option value="${rawMaterial.id}" data-unit="${rawMaterial.unit_of_measure}">${rawMaterial.name}</option>`).join('')}
             </select>
           </div>
           <div class="col-3">
