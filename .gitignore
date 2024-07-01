@@ -13,6 +13,9 @@
 .phpunit.result.cache
 .env
 
+# htaccess
+.htaccess
+
 docker-compose.override.yml
 
 Homestead.json
