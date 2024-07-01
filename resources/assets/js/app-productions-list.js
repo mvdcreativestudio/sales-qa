@@ -111,7 +111,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if ($.fn.DataTable.isDataTable('.datatables-productions')) {
       dt_productions_table.DataTable().destroy();
     }
-
     dt_productions_table.DataTable({
       data: productions,
       columns: columns,
@@ -158,7 +157,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       ]
     });
-
     // Ajustar clases después de la inicialización del DataTable
     $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
     $('.dt-buttons > .btn-group > button').removeClass('btn-secondary');
