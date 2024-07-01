@@ -50,9 +50,9 @@
           @csrf
           <div class="mb-3">
             <label for="storeId" class="form-label">Seleccionar tienda:</label>
-            <select class="form-select" name="storeId" id="storeId">
+            <select class="form-select" name="slug" id="storeId">
               @foreach($stores as $store)
-                <option value="{{ $store->id }}" {{ $selectedStoreId == $store->id ? 'selected' : '' }}>{{ $store->name }}</option>
+                <option value="{{ $store->slug }}" {{ $selectedStoreId == $store->id ? 'selected' : '' }}>{{ $store->name }}</option>
               @endforeach
             </select>
           </div>
@@ -66,7 +66,6 @@
     </div>
   </div>
 </div>
-
 
 <script>
   function confirmChangeStore() {
