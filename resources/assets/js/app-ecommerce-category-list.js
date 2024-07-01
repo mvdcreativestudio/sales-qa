@@ -131,6 +131,11 @@ $(function () {
     $('.dt-buttons').addClass('d-flex flex-wrap');
     $('.dataTables_length label select').addClass('form-select form-select-sm');
     $('.dataTables_filter label input').addClass('form-control');
+
+    $('.toggle-column').on('change', function() {
+      var column = dt_category.column($(this).attr('data-column'));
+      column.visible(!column.visible());
+  });
   }
 
 const commentEditor = new Quill('.comment-editor', {

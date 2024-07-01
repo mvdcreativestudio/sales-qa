@@ -56,6 +56,11 @@ document.addEventListener('DOMContentLoaded', function () {
       responsivePriority: 4,
       orderable: true,
       render: function (data, type, row, meta) {
+        if (type === 'display' || type === 'filter') {
+          var date = new Date(data);
+          var options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'};
+          return date.toLocaleDateString('es-ES', options);
+        }
         return data;
       }
     },
@@ -102,6 +107,10 @@ document.addEventListener('DOMContentLoaded', function () {
   ];
 
   if (dt_productions_table.length) {
+    // Destruir instancia previa si existe
+    if ($.fn.DataTable.isDataTable('.datatables-productions')) {
+      dt_productions_table.DataTable().destroy();
+    }
     dt_productions_table.DataTable({
       data: productions,
       columns: columns,
@@ -148,31 +157,31 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       ]
     });
-  }
+    // Ajustar clases después de la inicialización del DataTable
+    $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
+    $('.dt-buttons > .btn-group > button').removeClass('btn-secondary');
+    $('.dt-buttons').addClass('d-flex flex-wrap');
+    $('div.dataTables_filter input').addClass('form-control');
+    $('div.dataTables_length select').addClass('form-select');
 
-  $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');
-  $('.dt-buttons > .btn-group > button').removeClass('btn-secondary');
-  $('.dt-buttons').addClass('d-flex flex-wrap');
+    // Manejar eventos en la tabla
+    $('.datatables-productions tbody').on('click', '.status-button', function () {
+      var form = $(this).closest('form');
 
-  $('div.dataTables_filter input').addClass('form-control');
-  $('div.dataTables_length select').addClass('form-select');
-
-  $('.datatables-productions tbody').on('click', '.status-button', function () {
-    var form = $(this).closest('form');
-
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción cambiará el estado de la elaboración.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, continuar!',
-      cancelButtonText: 'Cancelar'
-    }).then(result => {
-      if (result.isConfirmed) {
-        form.submit();
-      }
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Esta acción cambiará el estado de la elaboración.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, continuar!',
+        cancelButtonText: 'Cancelar'
+      }).then(result => {
+        if (result.isConfirmed) {
+          form.submit();
+        }
+      });
     });
-  });
+  }
 });

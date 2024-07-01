@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   if (dtSupplierOrdersTable.length) {
-    dtSupplierOrdersTable.DataTable({
+    var table = dtSupplierOrdersTable.DataTable({
       data: supplierOrders,
       columns: columns,
       dom:
@@ -110,6 +110,10 @@ document.addEventListener('DOMContentLoaded', function () {
         infoEmpty: 'Mostrando 0 a 0 de 0 ordenes'
       }
     });
+    $('.toggle-column').on('change', function() {
+      var column = table.column($(this).attr('data-column'));
+      column.visible(!column.visible());
+  });
   }
 
   $('.dataTables_length').addClass('mt-0 mt-md-3 me-3');

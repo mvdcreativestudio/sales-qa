@@ -106,6 +106,11 @@ $(function () {
       renderer: 'bootstrap'
     });
 
+    $('.toggle-column').on('change', function() {
+      var column = dt_flavors.column($(this).attr('data-column'));
+      column.visible(!column.visible());
+  });
+
     $('.dataTables_length label select').addClass('form-select form-select-sm');
     $('.dataTables_filter label input').addClass('form-control');
 
