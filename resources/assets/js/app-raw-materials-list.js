@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
   var dt_raw_materials_table = $('.datatables-raw-materials');
-
+  console.log('DataTables version:', $.fn.dataTable.version);
   var rawMaterialAdd = window.rawMaterialAdd;
   var rawMaterialEdit = window.rawMaterialEditTemplate;
   var rawMaterialDelete = window.rawMaterialDeleteTemplate;
@@ -178,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }).then(result => {
       if (result.isConfirmed) {
         form.submit();
-      }});
+      }
+    });
   });
 });
