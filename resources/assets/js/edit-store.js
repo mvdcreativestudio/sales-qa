@@ -36,3 +36,42 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+  const ecommerceSwitch = document.getElementById('ecommerceSwitch');
+  const ecommerceFields = document.getElementById('ecommerceFields');
+
+  // Verificar el estado inicial del switch al cargar la página
+  const initialState = ecommerceSwitch.checked;
+
+  if (initialState) {
+    ecommerceFields.style.display = 'block';
+  }
+
+  ecommerceSwitch.addEventListener('change', function () {
+    if (initialState && !this.checked) {
+      // Mostrar Sweet Alert si MercadoPago estaba activado y se desactivó
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Se perderán los datos de la vinculación con MercadoPago y deberá ser realizada nuevamente',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, desactivar',
+        cancelButtonText: 'Cancelar'
+      }).then(result => {
+        if (result.isConfirmed) {
+          // Usuario confirma la acción
+          ecommerceFields.style.display = 'none';
+        } else {
+          // Usuario cancela la acción, resetear el switch a su estado inicial
+          ecommerceSwitch.checked = true;
+        }
+      });
+    } else {
+      // Manejar la visibilidad de los campos normalmente si no se cumple la condición anterior
+      ecommerceFields.style.display = this.checked ? 'block' : 'none';
+    }
+  });
+});

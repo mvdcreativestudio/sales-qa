@@ -59,6 +59,16 @@
                         </select>
                     </div>
 
+                    <!-- Ecommerce Switch -->
+                    <div class="mb-3">
+                      <div class="form-check form-switch">
+                          <!-- Campo oculto para asegurar que un valor falso se envíe si el checkbox no está marcado -->
+                          <input type="hidden" name="ecommerce" value="0">
+                          <input class="form-check-input" type="checkbox" id="ecommerceSwitch" name="ecommerce" value="1" {{ $store->ecommerce ? 'checked' : '' }}>
+                          <label class="form-check-label" for="ecommerceSwitch">¿Vende por Ecommerce?</label>
+                        </div>
+                    </div>
+
                     <!-- Acepta MercadoPago Switch -->
                     <div class="mb-3">
                       <div class="form-check form-switch">
@@ -68,6 +78,7 @@
                           <label class="form-check-label" for="mercadoPagoSwitch">Acepta MercadoPago</label>
                         </div>
                     </div>
+
 
 
                     <!-- Campos MercadoPago (ocultos por defecto) -->
