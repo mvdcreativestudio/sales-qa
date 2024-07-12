@@ -304,15 +304,6 @@ $navbarDetached = ($navbarDetached ?? '');
                 </div>
               </a>
             </li>
-            <li>
-              <div class="dropdown-divider"></div>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#">
-                <i class="bx bx-user me-2"></i>
-                <span class="align-middle">{{ __('My Profile') }}</span>
-              </a>
-            </li>
             @if (Auth::check() && Laravel\Jetstream\Jetstream::hasApiFeatures())
             <li>
               <a class="dropdown-item" href="{{ route('api-tokens.index') }}">
@@ -330,7 +321,7 @@ $navbarDetached = ($navbarDetached ?? '');
               <li>
                 <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                   <i class='bx bx-power-off me-2'></i>
-                  <span class="align-middle">{{ __('Sign Out') }}</span>
+                  <span class="align-middle">{{ __('Cerrar Sesión') }}</span>
                 </a>
               </li>
               <form method="POST" id="logout-form" action="{{ route('logout') }}">

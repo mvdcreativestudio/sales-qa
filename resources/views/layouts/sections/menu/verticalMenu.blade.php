@@ -7,7 +7,9 @@ $configData = Helper::appClasses();
   <div class="app-brand demo">
     <a href="{{ url('/') }}" class="app-brand-link">
       <div class="container">
-        <img src="{{ asset('assets\img\branding\chelato-black.png') }}" alt="" class="" style="max-width: 150px;">
+        @if($companySettings->logo_black != null)
+        <img class="logo-navbar" src="{{ asset($companySettings->logo_black) }}" alt="{{ $companySettings->name }}">
+        @endif
       </div>
     </a>
     {{-- Colapsa el menú --}}

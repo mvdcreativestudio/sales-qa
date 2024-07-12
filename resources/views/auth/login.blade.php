@@ -27,9 +27,11 @@ $customizerHidden = 'customizer-hide';
     <div class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg p-sm-5 p-4">
       <div class="w-px-400 mx-auto">
         <!-- Logo -->
-        <div class="row mb-5 text-center">
+        <div class="row  mb-5 text-center">
           <a href="{{url('/')}}" class="text-center justify-content-center">
-            <img src="{{ asset('assets/img/branding/chelato-black.png') }}" alt="" class="navbar-logo justify-content-center">
+            @if($companySettings->logo_black != null)
+            <img src="{{ $companySettings->logo_black }}" class="login-logo" alt="{{ $companySettings->name }}">
+            @endif
           </a>
         </div>
         <!-- /Logo -->

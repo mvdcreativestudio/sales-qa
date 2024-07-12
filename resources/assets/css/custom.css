@@ -585,3 +585,11 @@ tr.odd {
   max-height: 50vh;
   width: 100%;
 }
+
+.logo-navbar {
+  max-height: 65px;
+}
+
+.login-logo {
+  max-width: 200px;
+}

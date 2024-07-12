@@ -121,7 +121,9 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <img src="https://657041b07b.imgdist.com/pub/bfra/j2m7xe6w/nvl/6a4/y4a/Chelato-Black-Logo.png" alt="Logo">
+          @if($companySettings->logo_black != null)
+            <img src="{{ $companySettings->logo_black }}" alt="{{ $companySettings->name }}">
+          @endif
         </div>
         <div class="subheader">
           <h4 style="margin-bottom: 8px;">¡Hola, {{ $variables['client_name'] }}!</h4>
