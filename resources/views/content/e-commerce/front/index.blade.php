@@ -31,9 +31,11 @@
   <div class="video-overlay">
     <h2 class="header-title">Llegaste al paraíso del helado</h2>
     <img src="assets/img/branding/chelato-white.png" class="logo-header" alt="">
-    <div class="animated-text-container">
-      <a class="animated-text" href="#selectStore">Pedí Online <i class="fa fa-arrow-down arrow-animate"></i></a>
-    </div>
+    @if($stores->count() >= 1)
+      <div class="animated-text-container">
+        <a class="animated-text" href="#selectStore">Pedí Online <i class="fa fa-arrow-down arrow-animate"></i></a>
+      </div>
+    @endif
   </div>
 </div>
 
@@ -48,6 +50,7 @@
       </div>
     </div>
   @endif
+  @if($stores->count() >= 1)
   @if(session('store') == null)
   <div class="vendors-container container mt-5">
     <div class="row text-center justify-content-center">
@@ -98,6 +101,7 @@
 
     </div>
   </div>
+  @endif
   @endif
 
   <div class="d-flex quienes-somos-home container-fluid mt-3">

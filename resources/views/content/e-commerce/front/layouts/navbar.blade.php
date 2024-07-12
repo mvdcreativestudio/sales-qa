@@ -5,7 +5,7 @@
 
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
-    <img src="{{ asset('assets/img/branding/chelato-white.png') }}" alt="" class="navbar-logo">
+    <img src="{{ asset($companySettings->logo_white) }}" alt="" class="navbar-logo">
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -20,6 +20,7 @@
         @endif
       </ul>
       <ul class="navbar-nav navbar-nav-scroll">
+        @if($stores->count() >= 1)
         <li>
           @if(session('store') && session('store')['id'] == $selectedStoreId)
           <a href="#" class="nav-link nav-link-menu" onclick="confirmChangeStore()">Cambiar de tienda</a>
@@ -27,6 +28,7 @@
           <a href="#" class="nav-link nav-link-menu" data-bs-toggle="modal" data-bs-target="#selectStoreModal">Seleccionar tienda</a>
           @endif
         </li>
+        @endif
       </ul>
     </div>
   </div>
